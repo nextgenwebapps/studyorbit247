@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f5f0">
+<meta name="description" content="Student login and signup for StudyOrbit247.">
+<title>Student Login / Sign Up | StudyOrbit247</title>
+<style>
+:root{color-scheme:light;--ink:#171512;--muted:#777168;--line:#e8e1d4;--gold:#c49a45;--ruby:#9f2925}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(circle at 12% 15%,#e9ddc4 0,transparent 30%),radial-gradient(circle at 90% 85%,#ead8d3 0,transparent 28%),#f7f5f0;display:grid;place-items:center;padding:24px}
+a{color:inherit;text-decoration:none}.shell{width:min(100%,460px)}.brand{font-weight:850;font-size:23px;letter-spacing:-.7px;text-align:center;margin-bottom:25px;color:#111}.brand em{font-style:normal;background:linear-gradient(100deg,#a97820,#d9b45e 55%,#a92925);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card{background:#fff;border:1px solid #e5dccb;border-radius:23px;padding:clamp(25px,6vw,38px);box-shadow:0 24px 70px #261b0d16}.mark{width:54px;height:54px;margin:0 auto 19px;border-radius:17px;display:grid;place-items:center;background:linear-gradient(135deg,#171512,#4b201b);color:#f0d18a;border:1px solid #c49a45;font-size:23px}
+.eyebrow{text-align:center;color:#987024;font-size:11px;font-weight:850;letter-spacing:1.7px;text-transform:uppercase}h1{text-align:center;font-size:29px;letter-spacing:-1px;margin:9px 0 8px}.intro{text-align:center;color:var(--muted);font-size:13px;line-height:1.65;margin:0 0 23px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;background:#f3efe7;border:1px solid #e9e1d3;border-radius:12px;margin-bottom:22px}.tab{height:40px;border:0;border-radius:9px;background:transparent;color:#777168;font-weight:800;cursor:pointer}.tab.active{background:#fff;color:#76551e;box-shadow:0 3px 10px #261b0d12}
+label{display:block;font-size:12px;font-weight:750;margin:16px 0 8px}input{width:100%;height:49px;border:1px solid #ded7ca;border-radius:11px;padding:0 14px;font:inherit;font-size:14px;outline:none;background:#fff}input:focus{border-color:#bd9140;box-shadow:0 0 0 3px #c49a451c}
+.submit{width:100%;height:49px;margin-top:21px;border:0;border-radius:11px;background:linear-gradient(105deg,#93691f,#d8b35d 55%,#a52c27);color:white;font-size:14px;font-weight:800;cursor:pointer}.feedback{min-height:18px;margin:12px 0 0;color:#8b6725;font-size:12px;line-height:1.5;text-align:center}.note{margin:17px 0 0;padding:12px;border-radius:10px;background:#f7eee0;color:#76551e;font-size:11px;line-height:1.6}.back{text-align:center;margin:22px 0 0;color:#777168;font-size:12px}.back a{color:#8e6724;font-weight:800}.back a+a{margin-left:16px}
+[hidden]{display:none!important}@media(max-width:420px){body{padding:16px}.card{border-radius:18px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<div class="brand">Study<em>Orbit</em>247</div>
+<section class="card" aria-labelledby="title">
+<div class="mark" aria-hidden="true">✦</div>
+<div class="eyebrow">STUDENT ACCOUNT</div>
+<h1 id="title">Welcome back</h1>
+<p class="intro" id="intro">Login to continue your learning journey.</p>
+<div class="tabs" role="tablist" aria-label="Student account access">
+<button class="tab active" id="login-tab" type="button" role="tab" aria-selected="true">Login</button>
+<button class="tab" id="signup-tab" type="button" role="tab" aria-selected="false">Sign Up</button>
+</div>
+<form id="user-form">
+<label id="name-label" hidden>Full name<input name="name" type="text" autocomplete="name" placeholder="Enter your name"></label>
+<label>Email address<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+<label>Password<input name="password" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required></label>
+<label id="confirm-label" hidden>Confirm password<input name="confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Re-enter your password"></label>
+<button class="submit" id="submit" type="submit">Login</button>
+<p class="feedback" id="feedback" aria-live="polite"></p>
+</form>
+<p class="note">Student login and signup interface is ready. Secure authentication, account creation and saved cross-device learning data will work after connecting the authentication backend.</p>
+</section>
+<p class="back"><a href="../">← Back to StudyOrbit247</a><a href="../my-learning/">My Learning →</a></p>
+</main>
+<script>
+(function(){
+ const form=document.getElementById('user-form'),login=document.getElementById('login-tab'),signup=document.getElementById('signup-tab');
+ const title=document.getElementById('title'),intro=document.getElementById('intro'),submit=document.getElementById('submit'),feedback=document.getElementById('feedback');
+ const nameLabel=document.getElementById('name-label'),confirmLabel=document.getElementById('confirm-label');let mode='login';
+ function setMode(next){mode=next;const isSignup=mode==='signup';login.classList.toggle('active',!isSignup);signup.classList.toggle('active',isSignup);login.setAttribute('aria-selected',String(!isSignup));signup.setAttribute('aria-selected',String(isSignup));title.textContent=isSignup?'Create your account':'Welcome back';intro.textContent=isSignup?'Create an account to save your preparation and track progress.':'Login to continue your learning journey.';submit.textContent=isSignup?'Create Account':'Login';nameLabel.hidden=!isSignup;confirmLabel.hidden=!isSignup;form.elements.password.autocomplete=isSignup?'new-password':'current-password';feedback.textContent='';}
+ login.addEventListener('click',()=>setMode('login'));signup.addEventListener('click',()=>setMode('signup'));
+ form.addEventListener('submit',e=>{e.preventDefault();if(mode==='signup'&&form.elements.password.value!==form.elements.confirm.value){feedback.textContent='Passwords do not match.';return;}feedback.textContent='Authentication backend is not connected yet. No account was created and no login session was started.';});
+})();
+</script>
+</body>
+</html>
