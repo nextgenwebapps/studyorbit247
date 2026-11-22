@@ -4,21 +4,20 @@ Shared, root-level static assets for the StudyOrbit247 website.
 
 ## Structure
 
-- `brand/` — brand logo, compact mark and browser favicon (SVG).
+- `brand/studyorbit247-logo.svg` — text-only StudyOrbit247 wordmark; no standalone square emblem.
 - `css/` — shared design tokens. Page-specific CSS remains with each page until it is migrated deliberately.
 - `images/` — reserved for optimized content images (WebP/AVIF preferred).
-- `fonts/` — reserved for licensed self-hosted font files. The current site uses the system font stack, so no font download is required.
+- `fonts/` — reserved for licensed self-hosted font files. The current site uses the system font stack.
 
-## Current brand direction
+## Brand direction
 
-Black / ivory with gold and ruby accents. Keep logo artwork as SVG for crisp rendering at all sizes.
+Use the name **StudyOrbit247** as the only brand signature. Keep the visual theme consistent across pages: black and ivory foundations with restrained gold and ruby-red accents. Do not add a separate square brand icon, badge, or emblem.
 
 ## Use
 
 From the repository root:
 
 ```html
-<link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg">
 <link rel="stylesheet" href="assets/css/tokens.css">
 ```
 
