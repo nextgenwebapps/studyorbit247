@@ -66,3 +66,19 @@
  .palette-toggle-btn{padding:9px 11px}
 }
 @media(max-width:420px){.palette-card-head small{max-width:175px}.palette-total{padding:6px 7px}.palette-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+
+
+/* Performance insights: full-width horizontal overview on desktop and mobile */
+.result-columns{display:flex;flex-direction:column;gap:16px}
+.insights-horizontal{order:-1;width:100%;padding:20px 24px}
+.insights-horizontal .insight-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:end}
+.insights-horizontal .insight-metric{min-width:0}
+.insights-horizontal .insight-row{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:4px 0 10px;font-size:11px}
+.insights-horizontal .insight-row span{color:#716b61}
+.insights-horizontal .insight-row b{white-space:nowrap}
+.insights-horizontal .next-tip{margin-top:18px}
+@media(max-width:700px){
+ .insights-horizontal{padding:16px}
+ .insights-horizontal .insight-metrics{grid-template-columns:1fr;gap:12px}
+ .insights-horizontal .next-tip{margin-top:14px}
+}
