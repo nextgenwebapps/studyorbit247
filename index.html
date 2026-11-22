@@ -94,7 +94,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 .site-header .brand{font-size:23px;font-weight:850;letter-spacing:-.7px;color:#111}
 .site-header .brand em{font-style:normal;background:linear-gradient(100deg,#a97820,#d9b45e 55%,#a92925);-webkit-background-clip:text;background-clip:text;color:transparent}
 .account-nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,2.2vw,30px);font-size:14px;font-weight:700;color:#39342d}.auth-links{display:flex;flex-direction:row;align-items:center;gap:18px}.auth-links .admin-link{font-size:13px}
-.account-nav a{white-space:nowrap}.account-nav a:hover{color:#987024}.account-nav .signup-link:hover{color:#987024}
+.account-nav a{white-space:nowrap}.nav-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-right:7px;vertical-align:-4px;color:#9a7022}.nav-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.account-nav a:hover{color:#987024}.account-nav .signup-link:hover{color:#987024}
 .account-nav .signup-link{padding:0;border-radius:0;background:none;color:inherit}
 .settings-icon{font-size:16px;margin-right:4px}
 .home-content section{padding:52px 0 58px}
@@ -134,8 +134,8 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <a class="brand" href="#"><span>Study<em>Orbit</em>247</span></a>
 <button class="menu" aria-label="Open navigation" aria-expanded="false" onclick="const p=document.querySelector('.account-nav');const open=p.classList.toggle('mobile-open');this.setAttribute('aria-expanded',open)">☰</button>
 <nav class="account-nav">
-<div class="auth-links"><a class="signup-link" href="user/">Login / Sign Up</a><a class="admin-link" href="admin/">Login as Admin</a></div>
-<a href="my-learning/">My Learning</a>
+<div class="auth-links"><a class="signup-link" href="user/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>Login / Sign Up</a><a class="admin-link" href="admin/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span>Login as Admin</a></div>
+<a href="my-learning/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h8"/></svg></span>My Learning</a>
 </nav>
 </div></header>
 <main class="home-content">
