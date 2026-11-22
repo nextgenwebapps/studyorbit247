@@ -233,6 +233,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
  function open(){modal.hidden=false;document.body.style.overflow='hidden';setMode('login');}
  function close(){modal.hidden=true;document.body.style.overflow='';}
  document.querySelectorAll('.auth-open').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open();}));
+ if(location.hash==='#auth')open();
  document.getElementById('auth-close').addEventListener('click',close);
  modal.addEventListener('click',e=>{if(e.target===modal)close();});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)close();});
