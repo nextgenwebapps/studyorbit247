@@ -141,6 +141,15 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 .products-panel-inner>a:hover{border-color:#c4a45d;background:#faf6ec;color:#987024;transform:translateY(-2px)}
 .product-tile-icon{font-size:23px;line-height:1}.product-coming{color:#777168}.product-coming small{font-size:10px;color:#987024;font-weight:700}
 @media(max-width:650px){.products-trigger{width:100%;padding:12px 0;text-align:left;justify-content:flex-start}.products-panel-inner{width:100%;justify-content:flex-start;gap:10px;padding:14px 5%;overflow-x:auto}.products-panel-inner>a,.product-coming{flex:0 0 145px;min-height:92px;font-size:12px}}
+/* Keep the products panel anchored directly to its header trigger */
+.products-panel{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);width:100vw;z-index:25;background:#fffdf8;border-top:1px solid #e8e1d4;border-bottom:1px solid #e8e1d4;box-shadow:0 12px 28px #17120a12}
+.products-panel.products-open{display:block}
+.site-header .nav{position:relative}
+@media(max-width:650px){
+ .account-nav.mobile-open .products-panel{position:static;left:auto;top:auto;transform:none;width:100%;margin:0;padding:0;box-shadow:none;border:0;border-top:1px solid #e8e1d4;background:#faf8f2}
+ .account-nav.mobile-open .products-panel-inner{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px 0 12px;overflow:visible}
+ .account-nav.mobile-open .products-panel-inner>a,.account-nav.mobile-open .product-coming{min-width:0;width:100%;min-height:76px;padding:10px 7px;font-size:11px}
+}
 </style>
 
 <style id="continue-learning-styles">
@@ -166,9 +175,10 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <nav class="account-nav">
 <div class="auth-links"><a class="signup-link" href="user/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>Login / Sign Up</a><a class="admin-link" href="admin/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span>Login as Admin</a></div>
 <button class="products-trigger" type="button" aria-expanded="false" aria-controls="products-panel" onclick="const p=document.getElementById('products-panel');const open=p.classList.toggle('products-open');this.setAttribute('aria-expanded',open)"> <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Our Products</button>
+<div id="products-panel" class="products-panel" aria-label="Our Products"><div class="products-panel-inner"><a href="mocktest/"><span class="product-tile-icon">🧪</span><span>Test Series</span></a><a href="mocktest/"><span class="product-tile-icon">✍️</span><span>Practice Sets</span></a><div class="product-coming"><span class="product-tile-icon">📄</span><span>Previous Year Questions</span><small>Coming soon</small></div><div class="product-coming"><span class="product-tile-icon">📚</span><span>Study Notes</span><small>Coming soon</small></div><div class="product-coming"><span class="product-tile-icon">📖</span><span>Books</span><small>Coming soon</small></div></div></div>
 </nav>
 </div></header>
-<section id="products-panel" class="products-panel" aria-label="Our Products"><div class="products-panel-inner"><a href="mocktest/"><span class="product-tile-icon">🧪</span><span>Test Series</span></a><a href="mocktest/"><span class="product-tile-icon">✍️</span><span>Practice Sets</span></a><div class="product-coming"><span class="product-tile-icon">📄</span><span>Previous Year Questions</span><small>Coming soon</small></div><div class="product-coming"><span class="product-tile-icon">📚</span><span>Study Notes</span><small>Coming soon</small></div><div class="product-coming"><span class="product-tile-icon">📖</span><span>Books</span><small>Coming soon</small></div></div></section>
+
 <main class="home-content">
 <section class="hero"><div class="container hero-grid"><div>
 <div class="eyebrow">✦ YOUR COMPLETE EXAM PREPARATION HUB</div>
