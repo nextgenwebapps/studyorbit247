@@ -112,6 +112,24 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 .home-content section{padding:38px 0}.home-content .subject-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.home-content .exam-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 }
 @media(max-width:390px){.home-content .exam-grid{grid-template-columns:1fr}}
+
+/* Our Products opens from the header drawer; no separate bottom section */
+.products-menu{position:relative}
+.products-trigger{display:inline-flex;align-items:center;border:0;background:transparent;padding:10px 0;font:inherit;font-weight:700;color:#39342d;cursor:pointer;white-space:nowrap}
+.products-trigger:hover{color:#987024}
+.products-chevron{margin-left:6px;color:#987024}
+.products-drawer{display:none;position:absolute;top:calc(100% + 14px);right:0;z-index:30;min-width:255px;padding:9px;background:#fffdf8;border:1px solid #e7decd;border-radius:14px;box-shadow:0 18px 38px #17120a20}
+.products-drawer.products-open{display:grid}
+.products-drawer a,.products-drawer span{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;border-radius:9px;font-size:13px;font-weight:650;color:#29251f}
+.products-drawer a:hover{background:#f5efdf;color:#987024}
+.products-drawer span{color:#777168;cursor:default}
+.products-drawer small{font-size:10px;color:#9a7022;font-weight:700}
+@media(max-width:650px){
+ .products-menu{width:100%}
+ .products-trigger{width:100%;padding:12px 0;text-align:left;justify-content:flex-start}
+ .products-drawer{position:static;min-width:0;margin:0 0 8px 25px;padding:4px 8px;border:0;border-left:2px solid #d9bd7b;border-radius:0;box-shadow:none;background:#faf8f2}
+ .products-drawer a,.products-drawer span{padding:10px;font-size:12px}
+}
 </style>
 
 <style id="continue-learning-styles">
@@ -136,7 +154,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <button class="menu" aria-label="Open navigation" aria-expanded="false" onclick="const p=document.querySelector('.account-nav');const open=p.classList.toggle('mobile-open');this.setAttribute('aria-expanded',open)">☰</button>
 <nav class="account-nav">
 <div class="auth-links"><a class="signup-link" href="user/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>Login / Sign Up</a><a class="admin-link" href="admin/"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span>Login as Admin</a></div>
-<a href="#products"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.2 4.5L19 9.7l-4.8 2.2L12 16.5l-2.2-4.6L5 9.7l4.8-2.2L12 3Z"/><path d="m19 15 1.2 2.3L22.5 18.5l-2.3 1.2L19 22l-1.2-2.3-2.3-1.2 2.3-1.2L19 15Z"/></svg></span>Our Products</a>
+<div class="products-menu"><button class="products-trigger" type="button" aria-expanded="false" onclick="const p=this.nextElementSibling;const open=p.classList.toggle('products-open');this.setAttribute('aria-expanded',open)"> <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.2 4.5L19 9.7l-4.8 2.2L12 16.5l-2.2-4.6L5 9.7l4.8-2.2L12 3Z"/><path d="m19 15 1.2 2.3L22.5 18.5l-2.3 1.2L19 22l-1.2-2.3-2.3-1.2 2.3-1.2L19 15Z"/></svg></span>Our Products <span class="products-chevron">⌄</span></button><div class="products-drawer"><a href="mocktest/">Test Series</a><a href="mocktest/">Practice Sets</a><span>Previous Year Questions <small>Coming soon</small></span><span>Study Notes <small>Coming soon</small></span><span>Books <small>Coming soon</small></span></div></div>
 </nav>
 </div></header>
 <main class="home-content">
@@ -180,14 +198,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <div class="feature" id="lectures"><div class="feature-icon">🎥</div><h3>Video & Topic Lectures</h3><p>Return to your lessons and revise important concepts at your own pace.</p></div>
 </div></div></section>
 <section id="practice"><div class="container"><div class="practice"><div><h2>Your next step starts here.</h2><p>Choose an exam, select a subject and begin with a focused practice session.<br>Small daily progress can build strong exam readiness.</p></div><a class="btn" href="#subjects">Start Practising →</a></div></div></section>
-<section id="products"><div class="container"><div class="section-head"><div><div class="kicker">EXPLORE OUR OFFERINGS</div><h2>Our Products</h2><p>Everything you need to prepare, practise and revise in one place.</p></div></div>
-<div class="feature-grid">
-<a class="feature" href="mocktest/"><div class="feature-icon">🧪</div><h3>Test Series</h3><p>Attempt timed mock tests and review your performance.</p></a>
-<div class="feature"><div class="feature-icon">📄</div><h3>Previous Year Questions</h3><p>Explore exam-wise and topic-wise PYQ collections.</p><p><strong>Coming soon</strong></p></div>
-<a class="feature" href="mocktest/"><div class="feature-icon">✍️</div><h3>Practice Sets</h3><p>Build accuracy with focused question practice.</p></a>
-<div class="feature"><div class="feature-icon">📚</div><h3>Study Notes</h3><p>Revise key concepts with organised study material.</p><p><strong>Coming soon</strong></p></div>
-<div class="feature"><div class="feature-icon">📖</div><h3>Books</h3><p>Find recommended books and exam preparation reading.</p><p><strong>Coming soon</strong></p></div>
-</div></div></section>
+
 </main>
 
 <footer><div class="container"><div class="footer-grid">
