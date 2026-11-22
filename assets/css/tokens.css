@@ -1,0 +1,17 @@
+/* StudyOrbit247 shared design tokens. Load before page-specific styles. */
+:root {
+  --so-black: #0b0b0b;
+  --so-ink: #171512;
+  --so-ivory: #f7f5f0;
+  --so-white: #ffffff;
+  --so-gold: #c49a45;
+  --so-gold-light: #f0d58c;
+  --so-ruby: #a52b27;
+  --so-muted: #777168;
+  --so-line: #e8e1d4;
+  --so-radius-sm: 10px;
+  --so-radius-md: 15px;
+  --so-radius-lg: 23px;
+  --so-shadow-card: 0 12px 32px rgb(23 21 18 / 8%);
+  --so-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
