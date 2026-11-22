@@ -35,7 +35,7 @@
 <section class="test-screen hidden" id="testScreen">
   <div class="test-heading">
     <div><div class="eyebrow">GENERAL KNOWLEDGE · PRACTICE SET 01</div><h1>Mock test <span>attempt</span></h1></div>
-    <div class="timer-card"><small>TIME LEFT</small><strong id="timer">20:00</strong><span class="timer-state">● Test in progress</span></div>
+    <div class="test-heading-actions"><button class="palette-toggle-btn" id="paletteToggleBtn" type="button" aria-expanded="false" aria-controls="palettePanel">▦ Question palette <span>Open</span></button><div class="timer-card"><small>TIME LEFT</small><strong id="timer">20:00</strong><span class="timer-state">● Test in progress</span></div></div>
   </div>
   <div class="progress-wrap"><div class="progress-info"><span id="progressText">Question 1 of 12</span><b id="progressPercent">8% completed</b></div><div class="progress-track"><i id="progressBar"></i></div></div>
   <div class="test-layout">
@@ -45,7 +45,7 @@
       <div class="question-actions"><button class="text-btn" id="clearBtn">↺ Clear response</button><button class="review-btn" id="reviewBtn">⚑ Mark for review</button></div>
       <div class="bottom-actions"><button class="secondary-btn" id="prevBtn">← Previous</button><div><button class="secondary-btn" id="nextBtn">Save & next →</button><button class="primary-btn submit-inline" id="submitBtn">Submit test</button></div></div>
     </section>
-    <aside class="palette-panel">
+    <aside class="palette-panel hidden" id="palettePanel">
       <div class="candidate"><div class="avatar">S</div><div><b>Candidate</b><small>Practice attempt</small></div><span class="more">•••</span></div>
       <div class="palette-title"><b>Question palette</b><small id="paletteProgress">0 / 12 answered</small></div>
       <div class="legend"><span><i class="lg answered"></i>Answered</span><span><i class="lg not-answered"></i>Not answered</span><span><i class="lg review"></i>Review</span><span><i class="lg answered-review"></i>Answered + review</span><span><i class="lg not-visited"></i>Not visited</span></div>
