@@ -361,6 +361,25 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 
 
 
+
+<style id="desktop-products-grid-layout">
+@media(min-width:651px){
+  .site-header .account-nav .products-panel-inner{
+    width:min(960px,92%);
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px;
+    padding:22px 0;
+  }
+  .site-header .account-nav .products-panel-inner>a,
+  .site-header .account-nav .products-panel-inner>.product-coming{
+    width:100%;
+    min-width:0;
+    min-height:100px;
+  }
+}
+</style>
+
 </body></html>
 
 <style id="mobile-products-panel-full-width-fix">
