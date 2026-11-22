@@ -231,6 +231,60 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 }
 </style>
 
+
+<style id="mobile-icon-only-header">
+@media(max-width:650px){
+  /* Mobile: remove hamburger and show three icon-only header actions */
+  .site-header .nav{min-height:66px;height:66px;gap:10px}
+  .site-header .menu{display:none!important}
+  .site-header .brand{order:0;margin:0 auto 0 0;font-size:20px;white-space:nowrap}
+  .site-header .account-nav{
+    display:flex!important;position:static;inset:auto;width:auto;max-width:none;
+    max-height:none;overflow:visible;margin:0;padding:0;background:transparent;
+    border:0;box-shadow:none;flex:0 0 auto;flex-direction:row;align-items:center;
+    justify-content:flex-end;gap:15px
+  }
+  .site-header .account-nav .auth-links{display:contents}
+  .site-header .account-nav .auth-links a,
+  .site-header .account-nav>.products-trigger{
+    display:inline-flex!important;align-items:center;justify-content:center;
+    width:30px;height:42px;padding:0!important;margin:0;
+    font-size:0!important;line-height:0;white-space:nowrap;color:#76551e;
+    background:transparent;border:0
+  }
+  .site-header .account-nav .auth-links a .nav-icon,
+  .site-header .account-nav>.products-trigger .nav-icon{
+    display:inline-flex;width:23px;height:23px;margin:0!important;order:0
+  }
+  .site-header .account-nav .nav-icon svg{width:23px;height:23px;stroke-width:1.8}
+  .site-header .account-nav .signup-link{order:1}
+  .site-header .account-nav>.products-trigger{order:2}
+  .site-header .account-nav .admin-link{order:3}
+  .site-header .account-nav .products-trigger .products-chevron{display:none}
+  .site-header .account-nav .products-panel{
+    position:absolute;top:100%;left:0;right:0;transform:none;width:100vw;
+    margin:0;padding:0;background:#fffdf8;border:0;border-top:1px solid #e8e1d4;
+    box-shadow:0 12px 28px #17120a12
+  }
+  .site-header .account-nav .products-panel-inner{
+    width:92%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;padding:12px 0;overflow:visible
+  }
+  .site-header .account-nav .products-panel-inner>a,
+  .site-header .account-nav .products-panel-inner>.product-coming{
+    min-width:0;min-height:72px;display:flex;flex-direction:row;
+    justify-content:flex-start;align-items:center;text-align:left;padding:10px;gap:8px
+  }
+  .site-header .account-nav .products-panel-inner .product-tile-icon{order:0}
+}
+@media(max-width:370px){
+  .site-header .brand{font-size:18px}
+  .site-header .account-nav{gap:10px}
+  .site-header .account-nav .auth-links a,
+  .site-header .account-nav>.products-trigger{width:27px}
+}
+</style>
+
 </head>
 <body>
 <header class="site-header"><div class="container nav">
