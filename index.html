@@ -133,8 +133,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <a class="brand" href="#"><span>Study<em>Orbit</em>247</span></a>
 <button class="menu" aria-label="Open navigation" aria-expanded="false" onclick="const p=document.querySelector('.account-nav');const open=p.classList.toggle('mobile-open');this.setAttribute('aria-expanded',open)">☰</button>
 <nav class="account-nav">
-<a href="#login">Login</a>
-<a class="signup-link" href="#signup">Sign Up</a>
+<a class="signup-link auth-open" href="#auth">Login / Sign Up</a>
 <a href="#my-learning">My Learning</a>
 <a href="#dashboard">Dashboard</a>
 <a href="#settings" aria-label="Settings"><span class="settings-icon">⚙</span> Settings</a>
@@ -176,6 +175,29 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 </div></div></section>
 <section id="practice"><div class="container"><div class="practice"><div><h2>Your next step starts here.</h2><p>Choose an exam, select a subject and begin with a focused practice session.<br>Small daily progress can build strong exam readiness.</p></div><a class="btn" href="#subjects">Start Practising →</a></div></div></section>
 </main>
+
+<div class="auth-modal" id="auth-modal" hidden role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-dialog">
+    <button class="auth-close" type="button" aria-label="Close" id="auth-close">×</button>
+    <div class="auth-brand">Study<em>Orbit</em>247</div>
+    <h2 id="auth-title" style="font-size:23px;margin:0 0 7px;color:#171512">Welcome back</h2>
+    <p class="auth-subtitle" id="auth-subtitle">Login to continue your learning journey.</p>
+    <div class="auth-tabs" role="tablist" aria-label="Account access">
+      <button class="auth-tab active" id="login-tab" type="button" role="tab" aria-selected="true">Login</button>
+      <button class="auth-tab" id="signup-tab" type="button" role="tab" aria-selected="false">Sign Up</button>
+    </div>
+    <form class="auth-form" id="auth-form">
+      <label class="auth-field signup-only" id="name-field" hidden>Full name<input name="name" type="text" autocomplete="name" placeholder="Enter your name"></label>
+      <label class="auth-field">Email address<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+      <label class="auth-field">Password<input name="password" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required></label>
+      <label class="auth-field signup-only" id="confirm-field" hidden>Confirm password<input name="confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Re-enter your password"></label>
+      <button class="auth-submit" id="auth-submit" type="submit">Login</button>
+      <p class="auth-feedback" id="auth-feedback" aria-live="polite"></p>
+    </form>
+    <p class="auth-note">Account access UI is ready. Secure login, signup, password reset and account storage will work after connecting an authentication backend.</p>
+  </div>
+</div>
+
 <footer><div class="container"><div class="footer-grid">
 <div><a class="brand footer-brand" href="#"><span>Study<em>Orbit</em>247</span></a><p>Your exam preparation companion for learning, practice and progress across SSC, Banking, UPSC and State PCS examinations.</p></div>
 <div><h4>Subjects</h4><a href="#subjects">GK / GS</a><a href="#subjects">Reasoning</a><a href="#subjects">Quantitative Aptitude</a><a href="#subjects">English & Hindi</a></div>
@@ -206,4 +228,40 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   document.getElementById("saved-lecture-link").href=safeLocalPath(readCookie("so_last_lecture_url"),"#lectures");
   panel.hidden=false;
 })();
-</script>\n</body></html>
+</script>\n
+<script id="combined-auth-interaction">
+(function(){
+ const modal=document.getElementById('auth-modal'),form=document.getElementById('auth-form');
+ if(!modal||!form)return;
+ const loginTab=document.getElementById('login-tab'),signupTab=document.getElementById('signup-tab');
+ const title=document.getElementById('auth-title'),subtitle=document.getElementById('auth-subtitle'),submit=document.getElementById('auth-submit');
+ const feedback=document.getElementById('auth-feedback'),nameField=document.getElementById('name-field'),confirmField=document.getElementById('confirm-field');
+ let mode='login';
+ function setMode(next){
+  mode=next;const signup=mode==='signup';
+  loginTab.classList.toggle('active',!signup);signupTab.classList.toggle('active',signup);
+  loginTab.setAttribute('aria-selected',String(!signup));signupTab.setAttribute('aria-selected',String(signup));
+  title.textContent=signup?'Create your account':'Welcome back';
+  subtitle.textContent=signup?'Create one account to save your preparation and track progress.':'Login to continue your learning journey.';
+  submit.textContent=signup?'Create Account':'Login';
+  nameField.hidden=!signup;confirmField.hidden=!signup;
+  form.elements.password.autocomplete=signup?'new-password':'current-password';
+  feedback.textContent='';
+ }
+ function open(){modal.hidden=false;document.body.style.overflow='hidden';setMode('login');}
+ function close(){modal.hidden=true;document.body.style.overflow='';}
+ document.querySelectorAll('.auth-open').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open();}));
+ document.getElementById('auth-close').addEventListener('click',close);
+ modal.addEventListener('click',e=>{if(e.target===modal)close();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)close();});
+ loginTab.addEventListener('click',()=>setMode('login'));
+ signupTab.addEventListener('click',()=>setMode('signup'));
+ form.addEventListener('submit',e=>{
+  e.preventDefault();
+  if(mode==='signup'&&form.elements.password.value!==form.elements.confirm.value){feedback.textContent='Passwords do not match.';return;}
+  feedback.textContent='Authentication backend is not connected yet. No account was created and no login session was started.';
+ });
+})();
+</script>
+
+</body></html>
