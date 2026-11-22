@@ -134,10 +134,9 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <a class="brand" href="#"><span>Study<em>Orbit</em>247</span></a>
 <button class="menu" aria-label="Open navigation" aria-expanded="false" onclick="const p=document.querySelector('.account-nav');const open=p.classList.toggle('mobile-open');this.setAttribute('aria-expanded',open)">☰</button>
 <nav class="account-nav">
+<a class="admin-link" href="admin/">Login as Admin</a>
 <a class="signup-link auth-open" href="#auth">Login / Sign Up</a>
-<a href="#my-learning">My Learning</a>
-<a href="#dashboard">Dashboard</a>
-<a href="#settings" aria-label="Settings"><span class="settings-icon">⚙</span> Settings</a>
+<a href="my-learning/">My Learning</a>
 </nav>
 </div></header>
 <main class="home-content">
@@ -152,15 +151,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 </div></section>
 <div class="stats-strip"><div class="container stats"><div class="stat"><b>5</b><small>Core subjects</small></div><div class="stat"><b>4+</b><small>Exam categories</small></div><div class="stat"><b>24/7</b><small>Learn on your schedule</small></div><div class="stat"><b>One</b><small>Unified preparation hub</small></div></div></div>
 
-<section class="continue-learning" id="continue-learning" hidden aria-label="Continue learning">
-<div class="container">
-<div class="section-head"><div><div class="kicker">PICK UP WHERE YOU LEFT OFF</div><h2>Continue Learning</h2><p>Your recent activity and saved learning shortcuts.</p></div></div>
-<div class="continue-grid">
-<a class="continue-card" id="recent-test-link" href="mocktest/"><span class="continue-icon">🕘</span><span><strong>Recent Tests</strong><small>Resume your recent mock tests</small></span><span class="continue-arrow">→</span></a>
-<a class="continue-card" id="saved-subject-link" href="#subjects"><span class="continue-icon">📚</span><span><strong>Subjects</strong><small>Continue your subject practice</small></span><span class="continue-arrow">→</span></a>
-<a class="continue-card" id="saved-chapter-link" href="#chapter-practice"><span class="continue-icon">📝</span><span><strong>Chapters</strong><small>Jump back to chapter practice</small></span><span class="continue-arrow">→</span></a>
-<a class="continue-card" id="saved-lecture-link" href="#lectures"><span class="continue-icon">🎥</span><span><strong>Lectures</strong><small>Continue watching lessons</small></span><span class="continue-arrow">→</span></a>
-</div></div></section>
+
 
 <section id="subjects"><div class="container"><div class="section-head"><div><div class="kicker">LEARN BY SUBJECT</div><h2>Explore Subjects</h2><p>Choose a subject and start practising.</p></div></div>
 <div class="subject-grid">
@@ -218,31 +209,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <div><h4>Examinations</h4><a href="#exams">SSC</a><a href="#exams">Banking</a><a href="#exams">UPSC</a><a href="#exams">State PCS</a></div>
 <div><h4>StudyOrbit247</h4><a href="#features">Features</a><a href="mocktest/">Mock Tests</a><a href="#subjects">Practice</a><a href="admin/">Admin Login</a></div>
 </div><div class="copyright"><span>© 2026 StudyOrbit247. All rights reserved.</span><span>Learn • Practice • Progress</span></div></div></footer>
-<script id="continue-learning-cookie-logic">
-(function(){
-  function readCookie(name){
-    const prefix=name+"=";
-    const item=document.cookie.split(";").map(v=>v.trim()).find(v=>v.indexOf(prefix)===0);
-    if(!item)return "";
-    try{return decodeURIComponent(item.slice(prefix.length));}catch(e){return item.slice(prefix.length);}
-  }
-  function safeLocalPath(value,fallback){
-    if(!value)return fallback;
-    const v=value.trim();
-    if(v.startsWith("//")||/^[a-z][a-z0-9+.-]*:/i.test(v)||/[<>\\"']/.test(v))return fallback;
-    return v;
-  }
-  const user=readCookie("studyorbit_user")||readCookie("so_user")||readCookie("studyorbit_session")||readCookie("so_session");
-  if(!user)return;
-  const panel=document.getElementById("continue-learning");
-  if(!panel)return;
-  document.getElementById("recent-test-link").href=safeLocalPath(readCookie("so_recent_test_url"),"mocktest/");
-  document.getElementById("saved-subject-link").href=safeLocalPath(readCookie("so_last_subject_url"),"#subjects");
-  document.getElementById("saved-chapter-link").href=safeLocalPath(readCookie("so_last_chapter_url"),"#chapter-practice");
-  document.getElementById("saved-lecture-link").href=safeLocalPath(readCookie("so_last_lecture_url"),"#lectures");
-  panel.hidden=false;
-})();
-</script>
+
 
 <script id="combined-auth-interaction">
 (function(){
