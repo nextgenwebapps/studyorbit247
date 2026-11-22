@@ -1,11 +1,11 @@
-/* StudyOrbit247 shared design tokens. Load before page-specific styles. */
+/* StudyOrbit247 shared design tokens — black, ivory, gold and ruby. */
 :root {
-  --so-black: #0b0b0b;
+  --so-black: #090909;
   --so-ink: #171512;
   --so-ivory: #f7f5f0;
   --so-white: #ffffff;
-  --so-gold: #c49a45;
-  --so-gold-light: #f0d58c;
+  --so-gold: #b88b35;
+  --so-gold-light: #e6c879;
   --so-ruby: #a52b27;
   --so-muted: #777168;
   --so-line: #e8e1d4;
