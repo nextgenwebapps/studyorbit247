@@ -4,40 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101b3d">
-<meta name="description" content="Your recent subjects, chapters, quizzes and exam attempts on StudyOrbit247.">
+<meta name="description" content="Your recent learning activity on StudyOrbit247.">
 <title>My Learning | StudyOrbit247</title>
 <style>
 :root{--navy:#101b3d;--blue:#3157d5;--ink:#17213d;--muted:#66718c;--bg:#f5f7fc;--line:#e7ebf4;--white:#fff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit;text-decoration:none}button{font:inherit}.container{width:min(1120px,92%);margin:auto}
 header{background:#fff;border-bottom:1px solid var(--line)}.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:850;font-size:21px;letter-spacing:-.7px;color:var(--navy)}.brand em{font-style:normal;color:var(--blue)}.navlinks{display:flex;align-items:center;gap:25px;font-size:13px;font-weight:750}.navlinks a:hover{color:var(--blue)}
 main{padding:42px 0 65px}.eyebrow{color:var(--blue);font-size:11px;font-weight:850;letter-spacing:1.5px}.heading{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:25px}.heading h1{font-size:clamp(30px,4vw,42px);letter-spacing:-1.6px;margin:8px 0}.heading p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}.continue-btn{background:var(--blue);color:#fff;padding:12px 17px;border-radius:11px;font-size:13px;font-weight:800;white-space:nowrap}
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:25px 0 35px}.summary-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px}.summary-card span{font-size:12px;color:var(--muted)}.summary-card b{display:block;font-size:27px;margin-top:7px;color:var(--navy)}
 .section{margin-top:30px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.section-head h2{font-size:19px;letter-spacing:-.4px;margin:0}.section-head a{font-size:12px;font-weight:800;color:var(--blue)}
 .activity-list{display:grid;gap:10px}.activity{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 17px;min-width:0}.activity-icon{width:43px;height:43px;flex:0 0 43px;border-radius:13px;background:#edf1ff;display:grid;place-items:center;font-size:20px}.activity-main{min-width:0;flex:1}.activity-main b{display:block;font-size:14px}.activity-main small{display:block;color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5}.activity-meta{text-align:right;white-space:nowrap}.activity-meta b{display:block;color:var(--navy);font-size:14px}.activity-meta small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.open-link{color:var(--blue);font-size:12px;font-weight:850;margin-left:8px}
 .empty{background:#fff;border:1px dashed #cfd7e9;border-radius:14px;padding:19px;color:var(--muted);font-size:13px;line-height:1.6}.empty a{color:var(--blue);font-weight:800}
-.empty-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.empty-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px}.empty-card-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}.empty-card-top span{font-size:20px}.empty-card h3{font-size:15px;margin:0}.empty-card p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 12px}.empty-card a{color:var(--blue);font-size:12px;font-weight:850}
 .footer-note{margin-top:30px;color:#7b8499;font-size:11px;line-height:1.6}
-@media(max-width:680px){.nav{height:64px}.navlinks{gap:13px;font-size:12px}.summary{grid-template-columns:repeat(2,1fr)}.heading{align-items:flex-start;flex-direction:column}.empty-grid{grid-template-columns:1fr}.activity{padding:13px;gap:10px}.activity-meta{white-space:normal}.activity-meta small{max-width:90px}}
+@media(max-width:680px){.nav{height:64px}.navlinks{gap:13px;font-size:12px}.heading{align-items:flex-start;flex-direction:column}.activity{padding:13px;gap:10px}.activity-meta{white-space:normal}.activity-meta small{max-width:90px}}
 @media(max-width:390px){.navlinks{gap:9px;font-size:11px}.brand{font-size:18px}.activity-meta{display:none}}
 </style>
 </head>
 <body>
 <header><div class="container nav"><a class="brand" href="../">Study<em>Orbit</em>247</a><nav class="navlinks"><a href="../admin/">Login as Admin</a><a href="../#auth" class="account-link">Login / Sign Up</a><a href="./" aria-current="page">My Learning</a></nav></div></header>
 <main class="container">
-<div class="heading"><div><div class="eyebrow">YOUR PERSONAL STUDY SPACE</div><h1>My Learning</h1><p>Pick up where you left off. Your recent subjects, chapters, quizzes and exam attempts appear here.</p></div><a class="continue-btn" href="../">Explore learning →</a></div>
-<div class="summary">
-<div class="summary-card"><span>Recent subjects</span><b id="subject-count">0</b></div>
-<div class="summary-card"><span>Chapters opened</span><b id="chapter-count">0</b></div>
-<div class="summary-card"><span>Quizzes attempted</span><b id="quiz-count">0</b></div>
-<div class="summary-card"><span>Exams attempted</span><b id="exam-count">0</b></div>
-</div>
+<div class="heading"><div><div class="eyebrow">YOUR PERSONAL STUDY SPACE</div><h1>My Learning</h1><p>Your latest learning activity appears here.</p></div><a class="continue-btn" href="../">Explore learning →</a></div>
 <section class="section"><div class="section-head"><h2>Recent activity</h2><a href="../mocktest/">Attempt a mock test →</a></div><div class="activity-list" id="recent-list"></div></section>
-<div class="empty-grid">
-<section class="section"><div class="section-head"><h2>Recent subjects</h2><a href="../#subjects">Explore subjects →</a></div><div class="activity-list" id="subject-list"></div></section>
-<section class="section"><div class="section-head"><h2>Recent chapters</h2><a href="../#chapter-practice">Explore chapters →</a></div><div class="activity-list" id="chapter-list"></div></section>
-<section class="section"><div class="section-head"><h2>Recent quizzes</h2><a href="../mocktest/">Practice quiz →</a></div><div class="activity-list" id="quiz-list"></div></section>
-<section class="section"><div class="section-head"><h2>Recent exams</h2><a href="../mocktest/">Attempt exam →</a></div><div class="activity-list" id="exam-list"></div></section>
-</div>
 <p class="footer-note">Activity is currently saved in this browser on this device. Sign-in and cloud sync will require the StudyOrbit247 authentication backend. Clearing browser data may remove this local history.</p>
 </main>
 <script>
@@ -51,8 +37,7 @@ main{padding:42px 0 65px}.eyebrow{color:var(--blue);font-size:11px;font-weight:8
  function date(v){const d=new Date(v);return Number.isNaN(d.getTime())?'Recently':d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
  function card(x){const details=[x.detail,date(x.completedAt)].filter(Boolean).map(esc).join(' · ');let score=x.score!==undefined&&x.total!==undefined?'<b>'+esc(x.score)+'/'+esc(x.total)+'</b><small>'+esc(x.accuracy??0)+'% accuracy</small>':'';return '<article class="activity"><div class="activity-icon">'+icons[x.type]+'</div><div class="activity-main"><b>'+esc(x.title||labels[x.type])+'</b><small>'+details+'</small></div><div class="activity-meta">'+score+'</div>'+(x.url?'<a class="open-link" href="'+esc(x.url)+'">Open →</a>':'')+'</article>'}
  function empty(type){const copy={subject:['📚','No subject activity yet.','Choose a subject to start learning.','../#subjects'],chapter:['📝','No chapter activity yet.','Explore chapter-wise practice.','../#chapter-practice'],quiz:['✍️','No quiz attempts yet.','Try a practice quiz.','../mocktest/'],exam:['🎯','No exam attempts yet.','Start a timed mock test.','../mocktest/']};const x=copy[type];return '<div class="empty">'+x[1]+' '+x[2]+' <a href="'+x[3]+'">Start here →</a></div>'}
- function renderList(id,items,type,limit){const list=document.getElementById(id);list.innerHTML=items.length?items.slice(0,limit||5).map(card).join(''):empty(type)}
- function render(){const all=read().sort((a,b)=>new Date(b.completedAt||0)-new Date(a.completedAt||0));const groups={};validTypes.forEach(t=>groups[t]=all.filter(x=>x.type===t));document.getElementById('subject-count').textContent=groups.subject.length;document.getElementById('chapter-count').textContent=groups.chapter.length;document.getElementById('quiz-count').textContent=groups.quiz.length;document.getElementById('exam-count').textContent=groups.exam.length;document.getElementById('recent-list').innerHTML=all.length?all.slice(0,8).map(card).join(''):'<div class="empty">No learning activity yet. Your attempted quizzes and exams will appear here. <a href="../mocktest/">Start a mock test →</a></div>';renderList('subject-list',groups.subject,'subject',4);renderList('chapter-list',groups.chapter,'chapter',4);renderList('quiz-list',groups.quiz,'quiz',4);renderList('exam-list',groups.exam,'exam',4)}
+ function render(){const all=read().sort((a,b)=>new Date(b.completedAt||0)-new Date(a.completedAt||0));document.getElementById("recent-list").innerHTML=all.length?all.slice(0,20).map(card).join(""):'<div class="empty">No learning activity yet. Your attempted quizzes and exams will appear here. <a href="../mocktest/">Start a mock test →</a></div>'}
  window.StudyOrbitActivity={track:function(entry){if(!entry||!validTypes.includes(entry.type)||!entry.title)return false;const all=read();all.unshift({type:entry.type,title:String(entry.title).slice(0,120),detail:String(entry.detail||'').slice(0,180),url:String(entry.url||''),completedAt:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(all.slice(0,100)));render();return true}};
  render();
  window.addEventListener('storage',render);
