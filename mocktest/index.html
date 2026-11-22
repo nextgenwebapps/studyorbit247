@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>StudyOrbit247 | GK Mock Test</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+  <a class="brand" href="../index.html"><span class="brand-mark">◎</span><span>Study<em>Orbit</em>247</span></a>
+  <div class="test-meta"><span class="live-dot"></span><span>GENERAL KNOWLEDGE</span><span class="meta-divider">/</span><span>FULL MOCK TEST</span></div>
+  <button class="icon-btn" id="instructionsBtn" title="Instructions" aria-label="Instructions">ⓘ</button>
+</header>
+<main id="app">
+<section class="intro-screen" id="introScreen">
+  <div class="intro-copy">
+    <div class="eyebrow">STUDYORBIT247 · MOCK TEST LAB</div>
+    <h1>Test your knowledge.<br><span>Own your progress.</span></h1>
+    <p>A realistic, timed GK mock test with multiple question formats, question palette, review tools and a detailed result report.</p>
+    <div class="intro-points"><span>✓ Exam-style interface</span><span>✓ Multiple answer formats</span><span>✓ Detailed performance report</span></div>
+  </div>
+  <div class="setup-card">
+    <div class="setup-top"><div class="setup-icon">✦</div><div><b>General Knowledge</b><small>Demo mock test · 12 questions</small></div><span class="gold-tag">DEMO</span></div>
+    <div class="setup-stats"><div><b>20 min</b><small>Duration</small></div><div><b>12</b><small>Questions</small></div><div><b>12 marks</b><small>Total marks</small></div></div>
+    <div class="setup-rule"></div>
+    <div class="setup-row"><span>Question formats</span><b>MCQ · Multi-select · T/F · Image · Match · More</b></div>
+    <div class="setup-row"><span>Navigation</span><b>Free navigation + mark for review</b></div>
+    <button class="primary-btn full" id="startBtn">Start mock test <span>→</span></button>
+    <p class="tiny-note">Your demo answers stay in this browser session.</p>
+  </div>
+</section>
+
+<section class="test-screen hidden" id="testScreen">
+  <div class="test-heading">
+    <div><div class="eyebrow">GENERAL KNOWLEDGE · PRACTICE SET 01</div><h1>Mock test <span>attempt</span></h1></div>
+    <div class="timer-card"><small>TIME LEFT</small><strong id="timer">20:00</strong><span class="timer-state">● Test in progress</span></div>
+  </div>
+  <div class="progress-wrap"><div class="progress-info"><span id="progressText">Question 1 of 12</span><b id="progressPercent">8% completed</b></div><div class="progress-track"><i id="progressBar"></i></div></div>
+  <div class="test-layout">
+    <section class="question-panel">
+      <div class="question-toolbar"><div><span class="question-count" id="questionCount">QUESTION 01</span><span class="type-chip" id="typeChip">SINGLE CORRECT</span></div><div class="marks"><span>+1.00</span><span>−0.00</span></div></div>
+      <div class="question-body" id="questionBody"></div>
+      <div class="question-actions"><button class="text-btn" id="clearBtn">↺ Clear response</button><button class="review-btn" id="reviewBtn">⚑ Mark for review</button></div>
+      <div class="bottom-actions"><button class="secondary-btn" id="prevBtn">← Previous</button><div><button class="secondary-btn" id="nextBtn">Save & next →</button><button class="primary-btn submit-inline" id="submitBtn">Submit test</button></div></div>
+    </section>
+    <aside class="palette-panel">
+      <div class="candidate"><div class="avatar">S</div><div><b>Candidate</b><small>Practice attempt</small></div><span class="more">•••</span></div>
+      <div class="palette-title"><b>Question palette</b><small id="paletteProgress">0 / 12 answered</small></div>
+      <div class="legend"><span><i class="lg answered"></i>Answered</span><span><i class="lg not-answered"></i>Not answered</span><span><i class="lg review"></i>Review</span><span><i class="lg answered-review"></i>Answered + review</span><span><i class="lg not-visited"></i>Not visited</span></div>
+      <div class="palette-grid" id="palette"></div>
+      <div class="palette-footer"><div><span>Answered</span><b id="answeredCount">0</b></div><div><span>Not answered</span><b id="unansweredCount">0</b></div><div><span>For review</span><b id="reviewCount">0</b></div></div>
+      <button class="finish-btn" id="finishBtn">Finish & submit test <span>→</span></button>
+    </aside>
+  </div>
+</section>
+
+<section class="result-screen hidden" id="resultScreen">
+  <div class="result-header"><div class="eyebrow">TEST COMPLETED · PERFORMANCE REPORT</div><h1>Your result is <span>ready.</span></h1><p>Review your score, accuracy and every response. Use the insights to plan your next practice session.</p></div>
+  <div class="result-hero">
+    <div class="score-ring" id="scoreRing"><div><strong id="scoreValue">0</strong><small> / 12</small><span>YOUR SCORE</span></div></div>
+    <div class="result-summary"><span class="gold-tag">MOCK TEST REPORT</span><h2 id="resultMessage">Good effort. Keep improving.</h2><p id="resultSub">Your performance summary is below.</p><div class="summary-stats"><div><b id="accuracyValue">0%</b><small>Accuracy</small></div><div><b id="attemptedValue">0/12</b><small>Attempted</small></div><div><b id="timeValue">00:00</b><small>Time taken</small></div></div></div>
+  </div>
+  <div class="result-grid">
+    <div class="result-card"><span class="result-icon green">✓</span><small>Correct answers</small><b id="correctValue">0</b></div>
+    <div class="result-card"><span class="result-icon red">✕</span><small>Incorrect answers</small><b id="wrongValue">0</b></div>
+    <div class="result-card"><span class="result-icon grey">—</span><small>Unattempted</small><b id="skippedValue">0</b></div>
+    <div class="result-card"><span class="result-icon gold">⚑</span><small>Marked for review</small><b id="markedValue">0</b></div>
+  </div>
+  <div class="result-columns">
+    <div class="report-card"><div class="card-heading"><div><h3>Question-wise analysis</h3><p>Correct answer and your response</p></div><span class="gold-tag">REVIEW</span></div><div id="reviewList" class="review-list"></div></div>
+    <div class="report-card"><div class="card-heading"><div><h3>Performance insights</h3><p>A quick breakdown of this attempt</p></div></div><div class="insight-row"><span>Accuracy</span><b id="insightAccuracy">0%</b></div><div class="insight-track"><i id="accuracyBar"></i></div><div class="insight-row"><span>Attempt rate</span><b id="insightAttempt">0%</b></div><div class="insight-track"><i id="attemptBar"></i></div><div class="insight-row"><span>Correctness among attempted</span><b id="insightCorrect">0%</b></div><div class="insight-track"><i id="correctBar"></i></div><div class="next-tip"><b>✦ Next step</b><p>Review incorrect and skipped questions, then retake the test to measure your improvement.</p></div></div>
+  </div>
+  <div class="result-actions"><button class="secondary-btn" id="retakeBtn">↻ Retake mock test</button><a class="primary-btn link-btn" href="../index.html">Back to StudyOrbit247 ↗</a></div>
+</section>
+</main>
+<footer class="app-footer"><span>© 2026 StudyOrbit247</span><span>LEARN · PRACTICE · PROGRESS</span></footer>
+</div>
+<div class="modal-backdrop hidden" id="modal"><div class="modal-card"><button class="modal-close" id="modalClose">×</button><div class="modal-symbol">✦</div><h2 id="modalTitle">Submit your test?</h2><p id="modalText">Are you sure you want to finish this attempt?</p><div class="modal-actions"><button class="secondary-btn" id="modalCancel">Continue test</button><button class="primary-btn" id="modalConfirm">Submit now</button></div></div></div>
+<script src="app.js"></script>
+</body></html>
