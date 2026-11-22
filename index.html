@@ -199,6 +199,38 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 }
 </style>
 
+
+<style id="mobile-menu-left-alignment">
+@media(max-width:650px){
+  .site-header .nav{justify-content:space-between}
+  .site-header .menu{display:block;order:0;margin:0 auto 0 0;padding:8px 12px 8px 0}
+  .site-header .brand{order:1;margin-left:auto;margin-right:0}
+  .account-nav.mobile-open{left:0;right:0;width:100vw;align-items:stretch;text-align:left}
+  .account-nav.mobile-open .auth-links{align-items:stretch;text-align:left}
+  .account-nav.mobile-open .auth-links a{
+    display:flex;justify-content:flex-start;align-items:center;
+    width:100%;text-align:left;padding:13px 20px
+  }
+  .account-nav.mobile-open .auth-links a .nav-icon,
+  .account-nav.mobile-open>.products-trigger .nav-icon{order:0;margin:0 9px 0 0}
+  .account-nav.mobile-open>.products-trigger{
+    display:flex;justify-content:flex-start;align-items:center;
+    width:100%;padding:13px 20px;text-align:left
+  }
+  .account-nav.mobile-open .products-panel-inner{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%;padding:10px 20px 14px;gap:8px
+  }
+  .account-nav.mobile-open .products-panel-inner>a,
+  .account-nav.mobile-open .products-panel-inner>.product-coming{
+    display:flex;flex-direction:row;justify-content:flex-start;align-items:center;
+    text-align:left;padding:12px 10px;gap:8px
+  }
+  .account-nav.mobile-open .products-panel-inner .product-tile-icon{order:0}
+  .account-nav.mobile-open .products-panel-inner .product-coming small{margin-left:0}
+}
+</style>
+
 </head>
 <body>
 <header class="site-header"><div class="container nav">
