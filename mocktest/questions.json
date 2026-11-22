@@ -1,0 +1,176 @@
+{
+  "exam": "General Knowledge",
+  "testTitle": "GK Mixed Format Demo Mock Test",
+  "durationSeconds": 1200,
+  "totalMarks": 12,
+  "negativeMarks": 0,
+  "questions": [
+    {
+      "id": "gk01",
+      "type": "mcq",
+      "prompt": "Which part of the Indian Constitution deals with Fundamental Rights?",
+      "options": [
+        "Part II",
+        "Part III",
+        "Part IV",
+        "Part IVA"
+      ],
+      "correct": "Part III",
+      "explanation": "Fundamental Rights are covered under Part III (Articles 12–35)."
+    },
+    {
+      "id": "gk02",
+      "type": "multi",
+      "prompt": "Which of the following are constitutional bodies in India?",
+      "helper": "Select all correct options.",
+      "options": [
+        "Election Commission of India",
+        "Union Public Service Commission",
+        "NITI Aayog",
+        "Finance Commission"
+      ],
+      "correct": [
+        "Election Commission of India",
+        "Union Public Service Commission",
+        "Finance Commission"
+      ]
+    },
+    {
+      "id": "gk03",
+      "type": "truefalse",
+      "prompt": "The Tropic of Cancer passes through eight Indian states.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": "True"
+    },
+    {
+      "id": "gk04",
+      "type": "image",
+      "prompt": "Study the simplified diagram and identify the Indian river system represented.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Ganges-Brahmaputra-Meghna_basins.jpg/640px-Ganges-Brahmaputra-Meghna_basins.jpg",
+      "options": [
+        "Indus river system",
+        "Ganga–Brahmaputra river system",
+        "Godavari river system",
+        "Narmada river system"
+      ],
+      "correct": "Ganga–Brahmaputra river system"
+    },
+    {
+      "id": "gk05",
+      "type": "fill",
+      "prompt": "The headquarters of the Reserve Bank of India is located in ________.",
+      "placeholder": "Type city name",
+      "correct": [
+        "Mumbai"
+      ],
+      "hint": "Enter the city name."
+    },
+    {
+      "id": "gk06",
+      "type": "numeric",
+      "prompt": "How many schedules are currently present in the Constitution of India?",
+      "placeholder": "Enter a number",
+      "correct": [
+        "12"
+      ],
+      "hint": "Enter a whole number."
+    },
+    {
+      "id": "gk07",
+      "type": "match",
+      "prompt": "Match the Indian classical dance forms with their states of origin.",
+      "left": [
+        "Bharatanatyam",
+        "Kathak",
+        "Kuchipudi",
+        "Odissi"
+      ],
+      "right": [
+        "Uttar Pradesh",
+        "Andhra Pradesh",
+        "Tamil Nadu",
+        "Odisha"
+      ],
+      "correct": {
+        "0": "2",
+        "1": "0",
+        "2": "1",
+        "3": "3"
+      }
+    },
+    {
+      "id": "gk08",
+      "type": "ordering",
+      "prompt": "Arrange these events in chronological order, earliest to latest.",
+      "items": [
+        "Quit India Movement",
+        "Jallianwala Bagh massacre",
+        "Dandi March",
+        "Formation of the Indian National Congress"
+      ],
+      "correct": {
+        "0": "4",
+        "1": "1",
+        "2": "3",
+        "3": "2"
+      }
+    },
+    {
+      "id": "gk09",
+      "type": "assertion",
+      "prompt": "Assertion (A): The President of India is elected indirectly. Reason (R): The President is elected by an electoral college consisting of elected MPs and elected MLAs.",
+      "options": [
+        "Both A and R are true, and R correctly explains A",
+        "Both A and R are true, but R does not explain A",
+        "A is true, but R is false",
+        "A is false, but R is true"
+      ],
+      "correct": "Both A and R are true, and R correctly explains A"
+    },
+    {
+      "id": "gk10",
+      "type": "passage",
+      "passage": "The Indian monsoon is a seasonal wind system that brings most of the country's annual rainfall. The southwest monsoon generally arrives over Kerala in early June and advances northwards. Its progress is influenced by land-sea heating contrasts, pressure patterns and oceanic conditions.",
+      "prompt": "According to the passage, the southwest monsoon generally arrives first over which Indian state?",
+      "options": [
+        "Gujarat",
+        "Kerala",
+        "Odisha",
+        "West Bengal"
+      ],
+      "correct": "Kerala"
+    },
+    {
+      "id": "gk11",
+      "type": "matrix",
+      "prompt": "For each statement about the Indian Parliament, select True or False.",
+      "statements": [
+        "The Rajya Sabha is a permanent House.",
+        "The Lok Sabha is also known as the Council of States.",
+        "A Money Bill can be introduced only in the Lok Sabha."
+      ],
+      "correct": {
+        "0": "true",
+        "1": "false",
+        "2": "true"
+      }
+    },
+    {
+      "id": "gk12",
+      "type": "di",
+      "prompt": "A library recorded the following number of books issued in one week. On which day were the most books issued?",
+      "helper": "Use the table to answer the question.",
+      "passage": "Monday: 45 books · Tuesday: 60 books · Wednesday: 52 books · Thursday: 75 books · Friday: 68 books",
+      "options": [
+        "Monday",
+        "Tuesday",
+        "Thursday",
+        "Friday"
+      ],
+      "correct": "Thursday"
+    }
+  ]
+}
