@@ -93,7 +93,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 .site-header .nav{min-height:76px;height:auto;display:flex;align-items:center;justify-content:space-between;gap:24px}
 .site-header .brand{font-size:23px;font-weight:850;letter-spacing:-.7px;color:#111}
 .site-header .brand em{font-style:normal;background:linear-gradient(100deg,#a97820,#d9b45e 55%,#a92925);-webkit-background-clip:text;background-clip:text;color:transparent}
-.account-nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,2.2vw,30px);font-size:14px;font-weight:700;color:#39342d}
+.account-nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,2.2vw,30px);font-size:14px;font-weight:700;color:#39342d}.auth-links{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.auth-links .admin-link{font-size:12px}
 .account-nav a{white-space:nowrap}.account-nav a:hover{color:#987024}.account-nav .signup-link:hover{color:#987024}
 .account-nav .signup-link{padding:0;border-radius:0;background:none;color:inherit}
 .settings-icon{font-size:16px;margin-right:4px}
@@ -106,7 +106,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 @media(max-width:900px){.home-content .subject-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.home-content .exam-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.account-nav{gap:13px;font-size:13px}}
 @media(max-width:650px){
 .site-header .nav{min-height:66px}.menu{display:block;border:0;background:none;font-size:25px;color:#111}
-.account-nav{display:none;position:absolute;top:66px;left:0;right:0;padding:18px 5%;background:#fff;box-shadow:0 14px 28px #0002;border-bottom:1px solid #e7decd;align-items:stretch;flex-direction:column;gap:0}
+.account-nav{display:none;position:absolute;top:66px;left:0;right:0;padding:18px 5%;background:#fff;box-shadow:0 14px 28px #0002;border-bottom:1px solid #e7decd;align-items:stretch;flex-direction:column;gap:0}.auth-links{align-items:flex-start;gap:0}.auth-links a{padding:12px 0}
 .account-nav.mobile-open{display:flex}.account-nav a{padding:12px 0}.account-nav .signup-link{padding:12px 0;text-align:left;margin:0;background:none;color:inherit}
 .home-content section{padding:38px 0}.home-content .subject-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.home-content .exam-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 }
@@ -134,8 +134,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <a class="brand" href="#"><span>Study<em>Orbit</em>247</span></a>
 <button class="menu" aria-label="Open navigation" aria-expanded="false" onclick="const p=document.querySelector('.account-nav');const open=p.classList.toggle('mobile-open');this.setAttribute('aria-expanded',open)">☰</button>
 <nav class="account-nav">
-<a class="admin-link" href="admin/">Login as Admin</a>
-<a class="signup-link auth-open" href="#auth">Login / Sign Up</a>
+<div class="auth-links"><a class="signup-link auth-open" href="#auth">Login / Sign Up</a><a class="admin-link" href="admin/">Login as Admin</a></div>
 <a href="my-learning/">My Learning</a>
 </nav>
 </div></header>
