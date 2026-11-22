@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 112" role="img" aria-labelledby="title desc">
-<title id="title">StudyOrbit247</title><desc id="desc">StudyOrbit247 brand logo with a gold orbital mark and black, gold and ruby lettering.</desc>
-<defs><linearGradient id="orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c99b3d"/><stop offset=".58" stop-color="#f0d58c"/><stop offset="1" stop-color="#a52b27"/></linearGradient></defs>
-<g transform="translate(8 8)"><rect width="96" height="96" rx="27" fill="#0b0b0b" stroke="#c49a45" stroke-width="2"/><circle cx="48" cy="48" r="27" fill="none" stroke="url(#orbit)" stroke-width="5"/><ellipse cx="48" cy="48" rx="39" ry="14" fill="none" stroke="#e4c16f" stroke-width="3" transform="rotate(-32 48 48)"/><circle cx="73" cy="26" r="6" fill="#a52b27"/><path d="m48 29 4.8 12.2L65 46l-12.2 4.8L48 63l-4.8-12.2L31 46l12.2-4.8z" fill="#f1d58c"/></g>
-<text x="122" y="69" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" letter-spacing="-2" fill="#111">Study</text><text x="255" y="69" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" letter-spacing="-2" fill="#c0953d">Orbit</text><text x="383" y="69" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="32" font-weight="800" fill="#a52b27">247</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 76" role="img" aria-labelledby="title desc">
+<title id="title">StudyOrbit247</title>
+<desc id="desc">StudyOrbit247 text wordmark in black, gold and ruby red.</desc>
+<text x="4" y="53" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" letter-spacing="-2.2" fill="#111111">Study</text>
+<text x="137" y="53" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" letter-spacing="-2.2" fill="#c0953d">Orbit</text>
+<text x="267" y="53" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="36" font-weight="800" letter-spacing="-1.2" fill="#a52b27">247</text>
 </svg>
