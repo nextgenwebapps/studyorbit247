@@ -82,3 +82,26 @@
  .insights-horizontal .insight-metrics{grid-template-columns:1fr;gap:12px}
  .insights-horizontal .next-tip{margin-top:14px}
 }
+
+/* Desktop full-width quiz and question analysis layout */
+@media(min-width:701px){
+ main{width:96%;max-width:1800px}
+ .test-screen,.result-screen{width:100%}
+ .test-layout{display:grid;grid-template-columns:minmax(0,1fr);width:100%;gap:18px}
+ .test-layout .question-panel{grid-column:1/-1;width:100%;min-width:0}
+ .test-layout .palette-panel{grid-column:1/-1;grid-row:1;order:-1;width:100%;position:relative;top:auto}
+ .test-layout:not(.palette-open) .question-panel{grid-row:1}
+ .result-columns{display:grid;grid-template-columns:minmax(0,1fr);width:100%}
+ .result-columns>.report-card{width:100%;min-width:0}
+ .review-list{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+ .review-item{min-width:0}
+}
+@media(min-width:1200px){
+ .question-panel{padding:30px 38px}
+ .question-body{min-height:340px}
+ .question-text{font-size:21px}
+ .review-list{gap:12px}
+}
+@media(max-width:700px){
+ .review-list{grid-template-columns:1fr}
+}
