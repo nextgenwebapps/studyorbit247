@@ -167,6 +167,38 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 @media(max-width:900px){.continue-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.continue-learning{padding:26px 0 6px!important}.continue-grid{gap:9px}.continue-card{padding:13px 10px;gap:9px}.continue-icon{width:37px;height:37px;flex-basis:37px;font-size:18px}.continue-card strong{font-size:12px}.continue-card small{font-size:10px}.continue-arrow{font-size:16px}}
 </style>
+
+<style id="mobile-menu-right-alignment">
+@media(max-width:650px){
+  .site-header .nav{justify-content:space-between}
+  .site-header .menu{display:block;margin-left:auto;margin-right:0;order:2;padding:8px 0 8px 12px}
+  .site-header .brand{margin-right:auto}
+  .account-nav.mobile-open{left:0;right:0;width:100vw}
+  .account-nav.mobile-open .auth-links{align-items:stretch;text-align:right}
+  .account-nav.mobile-open .auth-links a{
+    display:flex;justify-content:flex-end;align-items:center;
+    width:100%;text-align:right;padding:13px 20px
+  }
+  .account-nav.mobile-open .auth-links a .nav-icon,
+  .account-nav.mobile-open>.products-trigger .nav-icon{order:2;margin:0 0 0 9px}
+  .account-nav.mobile-open>.products-trigger{
+    display:flex;justify-content:flex-end;align-items:center;
+    width:100%;padding:13px 20px;text-align:right
+  }
+  .account-nav.mobile-open .products-panel-inner{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%;padding:10px 20px 14px;gap:8px
+  }
+  .account-nav.mobile-open .products-panel-inner>a,
+  .account-nav.mobile-open .products-panel-inner>.product-coming{
+    display:flex;flex-direction:row;justify-content:flex-end;align-items:center;
+    text-align:right;padding:12px 10px;gap:8px
+  }
+  .account-nav.mobile-open .products-panel-inner .product-tile-icon{order:2}
+  .account-nav.mobile-open .products-panel-inner .product-coming small{margin-left:4px}
+}
+</style>
+
 </head>
 <body>
 <header class="site-header"><div class="container nav">
