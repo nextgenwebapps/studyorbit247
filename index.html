@@ -593,3 +593,28 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   }
 }
 </style>
+
+
+<style id="exam-show-more-theme-match">
+/* Make Show more exams a full-size card matching the exam tiles */
+.exam-more-wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-top:15px}
+#show-more-exams{
+  width:100%;min-height:100%;min-height:174px;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;
+  gap:18px;padding:19px;text-align:left;white-space:normal;
+  border:1px solid #e6dfd2!important;border-radius:17px!important;
+  background:#fff!important;color:#171512!important;
+  box-shadow:0 8px 25px #20170b0a!important;
+  font:inherit;font-size:16px;font-weight:750;
+  transition:.2s;
+}
+#show-more-exams::before{
+  content:"＋";width:43px;height:43px;display:grid;place-items:center;
+  border-radius:13px;background:#f2eee5;color:#987024;font-size:25px;font-weight:500;
+}
+#show-more-exams span{align-self:flex-end;color:#987024;font-size:12px}
+#show-more-exams:hover{transform:translateY(-4px);border-color:#c4a45d!important;box-shadow:0 15px 32px #8c67201b!important}
+@media(max-width:900px){.exam-more-wrap{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.exam-more-wrap{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#show-more-exams{min-height:160px;padding:15px;font-size:14px}}
+@media(max-width:390px){.exam-more-wrap{grid-template-columns:1fr}#show-more-exams{min-height:125px}}
+</style>
