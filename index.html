@@ -704,3 +704,63 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <style id="remove-extra-show-more-plus-icon">
 #show-more-exams::before{content:none!important;display:none!important}
 </style>
+
+<style id="restore-show-more-card-original-centered-ui">
+/* Match the earlier centered exam-card design; retain the site's ivory/gold/ruby palette. */
+#show-more-exams{
+  min-height:174px!important;
+  padding:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:12px!important;
+  text-align:center!important;
+  border:1px solid #e6dfd2!important;
+  border-radius:17px!important;
+  background:#fff!important;
+  color:#171512!important;
+  box-shadow:0 8px 25px #20170b0a!important;
+}
+#show-more-exams::before{content:none!important;display:none!important}
+#show-more-exams .exam-action-more,
+#show-more-exams .exam-action-less{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:0;
+  width:100%;
+  color:#987024;
+  text-align:center;
+}
+#show-more-exams .exam-action-less{display:none}
+#show-more-exams.is-expanded .exam-action-more,
+#show-more-exams.is-expanded .exam-action-less{display:flex}
+#show-more-exams.is-at-end .exam-action-more{display:none}
+#show-more-exams .exam-action-icon{
+  width:43px;height:43px;flex:0 0 43px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:#f2eee5;
+  border:1px solid #e6d9bb;
+  color:#987024;
+  font-size:25px;font-weight:500;line-height:1;
+}
+#show-more-exams .exam-action-more>span:last-child,
+#show-more-exams .exam-action-less>span:last-child{
+  align-self:center;
+  color:#987024;
+  font-size:13px;
+  font-weight:750;
+}
+#show-more-exams:hover{
+  transform:translateY(-4px);
+  border-color:#c4a45d!important;
+  box-shadow:0 15px 32px #8c67201b!important;
+}
+#show-more-exams[hidden]{display:none!important}
+@media(max-width:650px){#show-more-exams{min-height:160px!important;padding:15px!important}}
+@media(max-width:390px){#show-more-exams{min-height:125px!important}}
+</style>
