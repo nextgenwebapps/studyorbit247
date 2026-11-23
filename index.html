@@ -331,11 +331,11 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 
 <section id="subjects"><div class="container"><div class="section-head"><div><div class="kicker">LEARN BY SUBJECT</div><h2>Explore Subjects</h2><p>Choose a subject and start practising.</p></div></div>
 <div class="subject-grid">
-<div class="subject"><div class="subject-icon ic-blue">🌍</div><h3>GK / GS</h3><p>Static GK, current affairs, history, geography, polity and science.</p><a href="mocktest/">Practice now →</a></div>
-<div class="subject"><div class="subject-icon ic-green">🧩</div><h3>Reasoning</h3><p>Verbal and non-verbal reasoning, puzzles, series and logic.</p><a href="#reasoning">Practice now →</a></div>
-<div class="subject"><div class="subject-icon ic-orange">➗</div><h3>Quantitative Aptitude</h3><p>Arithmetic, algebra, number system, DI and advanced maths.</p><a href="#quant">Practice now →</a></div>
-<div class="subject"><div class="subject-icon ic-purple">🔤</div><h3>English</h3><p>Grammar, vocabulary, comprehension, cloze test and usage.</p><a href="#english">Practice now →</a></div>
-<div class="subject"><div class="subject-icon ic-pink">अ</div><h3>Hindi</h3><p>व्याकरण, शब्दावली, अपठित गद्यांश और भाषा अभ्यास।</p><a href="#hindi">अभ्यास करें →</a></div>
+<div class="subject"><div class="subject-icon ic-blue">🌍</div><h3>GK / GS</h3><p>Static GK, current affairs, history, geography, polity and science.</p><div class="subject-actions"><a href="mocktest/">Practice now →</a><a href="mocktest/" class="subject-explore-link">Explore now →</a></div></div>
+<div class="subject"><div class="subject-icon ic-green">🧩</div><h3>Reasoning</h3><p>Verbal and non-verbal reasoning, puzzles, series and logic.</p><div class="subject-actions"><a href="#reasoning">Practice now →</a><a href="#reasoning" class="subject-explore-link">Explore now →</a></div></div>
+<div class="subject"><div class="subject-icon ic-orange">➗</div><h3>Quantitative Aptitude</h3><p>Arithmetic, algebra, number system, DI and advanced maths.</p><div class="subject-actions"><a href="#quant">Practice now →</a><a href="#quant" class="subject-explore-link">Explore now →</a></div></div>
+<div class="subject"><div class="subject-icon ic-purple">🔤</div><h3>English</h3><p>Grammar, vocabulary, comprehension, cloze test and usage.</p><div class="subject-actions"><a href="#english">Practice now →</a><a href="#english" class="subject-explore-link">Explore now →</a></div></div>
+<div class="subject"><div class="subject-icon ic-pink">अ</div><h3>Hindi</h3><p>व्याकरण, शब्दावली, अपठित गद्यांश और भाषा अभ्यास।</p><div class="subject-actions"><a href="#hindi">अभ्यास करें →</a><a href="#hindi" class="subject-explore-link">Explore now →</a></div></div>
 </div></div></section>
 <section class="exam-section" id="exams"><div class="container"><div class="section-head"><div><div class="kicker">PREPARE WITH A CLEAR GOAL</div><h2>Explore Exams</h2><p>Select your target examination to begin preparation.</p></div></div>
 <div class="exam-grid">
@@ -620,6 +620,31 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 #show-more-exams[hidden]{display:none!important}
 @media(max-width:650px){#show-more-exams{min-height:160px;padding:15px!important;font-size:14px}}
 @media(max-width:390px){#show-more-exams{min-height:125px}}
+</style>
+
+
+<style id="subject-practice-and-explore-actions">
+/* Stack Practice Now and Explore Now beneath each subject description. */
+#subjects .subject-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:9px;
+  margin-top:auto;
+  padding-top:12px;
+}
+#subjects .subject-actions a{
+  display:inline-flex!important;
+  align-items:center!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  color:#987024!important;
+}
+#subjects .subject-actions .subject-explore-link{
+  color:#171512!important;
+}
 </style>
 
 </body></html>
