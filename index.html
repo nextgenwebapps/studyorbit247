@@ -970,3 +970,22 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   line-height:1;
 }
 </style>
+
+
+<style id="show-more-middle-caret-final-minus">
+/* Middle: Show More + and Show Less ^. End: Show Less − only. */
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less .exam-action-icon,
+#show-more-exams.is-at-end .exam-action-less .exam-action-icon{
+  font-size:0!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less .exam-action-icon::after{
+  content:"⌃";
+  font-size:22px;
+  line-height:1;
+}
+#show-more-exams.is-at-end .exam-action-less .exam-action-icon::after{
+  content:"−";
+  font-size:22px;
+  line-height:1;
+}
+</style>
