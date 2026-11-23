@@ -337,6 +337,12 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <div class="exam"><div class="exam-top"><div class="exam-icon">🇮🇳</div><span class="tag">CIVIL SERVICES</span></div><h3>UPSC</h3><p>Prelims, GS, CSAT, current affairs and concept revision.</p><div class="exam-foot"><span>Foundation to practice</span><b>Explore →</b></div></div>
 <div class="exam"><div class="exam-top"><div class="exam-icon">📍</div><span class="tag">STATE LEVEL</span></div><h3>State PCS</h3><p>UPPCS, UKPSC, BPSC, MPPSC, RPSC and other state exams.</p><div class="exam-foot"><span>State-specific GK</span><b>Explore →</b></div></div>
 </div></div></section>
+<section id="recent-activity" class="recent-activity-section">
+  <div class="container">
+    <div class="section-head"><div><div class="kicker">PICK UP WHERE YOU LEFT OFF</div><h2>Recent Activity</h2><p>Your recently opened tests, subjects, chapters and lectures.</p></div></div>
+    <div id="recent-activity-list" class="recent-activity-list"><div class="recent-empty">Your recent learning activity will appear here as you explore StudyOrbit247.</div></div>
+  </div>
+</section>
 <section id="features"><div class="container"><div class="section-head"><div><div class="kicker">A SMARTER WAY TO PREPARE</div><h2>Everything in your learning orbit</h2><p>Tools that help turn preparation into measurable progress.</p></div></div>
 <div class="feature-grid">
 <div class="feature" id="chapter-practice"><div class="feature-icon">📝</div><h3>Chapter-wise practice</h3><p>Practice topic by topic and build confidence before moving to full-length tests.</p></div>
@@ -379,6 +385,109 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   }
 }
 </style>
+
+
+<style id="site-search-and-recent-activity">
+.site-search-section{padding:34px 0 10px;background:#fff}
+.site-search-wrap{max-width:850px;margin:0 auto}
+.site-search-box{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #ded8ca;border-radius:16px;padding:7px 9px 7px 17px;box-shadow:0 10px 30px #2420180b}
+.site-search-box input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#201d19;font:inherit;font-size:15px;padding:11px 0}
+.site-search-box button{border:0;border-radius:11px;padding:12px 20px;background:#27231f;color:#fff;font-weight:750;cursor:pointer}
+.site-search-results{display:grid;gap:8px;margin-top:12px}
+.site-search-result{display:block;padding:13px 16px;border:1px solid #eee8dd;border-radius:12px;background:#fff;color:#29251f;text-decoration:none}
+.site-search-result:hover{border-color:#c7a65c;background:#fffdf8}
+.site-search-result small{display:block;color:#777064;margin-top:4px}
+.site-search-empty{padding:14px;color:#777064;background:#f8f6f1;border-radius:12px}
+.recent-activity-section{padding:28px 0 48px;background:#f8f7f3}
+.recent-activity-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.recent-activity-item{display:flex;align-items:flex-start;gap:12px;padding:16px;background:#fff;border:1px solid #ece7dc;border-radius:14px;color:#29251f;text-decoration:none;min-width:0}
+.recent-activity-item:hover{border-color:#c7a65c;transform:translateY(-1px)}
+.recent-activity-icon{width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px;border-radius:11px;background:#f4efe3;font-size:18px}
+.recent-activity-item strong{display:block;font-size:14px;line-height:1.4}
+.recent-activity-item small{display:block;margin-top:5px;color:#777064;font-size:11px}
+.recent-empty{grid-column:1/-1;padding:18px;background:#fff;border:1px dashed #d9d1c1;border-radius:14px;color:#777064}
+@media(max-width:600px){.site-search-box{gap:7px;padding-left:12px}.site-search-box button{padding:11px 13px}.recent-activity-list{grid-template-columns:1fr}}
+</style>
+
+
+<script id="site-search-and-recent-activity-script">
+(function(){
+  const activityKey='studyorbit_recent_activity';
+  const list=document.getElementById('recent-activity-list');
+  const readStored=(key)=>{
+    try{
+      const raw=localStorage.getItem(key);
+      if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed))return parsed;if(parsed&&Array.isArray(parsed.items))return parsed.items;if(parsed&&Array.isArray(parsed.activities))return parsed.activities;}
+    }catch(e){}
+    try{
+      const cookie=document.cookie.split('; ').find(row=>row.startsWith(key+'='));
+      if(cookie){const parsed=JSON.parse(decodeURIComponent(cookie.substring(key.length+1)));if(Array.isArray(parsed))return parsed;if(parsed&&Array.isArray(parsed.items))return parsed.items;if(parsed&&Array.isArray(parsed.activities))return parsed.activities;}
+    }catch(e){}
+    return [];
+  };
+  const isLoggedIn=()=>{
+    const keys=['studyorbit_user','currentUser','authUser','user','userData','studyorbit_session'];
+    return keys.some(key=>{try{const v=localStorage.getItem(key);return !!v&&v!=='null'&&v!=='false';}catch(e){return false;}})||
+      document.cookie.split('; ').some(c=>/^(studyorbit_user|studyorbit_session|authToken|token)=/.test(c));
+  };
+  const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const stored=readStored(activityKey);
+  const recent=stored.concat(readStored('recentActivities'),readStored('recent_activity'),readStored('recentLearning')).filter(x=>x&&typeof x==='object');
+  const unique=[];
+  recent.forEach(item=>{
+    const title=item.title||item.name||item.label||item.activity||item.type;
+    const url=item.url||item.href||item.link||'#';
+    if(title&&!unique.some(x=>(x.title||x.name||x.label||x.activity)===title&&((x.url||x.href||x.link||'#')===url)))unique.push(item);
+  });
+  const renderRecent=()=>{
+    if(!list)return;
+    if(!unique.length){list.innerHTML='<div class="recent-empty">'+(isLoggedIn()?'You are signed in. Open a test, subject or lecture and it will appear here.':'Sign in or start exploring. Your recent tests, subjects and lectures will be saved on this device.')+'</div>';return;}
+    list.innerHTML=unique.slice(0,8).map(item=>{
+      const title=item.title||item.name||item.label||item.activity||'Recent activity';
+      const url=item.url||item.href||item.link||'#';
+      const type=item.type||item.category||'Recently opened';
+      const icon=/test|quiz|mock/i.test(type+' '+title)?'📝':/lecture|video/i.test(type+' '+title)?'🎥':/chapter|subject/i.test(type+' '+title)?'📚':'↗';
+      return '<a class="recent-activity-item" href="'+esc(url)+'"><span class="recent-activity-icon">'+icon+'</span><span><strong>'+esc(title)+'</strong><small>'+esc(type)+'</small></span></a>';
+    }).join('');
+  };
+  renderRecent();
+  document.addEventListener('click',event=>{
+    const a=event.target.closest('main a[href]');
+    if(!a||!a.href||a.href==='#'||a.target==='_blank')return;
+    const title=(a.innerText||a.textContent||'').trim().replace(/\s+/g,' ').slice(0,90);
+    if(!title)return;
+    const href=a.getAttribute('href');
+    const item={title,url:href,type:(a.closest('.subject')?'Subject':a.closest('.exam')?'Exam':/mock|test|quiz/i.test(title)?'Test':'Learning'),time:Date.now()};
+    const next=[item,...unique.filter(x=>(x.title||x.name||x.label||x.activity)!==title)].slice(0,8);
+    try{localStorage.setItem(activityKey,JSON.stringify(next));}catch(e){}
+    unique.splice(0,unique.length,...next);
+    renderRecent();
+  });
+  const search=document.getElementById('site-content-search');
+  const results=document.getElementById('site-search-results');
+  if(!search||!results)return;
+  const candidates=Array.from(document.querySelectorAll('main h1,main h2,main h3,main .subject,main .exam,main .feature,main p,main a'))
+    .filter(el=>!el.closest('#recent-activity')&&!el.closest('#site-search-results'));
+  search.addEventListener('input',()=>{
+    const q=search.value.trim().toLowerCase();
+    if(!q){results.innerHTML='';return;}
+    const seen=new Set(),matches=[];
+    candidates.forEach(el=>{
+      const text=(el.innerText||el.textContent||'').trim().replace(/\s+/g,' ');
+      if(!text||!text.toLowerCase().includes(q))return;
+      const card=el.closest('.subject,.exam,.feature')||el;
+      const title=(card.querySelector('h3,h2,h1')?.textContent||text).trim().replace(/\s+/g,' ').slice(0,100);
+      if(seen.has(title))return;
+      seen.add(title);
+      const anchor=card.matches('a')?card:card.querySelector('a[href]');
+      let href=anchor?.getAttribute('href')||'#';
+      if(href==='#'&&card.id)href='#'+card.id;
+      matches.push({title,description:text.slice(0,160),href});
+    });
+    results.innerHTML=matches.length?matches.slice(0,10).map(m=>'<a class="site-search-result" href="'+esc(m.href)+'"><strong>'+esc(m.title)+'</strong><small>'+esc(m.description)+'</small></a>').join(''):'<div class="site-search-empty">No matching content found. Try another keyword.</div>';
+  });
+})();
+</script>
 
 </body></html>
 
