@@ -489,6 +489,11 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   };
   renderRecent();
   document.addEventListener('click',event=>{
+    /* Do not record clicks made inside the Recent Activity section itself,
+       or navigation clicks whose destination is the Recent Activity section. */
+    if(event.target.closest('#recent-activity'))return;
+    const clickedLink=event.target.closest('main a[href]');
+    if(clickedLink && (clickedLink.getAttribute('href')||'').split(/[?#]/)[0]==='' && (clickedLink.getAttribute('href')||'').includes('#recent-activity'))return;
     const examCard=event.target.closest('main .exam');
     const a=event.target.closest('main a[href]');
     let title='',href='',type='Learning';
