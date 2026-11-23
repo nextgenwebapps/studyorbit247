@@ -369,7 +369,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <div class="exam exam-extra exam-template" hidden><div class="exam-top"><div class="exam-icon">🛠️</div><span class="tag">TEST TEMPLATE 18</span></div><h3>Apprentice Exams</h3><p>Apprenticeship recruitment and technical aptitude tests.</p><div class="exam-foot"><span>Temporary demo card</span><b>Explore →</b></div></div>
 <div class="exam exam-extra exam-template" hidden><div class="exam-top"><div class="exam-icon">🛡️</div><span class="tag">TEST TEMPLATE 19</span></div><h3>Insurance Exams</h3><p>LIC, NIACL and other insurance recruitment tests.</p><div class="exam-foot"><span>Temporary demo card</span><b>Explore →</b></div></div>
 <div class="exam exam-extra exam-template" hidden><div class="exam-top"><div class="exam-icon">📋</div><span class="tag">TEST TEMPLATE 20</span></div><h3>Other Entrance Exams</h3><p>Practice for additional national and state entrance tests.</p><div class="exam-foot"><span>Temporary demo card</span><b>Explore →</b></div></div>
-</div><div class="exam-more-wrap"><button id="show-more-exams" class="btn btn-outline" type="button">Show more exams <span aria-hidden="true">↓</span></button></div></div></section>
+<button id="show-more-exams" class="btn btn-outline" type="button">Show more exams <span aria-hidden="true">→</span></button></div></div></section>
 <section id="features"><div class="container"><div class="section-head"><div><div class="kicker">A SMARTER WAY TO PREPARE</div><h2>Everything in your learning orbit</h2><p>Tools that help turn preparation into measurable progress.</p></div></div>
 <div class="feature-grid">
 <div class="feature" id="chapter-practice"><div class="feature-icon">📝</div><h3>Chapter-wise practice</h3><p>Practice topic by topic and build confidence before moving to full-length tests.</p></div>
@@ -617,4 +617,24 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 @media(max-width:900px){.exam-more-wrap{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.exam-more-wrap{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#show-more-exams{min-height:160px;padding:15px;font-size:14px}}
 @media(max-width:390px){.exam-more-wrap{grid-template-columns:1fr}#show-more-exams{min-height:125px}}
+</style>
+
+<style id="exam-show-more-inline-grid">
+/* Show more is the next tile in the same exam grid */
+.exam-more-wrap{display:contents!important}
+#show-more-exams{
+  grid-column:auto!important;
+  width:100%;min-height:174px;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;
+  gap:18px;padding:19px;text-align:left;white-space:normal;
+  border:1px solid #e6dfd2!important;border-radius:17px!important;
+  background:#fff!important;color:#171512!important;
+  box-shadow:0 8px 25px #20170b0a!important;
+  font:inherit;font-size:16px;font-weight:750;transition:.2s;
+}
+#show-more-exams::before{content:"＋";width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:#f2eee5;color:#987024;font-size:25px;font-weight:500}
+#show-more-exams span{align-self:flex-end;color:#987024;font-size:12px}
+#show-more-exams:hover{transform:translateY(-4px);border-color:#c4a45d!important;box-shadow:0 15px 32px #8c67201b!important}
+@media(max-width:650px){#show-more-exams{min-height:160px;padding:15px;font-size:14px}}
+@media(max-width:390px){#show-more-exams{min-height:125px}}
 </style>
