@@ -997,3 +997,33 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   color:#fff!important;
 }
 </style>
+
+
+<style id="show-more-middle-center-all-content">
+/* Middle state: center both complete action groups horizontally inside the card. */
+#show-more-exams.is-expanded:not(.is-at-end){
+  align-items:center!important;
+  text-align:center!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-more,
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{
+  width:100%!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  gap:9px!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-more .exam-action-icon,
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less .exam-action-icon{
+  order:0!important;
+  margin:0!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-more>span:last-child,
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less>span:last-child{
+  order:0!important;
+  margin:0!important;
+  text-align:center!important;
+}
+</style>
