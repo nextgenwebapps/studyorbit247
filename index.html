@@ -764,3 +764,70 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 @media(max-width:650px){#show-more-exams{min-height:160px!important;padding:15px!important}}
 @media(max-width:390px){#show-more-exams{min-height:125px!important}}
 </style>
+
+
+<style id="show-more-middle-state-single-card-layout">
+/* Keep one exam-sized card; show both actions as compact centered rows only in the middle state. */
+#show-more-exams.is-expanded:not(.is-at-end){
+  min-height:174px!important;
+  padding:10px 16px!important;
+  gap:7px!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-more,
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  min-height:48px!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-icon{
+  width:34px!important;
+  height:34px!important;
+  flex:0 0 34px!important;
+  font-size:21px!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-more>span:last-child,
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less>span:last-child{
+  font-size:13px!important;
+  white-space:nowrap;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{
+  border-top:1px solid #e8e1d4;
+  padding-top:7px;
+}
+@media(max-width:650px){
+  #show-more-exams.is-expanded:not(.is-at-end){
+    min-height:160px!important;
+    padding:9px 12px!important;
+    gap:5px!important;
+  }
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-more,
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{
+    min-height:45px!important;
+    gap:7px!important;
+  }
+}
+@media(max-width:390px){
+  #show-more-exams.is-expanded:not(.is-at-end){
+    min-height:125px!important;
+    padding:7px 10px!important;
+    gap:3px!important;
+  }
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-more,
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{
+    min-height:42px!important;
+    gap:6px!important;
+  }
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-icon{
+    width:30px!important;
+    height:30px!important;
+    flex-basis:30px!important;
+    font-size:19px!important;
+  }
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-more>span:last-child,
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-less>span:last-child{
+    font-size:12px!important;
+  }
+}
+</style>
