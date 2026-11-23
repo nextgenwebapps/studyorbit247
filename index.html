@@ -831,3 +831,26 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   }
 }
 </style>
+
+
+<style id="show-more-single-action-icon-right">
+/* In the initial and final states, keep the label left and move its icon to the right. */
+#show-more-exams:not(.is-expanded) .exam-action-more,
+#show-more-exams.is-at-end .exam-action-less{
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  width:100%!important;
+}
+#show-more-exams:not(.is-expanded) .exam-action-more .exam-action-icon,
+#show-more-exams.is-at-end .exam-action-less .exam-action-icon{
+  order:2;
+}
+#show-more-exams:not(.is-expanded) .exam-action-more>span:last-child,
+#show-more-exams.is-at-end .exam-action-less>span:last-child{
+  order:1;
+  align-self:center!important;
+  text-align:left!important;
+}
+</style>
