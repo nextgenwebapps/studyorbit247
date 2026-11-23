@@ -322,7 +322,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <div class="stats-strip"><div class="container stats"><div class="stat"><b>5</b><small>Core subjects</small></div><div class="stat"><b>4+</b><small>Exam categories</small></div><div class="stat"><b>24/7</b><small>Learn on your schedule</small></div><div class="stat"><b>One</b><small>Unified preparation hub</small></div></div></div>
 <section id="recent-activity" class="recent-activity-section">
   <div class="container">
-    <div class="section-head"><div><div class="kicker">PICK UP WHERE YOU LEFT OFF</div><h2>Recent Activity</h2><p>Your recently opened tests, subjects, chapters and lectures.</p></div></div>
+    <div class="section-head"><div><div class="kicker">PICK UP WHERE YOU LEFT OFF</div><h2>Recent Activity</h2><p>Your recently opened exams, tests, subjects, chapters and lectures.</p></div></div>
     <div id="recent-activity-list" class="recent-activity-list"><div class="recent-empty">Your recent learning activity will appear here as you explore StudyOrbit247.</div></div>
   </div>
 </section>
@@ -489,12 +489,21 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   };
   renderRecent();
   document.addEventListener('click',event=>{
+    const examCard=event.target.closest('main .exam');
     const a=event.target.closest('main a[href]');
-    if(!a||!a.href||a.href==='#'||a.target==='_blank')return;
-    const title=(a.innerText||a.textContent||'').trim().replace(/\s+/g,' ').slice(0,90);
+    let title='',href='',type='Learning';
+    if(examCard){
+      title=(examCard.querySelector('h3')?.textContent||'').trim();
+      href=a&&a.closest('.exam')===examCard?a.getAttribute('href'):'#exams';
+      type='Exam';
+    }else{
+      if(!a||!a.href||a.href==='#'||a.target==='_blank')return;
+      title=(a.innerText||a.textContent||'').trim().replace(/\s+/g,' ').slice(0,90);
+      href=a.getAttribute('href');
+      type=a.closest('.subject')?'Subject':/mock|test|quiz/i.test(title)?'Test':'Learning';
+    }
     if(!title)return;
-    const href=a.getAttribute('href');
-    const item={title,url:href,type:(a.closest('.subject')?'Subject':a.closest('.exam')?'Exam':/mock|test|quiz/i.test(title)?'Test':'Learning'),time:Date.now()};
+    const item={title,url:href,type,time:Date.now()};
     const next=[item,...unique.filter(x=>(x.title||x.name||x.label||x.activity)!==title)].slice(0,8);
     try{localStorage.setItem(activityKey,JSON.stringify(next));}catch(e){}
     unique.splice(0,unique.length,...next);
