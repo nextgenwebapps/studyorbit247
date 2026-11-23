@@ -313,17 +313,11 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <h1>Prepare smarter.<br><span>Achieve bigger.</span></h1>
 <p>One destination for SSC, Banking, RRB, UPSC and State PCS preparation. Learn concepts, practice questions, attempt mock tests and track your progress — all in one orbit.</p>
 <div class="hero-buttons"><a class="btn btn-primary" href="#exams">Explore Exams <span>→</span></a><a class="btn btn-outline" href="#subjects">Explore Subjects</a></div>
+<div class="hero-search"><div class="site-search-box"><span aria-hidden="true">⌕</span><input id="site-content-search" type="search" placeholder="Search exams, subjects, chapters, tests..." autocomplete="off" aria-label="Search website content"><button type="button" onclick="document.getElementById('site-content-search').dispatchEvent(new Event('input'))">Search</button></div><div id="site-search-results" class="site-search-results" aria-live="polite"></div></div>
 <div class="hero-note"><span>✓ Exam-focused practice</span><span>✓ Performance insights</span><span>✓ Learn at your pace</span></div>
 </div>
 
 </div></section>
-<section id="site-search" class="site-search-section">
-  <div class="container"><div class="site-search-wrap">
-    <div class="section-head"><div><div class="kicker">FIND WHAT YOU NEED</div><h2>Search StudyOrbit247</h2><p>Search exams, subjects, practice, tests and learning content.</p></div></div>
-    <div class="site-search-box"><span aria-hidden="true">⌕</span><input id="site-content-search" type="search" placeholder="Search exams, subjects, chapters, tests..." autocomplete="off" aria-label="Search website content"><button type="button" onclick="document.getElementById('site-content-search').dispatchEvent(new Event('input'))">Search</button></div>
-    <div id="site-search-results" class="site-search-results" aria-live="polite"></div>
-  </div></div>
-</section>
 <section id="recent-activity" class="recent-activity-section">
   <div class="container">
     <div class="section-head"><div><div class="kicker">PICK UP WHERE YOU LEFT OFF</div><h2>Recent Activity</h2><p>Your recently opened tests, subjects, chapters and lectures.</p></div></div>
@@ -394,6 +388,16 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 </style>
 
 
+<style id="hero-search-placement">
+.hero-search{width:min(650px,100%);margin-top:18px}
+.hero-search .site-search-box{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #d8c69d;border-radius:13px;padding:6px 8px 6px 15px;box-shadow:0 8px 24px #0002}
+.hero-search .site-search-box input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#201d19;font:inherit;font-size:14px;padding:10px 0}
+.hero-search .site-search-box button{border:0;border-radius:9px;padding:10px 17px;background:#171512;color:#f5dfaa;font-weight:750;cursor:pointer}
+.hero-search .site-search-results{display:grid;gap:8px;margin-top:10px}
+.hero-search .site-search-result{color:#29251f}
+.hero-search .site-search-empty{color:#29251f}
+@media(max-width:650px){.hero-search{margin-top:16px}.hero-search .site-search-box{gap:7px;padding-left:11px}.hero-search .site-search-box button{padding:10px 12px}}
+</style>
 <style id="site-search-and-recent-activity">
 .site-search-section{padding:34px 0 10px;background:#fff}
 .site-search-wrap{max-width:850px;margin:0 auto}
