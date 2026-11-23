@@ -895,3 +895,65 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   padding-top:5px!important;
 }
 </style>
+
+
+<style id="show-more-actions-inline-centered-final">
+/* Center each label + circular icon together on one horizontal line. */
+#show-more-exams:not(.is-expanded) .exam-action-more,
+#show-more-exams.is-expanded .exam-action-more,
+#show-more-exams.is-expanded .exam-action-less,
+#show-more-exams.is-at-end .exam-action-less{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  width:100%!important;
+  min-height:0!important;
+  padding:0!important;
+  border-top:0!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end){
+  justify-content:center!important;
+  align-items:center!important;
+  gap:0!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-more,
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{
+  flex:1 1 0!important;
+  min-height:0!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{
+  border-top:1px solid #e8e1d4!important;
+  padding-top:7px!important;
+}
+#show-more-exams .exam-action-icon{
+  order:0!important;
+  width:34px!important;
+  height:34px!important;
+  flex:0 0 34px!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  line-height:1!important;
+}
+#show-more-exams .exam-action-more>span:last-child,
+#show-more-exams .exam-action-less>span:last-child{
+  order:0!important;
+  align-self:center!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  font-size:13px!important;
+}
+#show-more-exams:not(.is-expanded) .exam-action-icon,
+#show-more-exams.is-at-end .exam-action-icon{
+  width:34px!important;
+  height:34px!important;
+  flex-basis:34px!important;
+}
+@media(max-width:650px){
+  #show-more-exams.is-expanded:not(.is-at-end){gap:0!important}
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-more,
+  #show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{min-height:0!important}
+}
+</style>
