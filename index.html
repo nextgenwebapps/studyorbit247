@@ -574,41 +574,45 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
  const grid=document.querySelector('#exams .exam-grid');
  const button=document.getElementById('show-more-exams');
  if(!grid||!button)return;
- let extras=Array.from(grid.querySelectorAll('.exam-extra'));
- let shown=extras.filter(card=>!card.hidden).length;
+
  const batchSize=4;
- const updateButton=()=>{
+ let extras=Array.from(grid.querySelectorAll('.exam-extra'));
+ let shown=extras.reduce((count,card)=>count+(!card.hidden?1:0),0);
+
+ function refresh(){
    extras=Array.from(grid.querySelectorAll('.exam-extra'));
    const hasMore=shown<extras.length;
    const hasShown=shown>0;
-   button.hidden=!hasMore&&!hasShown;
+   button.hidden=!(hasMore||hasShown);
    button.classList.toggle('is-expanded',hasShown);
-   button.classList.toggle('is-at-end',!hasMore);
+   button.classList.toggle('is-at-end',!hasMore&&hasShown);
    button.setAttribute('aria-label',hasMore&&hasShown?'Show more or show less exams':hasMore?'Show more exams':'Show less exams');
- };
- button.addEventListener('click',event=>{
-   const clickedLess=event.target.closest('.exam-action-less');
-   if(clickedLess){
+ }
+ button.addEventListener('click',function(event){
+   const less=event.target.closest('.exam-action-less');
+   if(less){
      const nextShown=Math.max(0,shown-batchSize);
-     extras.slice(nextShown,shown).forEach(card=>card.hidden=true);
+     extras.slice(nextShown,shown).forEach(card=>{card.hidden=true;});
      shown=nextShown;
-     updateButton();
+     refresh();
      return;
    }
    if(shown>=extras.length)return;
    const next=extras.slice(shown,shown+batchSize);
-   next.forEach(card=>card.hidden=false);
+   next.forEach(card=>{card.hidden=false;});
    shown+=next.length;
-   updateButton();
+   refresh();
    if(next.length)next[0].scrollIntoView({behavior:'smooth',block:'nearest'});
  });
- updateButton();
- window.setTimeout(()=>{
+ refresh();
+
+ /* Keep demo cards available long enough to test; remove them after 30 minutes. */
+ window.setTimeout(function(){
    grid.querySelectorAll('.exam-template').forEach(card=>card.remove());
    extras=Array.from(grid.querySelectorAll('.exam-extra'));
-   shown=extras.filter(card=>!card.hidden).length;
-   updateButton();
- },10*60*1000);
+   shown=extras.reduce((count,card)=>count+(!card.hidden?1:0),0);
+   refresh();
+ },30*60*1000);
 })();
 </script>
 
@@ -1376,5 +1380,13 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   line-height:1.2!important;
   white-space:nowrap!important;
 }
+</style>
+
+
+
+<style id="ensure-exam-demo-toggle-visible">
+/* Keep the exam toggle visible whenever hidden demo cards are available. */
+#exams .exam-grid>#show-more-exams:not([hidden]){display:flex!important}
+#exams .exam-grid>.exam.exam-template[hidden]{display:none!important}
 </style>
 
