@@ -1,0 +1,12 @@
+name = "studyorbit247-admin-api"
+main = "src/index.js"
+compatibility_date = "2026-11-24"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "studyorbit247-admin"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+# Add a same-domain route after connecting your domain to Cloudflare:
+# routes = [{ pattern = "YOUR_DOMAIN/api/*", zone_name = "YOUR_DOMAIN" }]
