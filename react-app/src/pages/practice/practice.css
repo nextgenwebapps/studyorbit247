@@ -38,16 +38,17 @@
 }
 
 .practice-filters .practice-search {
-  justify-self: center;
-  width: 110px;
-  height: 44px;
-  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
   padding: 0;
   border-radius: 10px;
   background: linear-gradient(120deg, #f3d98f, #d3a449 62%, #bd802d);
   color: #231706;
   box-shadow: 0 4px 12px rgb(121 77 15 / 20%);
-  transform-origin: center;
 }
 
 .practice-form :is(select, button):focus-visible {
@@ -57,20 +58,21 @@
 
 @media (min-width: 700px) {
   .practice-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .practice-filters .practice-search { justify-self: end; margin-inline-end: 3px; }
+}
+
+.practice-title-now {
+  display: inline-block;
+  color: #8a6220;
+  transform-origin: center;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .practice-search { animation: practice-search-pulse 2s ease-in-out 2; }
-  .practice-search:hover { animation-iteration-count: infinite; }
+  .practice-title-now { animation: practice-now-pulse 2s ease-in-out infinite; }
 }
 
-/* Scale from the 110 × 44 px base to 115 × 49 and 105 × 39. */
-@keyframes practice-search-pulse {
-  0%, 100% { transform: scale(1); }
-  25% { transform: scale(1.045455, 1.113636); }
-  60% { transform: scale(.954545, .886364); }
-  85% { transform: scale(1.045455, 1.113636); }
+@keyframes practice-now-pulse {
+  0%, 100% { transform: scale(1.07); }
+  50% { transform: scale(.93); }
 }
 
 .practice-field {
