@@ -57,7 +57,7 @@ function renderList() {
       <small>${escapeHtml(typeLabel(q.type))} · ${escapeHtml(q.subject || "No subject")} · ${validateQuestion(q).length ? "Needs attention" : "Ready for review"}</small></div>
       <button class="text-button" data-remove="${escapeHtml(q.id)}">Delete</button>
     </div>`).join("") : '<div class="empty-state">No matching questions.</div>';
-  list.querySelectorAll("[data-remove]").forEach(button => button.onclick = () => {
+  list.querySelectorAll("[data-edit-question]").forEach(button => button.onclick = () => {\n    const question = drafts.find(item => item.id === button.dataset.editQuestion);\n    nav("create", "single");\n    builder.loadQuestion(question);\n    renderPreview(question, $("#preview-stage"), $(".device-switch .selected")?.dataset.device || "mobile");\n  });\n  list.querySelectorAll("[data-remove]").forEach(button => button.onclick = () => {
     if (confirm("Delete this local draft?")) save(drafts.filter(q => q.id !== button.dataset.remove));
   });
 }
