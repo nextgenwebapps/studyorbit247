@@ -1484,17 +1484,22 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 
 
 <style id="subject-toggle-single-state-card-height">
-/* In the single-action states, make the Subjects toggle the same height as a subject card. */
+/* Let the single-action toggle stretch to the exact height of its subject-grid row. */
+#subjects .subject-grid{
+  align-items:stretch!important;
+}
 #show-more-subjects:not(.is-expanded),
 #show-more-subjects.is-at-end{
-  min-height:174px!important;
-  height:100%!important;
+  min-height:0!important;
+  height:auto!important;
   align-self:stretch!important;
+  box-sizing:border-box!important;
+  padding:20px 16px!important;
 }
 @media(max-width:650px){
   #show-more-subjects:not(.is-expanded),
   #show-more-subjects.is-at-end{
-    min-height:174px!important;
+    padding:16px 13px!important;
   }
 }
 </style>
