@@ -42,13 +42,23 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  justify-self: center;
   width: 100%;
-  min-height: 44px;
+  height: 44px;
   padding: 0;
   border-radius: 10px;
-  background: linear-gradient(120deg, #f3d98f, #d3a449 62%, #bd802d);
-  color: #231706;
+  background: linear-gradient(120deg, #805414, #a16a20 52%, #8a302a);
+  color: #fff;
   box-shadow: 0 4px 12px rgb(121 77 15 / 20%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .practice-filters .practice-search:hover {
+    width: calc(100% + 10px);
+    height: 54px;
+    margin: -5px;
+    transform: none;
+  }
 }
 
 .practice-form :is(select, button):focus-visible {
@@ -60,14 +70,44 @@
   .practice-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
+@property --practice-now-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .practice-title-now {
   display: inline-block;
   color: #8a6220;
   transform-origin: center;
 }
 
+@supports (background-clip: text) {
+  .practice-title-now {
+    background: linear-gradient(var(--practice-now-angle), #77471b, #db9c2a, #a52b27, #f2cb6e, #77471b);
+    background-size: 220% 220%;
+    background-position: 50% 50%;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .practice-title-now { animation: practice-now-pulse 2s ease-in-out infinite; }
+  .practice-title-now {
+    animation: practice-now-pulse 2s ease-in-out infinite, practice-now-gradient 5s linear infinite;
+  }
+}
+
+@keyframes practice-now-gradient {
+  0% { --practice-now-angle: 0deg; background-position: 50% 50%; }
+  12.5% { background-position: 100% 50%; }
+  25% { background-position: 0% 50%; }
+  37.5% { background-position: 50% 0%; }
+  50% { background-position: 50% 100%; }
+  62.5% { background-position: 100% 0%; }
+  75% { background-position: 0% 100%; }
+  87.5% { background-position: 100% 100%; }
+  100% { --practice-now-angle: 360deg; background-position: 50% 50%; }
 }
 
 @keyframes practice-now-pulse {
@@ -100,6 +140,7 @@
   display: grid;
   gap: 16px;
   margin-top: 26px;
+  scroll-margin-top: 16px;
 }
 
 .practice-results > h2 {

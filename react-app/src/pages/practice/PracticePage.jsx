@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { mount } from "../../mount.jsx";
 import { subjects } from "../home/Subjects.jsx";
 import { exams } from "../home/Exams.jsx";
@@ -276,6 +276,14 @@ function PracticePage() {
     }
   }
   const [searchNumber, setSearchNumber] = useState(0);
+  const resultsRef = useRef(null);
+
+  useEffect(() => {
+    if (results?.length) {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      resultsRef.current?.scrollIntoView({ behavior: reduceMotion ? "instant" : "smooth", block: "start" });
+    }
+  }, [results]);
   const { subject, exam, chapter, topic, level, status, source } = filters;
   const chapters = [...new Set(findQuestions({ subject, exam }).map((question) => question.chapter))].sort();
   const topics = [...new Set(findQuestions({ subject, exam, chapter }).map((question) => question.topic))].sort();
@@ -325,7 +333,7 @@ function PracticePage() {
         </form>
         <p role="status" className="practice-bookmark-feedback" hidden={!bookmarkMessage}>{bookmarkMessage}</p>
         {results !== null && (
-          <section className="practice-results" aria-labelledby="practice-total">
+          <section ref={resultsRef} className="practice-results" aria-labelledby="practice-total">
             <h2 id="practice-total" aria-live="polite">Total Questions: {results.length}</h2>
             {results.length === 0 && <p>No questions match these filters. Try changing or clearing a filter.</p>}
             {results.length > 0 && <PracticeSession key={searchNumber} questions={results} attempts={attempts} setAttempts={setAttempts} bookmarks={bookmarks} onBookmark={toggleBookmark} />}
