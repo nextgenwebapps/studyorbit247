@@ -1481,3 +1481,20 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   transform:translateY(-27px)!important;
 }
 </style>
+
+
+<style id="subject-toggle-single-state-card-height">
+/* In the single-action states, make the Subjects toggle the same height as a subject card. */
+#show-more-subjects:not(.is-expanded),
+#show-more-subjects.is-at-end{
+  min-height:174px!important;
+  height:100%!important;
+  align-self:stretch!important;
+}
+@media(max-width:650px){
+  #show-more-subjects:not(.is-expanded),
+  #show-more-subjects.is-at-end{
+    min-height:174px!important;
+  }
+}
+</style>
