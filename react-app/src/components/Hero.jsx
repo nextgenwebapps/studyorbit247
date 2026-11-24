@@ -32,7 +32,7 @@ export default function Hero({ searchTerm, onSearchChange, searchResults }) {
             {searchTerm.trim() && (
               <div className="site-search-results" aria-live="polite">
                 {searchResults.length ? (
-                  searchResults.slice(0, 8).map((item) => (
+                  searchResults.slice(0, 10).map((item) => (
                     <a
                       className="site-search-result"
                       href={item.includes("Exam") || item.includes("SSC") || item.includes("UPSC") ? "#exams" : "#subjects"}
