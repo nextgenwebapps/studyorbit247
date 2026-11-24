@@ -1562,3 +1562,15 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   transform-origin:center center!important;
 }
 </style>
+
+<style id="force-mobile-header-height-41px">
+/* Override the later mobile icon-header rule that was keeping it at 66px. */
+@media(max-width:650px){
+  .site-header .nav{
+    height:41px!important;
+    min-height:41px!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
+  }
+}
+</style>
