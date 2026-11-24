@@ -5,7 +5,7 @@
 }
 
 .practice-title {
-  margin: 0 0 12px;
+  margin: 0 0 18px;
   font-size: clamp(1.65rem, 4vw, 2.5rem);
   letter-spacing: -0.04em;
 }
@@ -15,7 +15,8 @@
 }
 
 .practice-form {
-  padding: 12px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--so-line);
 }
 
 .practice-question {
@@ -26,13 +27,14 @@
 .practice-extra-filters {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   align-items: end;
 }
 
 .practice-form .practice-field {
   font-size: .8rem;
-  gap: 4px;
+  color: #544b3f;
+  gap: 5px;
   min-width: 0;
 }
 
@@ -43,7 +45,7 @@
 
 .practice-more summary {
   width: fit-content;
-  min-height: 32px;
+  min-height: 36px;
   padding: 6px 2px;
   font-size: .85rem;
   font-weight: 700;
@@ -55,12 +57,22 @@
   border-top: 1px solid var(--so-line);
 }
 
-.practice-search { grid-column: 1 / -1; }
+.practice-filters .practice-search {
+  grid-column: 1 / -1;
+  background: var(--so-black);
+  color: var(--so-gold-light);
+  padding-inline: 22px;
+}
+
+.practice-form :is(select, button, summary):focus-visible {
+  outline: 2px solid #99712b;
+  outline-offset: 2px;
+}
 
 @media (min-width: 700px) {
   .practice-filters { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; }
   .practice-extra-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .practice-search { grid-column: auto; }
+  .practice-filters .practice-search { grid-column: auto; }
 }
 
 .practice-field {
@@ -73,9 +85,9 @@
   width: 100%;
   min-height: 44px;
   padding: 0 10px;
-  border: 1px solid var(--so-line);
-  border-radius: var(--so-radius-sm);
-  background: var(--so-white);
+  border: 1px solid #dbd0ba;
+  border-radius: 8px;
+  background: #fffdf8;
   color: var(--so-ink);
   font: inherit;
 }

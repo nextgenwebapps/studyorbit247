@@ -306,7 +306,7 @@ function PracticePage() {
       </header>
       <main className="practice-page">
         <h1 className="practice-title">Practice Now</h1>
-        <form className="question-panel practice-form" onSubmit={search} aria-label="Question search">
+        <form className="practice-form" onSubmit={search} aria-label="Question search">
           <div className="practice-filters">
             <Filter label="Subject" name="subject" options={subjectOptions} value={subject} onChange={changeFilter} />
             <Filter label="Exam" name="exam" options={examOptions} value={exam} onChange={changeFilter} />
@@ -315,7 +315,7 @@ function PracticePage() {
             <button type="submit" className="primary-btn practice-search">Search</button>
           </div>
           <details className="practice-more">
-            <summary>More filters{extraFilterCount > 0 && (
+            <summary>Advanced filters{extraFilterCount > 0 && (
               <span> ({extraFilterCount} selected)</span>
             )}</summary>
             <div className="practice-extra-filters">
