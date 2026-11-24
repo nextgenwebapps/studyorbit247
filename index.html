@@ -728,6 +728,21 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
  updateButton();
 })();
 </script>
+
+
+<style id="recent-activity-hover-grow">
+/* Match Recent Activity cards to the centered hover growth used by subject and exam cards. */
+#recent-activity .recent-activity-item{
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important;
+}
+#recent-activity .recent-activity-item:hover{
+  transform:scale(1.04)!important;
+  transform-origin:center center!important;
+  border-color:#c4a45d!important;
+  box-shadow:0 15px 32px #8c67201b!important;
+}
+</style>
+
 </body></html>
 
 <style id="mobile-products-panel-full-width-fix">
