@@ -23,34 +23,121 @@ function Filter({ label, name, options, value, onChange, disabled = false, all =
   );
 }
 
-function PracticeQuestion({ question, index }) {
-  const [answer, setAnswer] = useState(() => emptyAnswer(question));
-  const [feedback, setFeedback] = useState("");
-  const [checked, setChecked] = useState(false);
+const PALETTE_PAGE_SIZE = 20;
+const statusLabels = {
+  unvisited: "Unvisited",
+  opened: "Opened",
+  correct: "Correct",
+  incorrect: "Incorrect",
+};
 
-  function checkAnswer() {
-    setFeedback(scoreQuestion(question, answer) ? "Correct." : "Incorrect.");
-    setChecked(true);
+function QuestionPalette({ questions, current, attempts, visited, onSelect }) {
+  const [page, setPage] = useState(() => Math.floor(current / PALETTE_PAGE_SIZE));
+  const pageCount = Math.ceil(questions.length / PALETTE_PAGE_SIZE);
+  const start = page * PALETTE_PAGE_SIZE;
+
+  return (
+    <nav id="practice-palette" className="question-panel practice-palette" aria-label="Question Palette">
+      <h3>Jump to a question</h3>
+      <div className="practice-number-grid">
+        {questions.slice(start, start + PALETTE_PAGE_SIZE).map((question, offset) => {
+          const index = start + offset;
+          const attempt = attempts[question.id];
+          const status = attempt?.status ?? (visited.has(index) ? "opened" : "unvisited");
+          return (
+            <button
+              key={question.id}
+              type="button"
+              data-status={status}
+              data-review={Boolean(attempt?.review)}
+              aria-current={current === index ? "step" : undefined}
+              aria-label={`Question ${index + 1}, ${statusLabels[status]}${attempt?.review ? ", marked for review" : ""}`}
+              onClick={() => onSelect(index)}
+            >
+              {index + 1}
+            </button>
+          );
+        })}
+      </div>
+      {pageCount > 1 && (
+        <div className="practice-palette-pages">
+          <button type="button" className="secondary-btn" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</button>
+          <small>{page + 1} / {pageCount}</small>
+          <button type="button" className="secondary-btn" disabled={page + 1 === pageCount} onClick={() => setPage(page + 1)}>Next</button>
+        </div>
+      )}
+      <ul className="practice-legend">
+        {Object.entries(statusLabels).map(([status, label]) => <li key={status} data-status={status}>{label}</li>)}
+        <li data-status="review">Review</li>
+      </ul>
+    </nav>
+  );
+}
+
+function PracticeSession({ questions }) {
+  const [current, setCurrent] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [visited, setVisited] = useState(() => new Set([0]));
+  const [attempts, setAttempts] = useState({});
+  const question = questions[current];
+  const attempt = attempts[question.id];
+  const answer = attempt?.answer ?? emptyAnswer(question);
+  const checked = Object.values(attempts).filter((item) => item.status).length;
+
+  function updateAttempt(changes) {
+    setAttempts((items) => ({
+      ...items,
+      [question.id]: { ...items[question.id], ...changes },
+    }));
+  }
+
+  function changeQuestion(index) {
+    setCurrent(index);
+    setVisited((items) => new Set([...items, index]));
   }
 
   return (
-    <article className="question-panel practice-question">
-      <p className="practice-question-meta">Question {index + 1} · {question.chapter} · {question.topic} · {question.level}</p>
-      <Question question={question} answer={answer} onAnswer={(value) => {
-        setAnswer(value);
-        setFeedback("");
-        setChecked(false);
-      }} />
-      <button type="button" className="primary-btn practice-check" disabled={!hasAnswer(answer)} onClick={checkAnswer}>
-        Check Answer
-      </button>
-      <div role="status">
-        {checked && <p className="practice-feedback">
-          <strong>{feedback}</strong> Correct answer: {displayAnswer(question.correct)}.
-          {question.explanation && <> {question.explanation}</>}
-        </p>}
+    <>
+      <div className="practice-session-bar">
+        <div>
+          <strong>Question {current + 1} of {questions.length}</strong>
+          <span>{checked} checked</span>
+          <progress value={checked} max={questions.length} aria-label="Questions checked" />
+        </div>
+        <button type="button" className="secondary-btn practice-toggle" aria-expanded={open} aria-controls="practice-palette" onClick={() => setOpen(!open)}>
+          {open ? "Hide Question Palette" : "Question Palette"}
+        </button>
       </div>
-    </article>
+      <div className={open ? "practice-workspace palette-visible" : "practice-workspace"}>
+        <article className="question-panel practice-question">
+          <p className="practice-question-meta">{question.chapter} · {question.topic} · {question.level}</p>
+          <Question key={question.id} question={question} answer={answer} onAnswer={(value) => updateAttempt({ answer: value, status: null })} />
+          <div className="practice-question-actions">
+            <button type="button" className="secondary-btn" disabled={current === 0} onClick={() => changeQuestion(current - 1)}>Previous</button>
+            <button type="button" className="secondary-btn" disabled={!hasAnswer(answer)} onClick={() => updateAttempt({ answer: emptyAnswer(question), status: null })}>Clear Answer</button>
+            <button type="button" className="secondary-btn practice-review" aria-pressed={Boolean(attempt?.review)} onClick={() => updateAttempt({ review: !attempt?.review })}>
+              {attempt?.review ? "Marked for Review" : "Review Later"}
+            </button>
+            <button type="button" className="primary-btn" disabled={!hasAnswer(answer) || Boolean(attempt?.status)} onClick={() => updateAttempt({ status: scoreQuestion(question, answer) ? "correct" : "incorrect" })}>Check Answer</button>
+            <button type="button" className="secondary-btn" disabled={current + 1 === questions.length} onClick={() => changeQuestion(current + 1)}>Next</button>
+          </div>
+          <div role="status">
+            {attempt?.status && <p className="practice-feedback" data-status={attempt.status}>
+              <strong>{statusLabels[attempt.status]}.</strong> Correct answer: {displayAnswer(question.correct)}.
+              {question.explanation && <> {question.explanation}</>}
+            </p>}
+          </div>
+        </article>
+        {open && <QuestionPalette
+          key={Math.floor(current / PALETTE_PAGE_SIZE)}
+          questions={questions}
+          current={current}
+          attempts={attempts}
+          visited={visited}
+          onSelect={changeQuestion}
+        />}
+      </div>
+    </>
   );
 }
 
@@ -103,9 +190,7 @@ function PracticePage() {
         <section className="practice-results" aria-labelledby="practice-total">
           <h2 id="practice-total" aria-live="polite">Total Questions: {results === null ? "—" : results.length}</h2>
           {results?.length === 0 && <p>No questions match these filters. Try a different subject or exam, or clear a filter.</p>}
-          {results?.map((question, index) => (
-            <PracticeQuestion key={searchNumber + "-" + question.id} question={question} index={index} />
-          ))}
+          {results?.length > 0 && <PracticeSession key={searchNumber} questions={results} />}
         </section>
       </main>
     </>
