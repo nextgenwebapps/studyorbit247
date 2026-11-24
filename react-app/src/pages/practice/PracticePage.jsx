@@ -154,7 +154,10 @@ function QuestionReport({ questionId, onClose }) {
       )}
       <div className="practice-question-actions">
         {!saved && <button type="submit" className="primary-btn">Save Report</button>}
-        <button type="button" className="secondary-btn" onClick={onClose}>{saved ? "Done" : "Cancel"}</button>
+        <button type="button" className="secondary-btn" onClick={(event) => {
+          event.preventDefault();
+          onClose();
+        }}>{saved ? "Done" : "Cancel"}</button>
       </div>
       <div role="status">{message}</div>
     </form>
@@ -164,9 +167,11 @@ function QuestionReport({ questionId, onClose }) {
 function PracticeSession({ questions, attempts, setAttempts, bookmarks, onBookmark }) {
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
-  const [reportOpen, setReportOpen] = useState(false);
+  const [reportQuestionId, setReportQuestionId] = useState(null);
+  const reportButtonRef = useRef(null);
   const [visited, setVisited] = useState(() => new Set([0]));
   const question = questions[current];
+  const reportOpen = reportQuestionId === question.id;
   const bookmarked = bookmarks.includes(question.id);
   const attempt = attempts[question.id];
   const answer = attempt?.answer ?? emptyAnswer(question);
@@ -179,8 +184,13 @@ function PracticeSession({ questions, attempts, setAttempts, bookmarks, onBookma
     }));
   }
 
+  function closeReport() {
+    setReportQuestionId(null);
+    reportButtonRef.current?.focus({ preventScroll: true });
+  }
+
   function changeQuestion(index) {
-    if (index !== current) setReportOpen(false);
+    if (index !== current) setReportQuestionId(null);
     setCurrent(index);
     setVisited((items) => new Set([...items, index]));
   }
@@ -208,15 +218,15 @@ function PracticeSession({ questions, attempts, setAttempts, bookmarks, onBookma
                 </svg>
                 <span>{bookmarked ? "Bookmarked" : "Bookmark"}</span>
               </button>
-              <button type="button" className="secondary-btn" aria-label="Report question" aria-expanded={reportOpen} aria-controls={reportOpen ? "practice-report-form" : undefined} onClick={() => setReportOpen(!reportOpen)}>
+              <button type="button" className="secondary-btn" ref={reportButtonRef} aria-label={reportOpen ? "Close report form" : "Report question"} aria-expanded={reportOpen} aria-controls={reportOpen ? "practice-report-form" : undefined} onClick={() => setReportQuestionId((id) => id === question.id ? null : question.id)}>
                 <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 21V4m0 1h14l-3 4 3 4H5" />
                 </svg>
-                <span>Report</span>
+                <span>{reportOpen ? "Close Report" : "Report"}</span>
               </button>
             </div>
           </div>
-          {reportOpen && <QuestionReport key={question.id} questionId={question.id} onClose={() => setReportOpen(false)} />}
+          {reportOpen && <QuestionReport key={question.id} questionId={question.id} onClose={closeReport} />}
           <Question key={question.id} question={question} answer={answer} onAnswer={(value) => updateAttempt({ answer: value, status: null })} />
           <div className="practice-question-actions">
             <button type="button" className="secondary-btn" disabled={current === 0} onClick={() => changeQuestion(current - 1)}>Previous</button>
