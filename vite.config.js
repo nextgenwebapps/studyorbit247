@@ -17,7 +17,6 @@ export default defineConfig({
         mocktest: entry("./mocktest/index.html"),
         adminLogin: entry("./admin/index.html"),
         adminDashboard: entry("./admin/app.html"),
-        destructionPreview: entry("./destruction-preview/index.html"),
       },
     },
   },
