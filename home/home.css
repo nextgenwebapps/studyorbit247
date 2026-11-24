@@ -130,7 +130,10 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 .products-panel.products-open{display:block}
 .products-panel-inner{width:min(1160px,92%);margin:0 auto;display:flex;align-items:stretch;justify-content:center;gap:14px;padding:22px 0}
 .products-panel-inner>a,.product-coming{flex:1;min-width:0;min-height:94px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 10px;border:1px solid #e8e1d4;border-radius:14px;background:#fff;color:#29251f;text-align:center;font-size:13px;font-weight:700}
-.products-panel-inner>a:hover{border-color:#c4a45d;background:#faf6ec;color:#987024;transform:translateY(-2px)}
+.products-panel-inner>a,
+.products-panel-inner>.product-coming{transition:transform .2s ease,border-color .2s ease,background-color .2s ease,color .2s ease}
+.products-panel-inner>a:hover,
+.products-panel-inner>.product-coming:hover{border-color:#c4a45d;background:#faf6ec;color:#987024}
 .product-tile-icon{font-size:23px;line-height:1}.product-coming{color:#777168}.product-coming small{font-size:10px;color:#987024;font-weight:700}
 @media(max-width:650px){.products-trigger{width:100%;padding:12px 0;text-align:left;justify-content:flex-start}.products-panel-inner{width:100%;justify-content:flex-start;gap:10px;padding:14px 5%;overflow-x:auto}.products-panel-inner>a,.product-coming{flex:0 0 145px;min-height:92px;font-size:12px}}
 /* Keep the products panel anchored directly to its header trigger */
@@ -1197,10 +1200,12 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 
 
 
-/* Enlarge subject and exam cards evenly from the centre on hover.
+/* Enlarge subject, exam and product cards evenly from the centre on hover.
    Scaling the whole card also scales its contents proportionally; no upward lift. */
 #subjects .subject-grid>.subject:not(#show-more-subjects):hover,
-#exams .exam-grid>.exam:not(#show-more-exams):hover{
+#exams .exam-grid>.exam:not(#show-more-exams):hover,
+.products-panel-inner>a:hover,
+.products-panel-inner>.product-coming:hover{
   transform:scale(1.04)!important;
   transform-origin:center center!important;
 }
