@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { mount } from "../react-app/src/mount.jsx";
+import { mount } from "../../mount.jsx";
 import { api } from "./assets/js/api.js";
 
 function AdminLogin() {

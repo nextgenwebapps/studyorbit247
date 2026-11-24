@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { mount } from "../react-app/src/mount.jsx";
+import { mount } from "../../mount.jsx";
 import { Question } from "./Question.jsx";
 import questionBank from "./questions.json";
 

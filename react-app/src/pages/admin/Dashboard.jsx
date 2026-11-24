@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { mount } from "../react-app/src/mount.jsx";
+import { mount } from "../../mount.jsx";
 import { api } from "./assets/js/api.js";
 import { requireAdmin, signOut } from "./assets/js/auth.js";
 import { STORAGE_KEY } from "./assets/js/config.js";

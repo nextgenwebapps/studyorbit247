@@ -4,7 +4,7 @@ This directory contains the standalone mock-test attempt experience. It is inten
 
 ## Open
 - Development: run `npm run dev` from the repository root, then open `/mocktest/`.
-- Production: deploy the root `npm run build` output (`dist-react/`). The bundled question bank is sourced from `questions.json`.
+- Production: deploy the root `npm run build` output (`dist-react/`). The bundled question bank is sourced from `../react-app/src/pages/mocktest/questions.json`.
 
 ## Current demo
 - General Knowledge mixed-format test, 12 sample questions

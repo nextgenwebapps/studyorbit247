@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import Header from "./components/Header.jsx";
-import Footer from "./components/Footer.jsx";
-import Hero from "./components/Hero.jsx";
-import Stats from "./components/Stats.jsx";
-import RecentActivity from "./components/RecentActivity.jsx";
-import Subjects, { subjects } from "./components/Subjects.jsx";
-import Exams, { exams } from "./components/Exams.jsx";
-import Features, { features } from "./components/Features.jsx";
-import Practice from "./components/Practice.jsx";
+import Header from "./components/layout/Header.jsx";
+import Footer from "./components/layout/Footer.jsx";
+import Hero from "./pages/home/Hero.jsx";
+import Stats from "./pages/home/Stats.jsx";
+import RecentActivity from "./pages/home/RecentActivity.jsx";
+import Subjects, { subjects } from "./pages/home/Subjects.jsx";
+import Exams, { exams } from "./pages/home/Exams.jsx";
+import Features, { features } from "./pages/home/Features.jsx";
+import Practice from "./pages/home/Practice.jsx";
 
 const ACTIVITY_KEY = "studyorbit_recent_activity";
 const searchableItems = [

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { mount } from "../react-app/src/mount.jsx";
+import { mount } from "../../mount.jsx";
 
 function Student() {
   const [signup, setSignup] = useState(false);
