@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const BATCH_SIZE = 4;
+
 const exams = [
   ["🏛️", "CENTRAL GOVT.", "SSC Exams", "CGL, CHSL, MTS, GD, CPO and other SSC examinations.", "Tier-wise practice"],
   ["🏦", "BANKING", "Banking Exams", "IBPS PO/Clerk, SBI PO/Clerk, RRB and RBI preparation.", "Prelims + Mains"],
@@ -33,8 +35,23 @@ const exams = [
 ];
 
 export default function Exams() {
-  const [expanded, setExpanded] = useState(false);
-  const visibleExams = expanded ? exams : exams.slice(0, 5);
+  const [visibleExtraCount, setVisibleExtraCount] = useState(0);
+  const extraExams = exams.slice(5);
+  const hasMore = visibleExtraCount < extraExams.length;
+  const hasShown = visibleExtraCount > 0;
+
+  function handleToggle(event) {
+    const clickedLess = event.target.closest(".exam-action-less");
+
+    if (clickedLess) {
+      setVisibleExtraCount((count) => Math.max(0, count - BATCH_SIZE));
+      return;
+    }
+
+    setVisibleExtraCount((count) =>
+      Math.min(extraExams.length, count + BATCH_SIZE),
+    );
+  }
 
   return (
     <section className="exam-section" id="exams">
@@ -46,28 +63,46 @@ export default function Exams() {
             <p>Select your target examination to begin preparation.</p>
           </div>
         </div>
+
         <div className="exam-grid">
-          {visibleExams.map(([icon, tag, title, description, detail], index) => (
-            <article className={`exam ${index >= 5 ? "exam-extra" : ""}`} key={title}>
-              <div className="exam-top">
-                <div className="exam-icon">{icon}</div>
-                <span className="tag">{tag}</span>
-              </div>
-              <h3>{title}</h3>
-              <p>{description}</p>
-              <div className="exam-foot">
-                <span>{detail}</span>
-                <a href="mocktest/"><b>Explore →</b></a>
-              </div>
-            </article>
-          ))}
+          {exams.map(([icon, tag, title, description, detail], index) => {
+            const isExtra = index >= 5;
+            const isHidden = isExtra && index - 5 >= visibleExtraCount;
+
+            return (
+              <article
+                className={`exam ${isExtra ? "exam-extra" : ""}`}
+                key={title}
+                hidden={isHidden}
+              >
+                <div className="exam-top">
+                  <div className="exam-icon">{icon}</div>
+                  <span className="tag">{tag}</span>
+                </div>
+                <h3>{title}</h3>
+                <p>{description}</p>
+                <div className="exam-foot">
+                  <span>{detail}</span>
+                  <a href="mocktest/"><b>Explore →</b></a>
+                </div>
+              </article>
+            );
+          })}
+
           <button
             id="show-more-exams"
-            className="exam exam-more-toggle"
+            className={`exam ${hasShown ? "is-expanded" : ""} ${!hasMore && hasShown ? "is-at-end" : ""}`}
             type="button"
-            aria-label={expanded ? "Show fewer exams" : "Show more exams"}
-            aria-expanded={expanded}
-            onClick={() => setExpanded((value) => !value)}
+            aria-label={
+              hasMore && hasShown
+                ? "Show more or show less exams"
+                : hasMore
+                  ? "Show more exams"
+                  : "Show less exams"
+            }
+            aria-expanded={hasShown}
+            hidden={!hasMore && !hasShown}
+            onClick={handleToggle}
           >
             <span className="exam-action-more">
               <span className="exam-action-icon" aria-hidden="true">＋</span>

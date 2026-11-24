@@ -27,9 +27,16 @@ export default function RecentActivity() {
         <div id="recent-activity-list" className="recent-activity-list">
           {activities.length ? (
             activities.map((activity) => (
-              <a className="recent-activity-item" href={activity.url || "mocktest/"} key={activity.id}>
-                <strong>{activity.title || "Learning activity"}</strong>
-                <span>{activity.detail || "Continue learning"}</span>
+              <a
+                className="recent-activity-item"
+                href={activity.url || "mocktest/"}
+                key={activity.id}
+              >
+                <span className="recent-activity-icon" aria-hidden="true">◷</span>
+                <span>
+                  <strong>{activity.title || "Learning activity"}</strong>
+                  <small>{activity.detail || "Continue learning"}</small>
+                </span>
               </a>
             ))
           ) : (

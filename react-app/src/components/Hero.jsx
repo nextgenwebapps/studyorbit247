@@ -32,13 +32,20 @@ export default function Hero({ searchTerm, onSearchChange, searchResults }) {
             {searchTerm.trim() && (
               <div className="site-search-results" aria-live="polite">
                 {searchResults.length ? (
-                  searchResults.slice(0, 8).map((item) => (
-                    <a href={item.includes("Exam") || item.includes("SSC") || item.includes("UPSC") ? "#exams" : "#subjects"} key={item}>
-                      {item}
+                  searchResults.slice(0, 10).map((item) => (
+                    <a
+                      className="site-search-result"
+                      href={item.includes("Exam") || item.includes("SSC") || item.includes("UPSC") ? "#exams" : "#subjects"}
+                      key={item}
+                    >
+                      <strong>{item}</strong>
+                      <small>Open {item} on StudyOrbit247</small>
                     </a>
                   ))
                 ) : (
-                  <span>No matching exams or subjects found.</span>
+                  <div className="site-search-empty">
+                    No matching content found. Try another keyword.
+                  </div>
                 )}
               </div>
             )}

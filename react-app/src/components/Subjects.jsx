@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const BATCH_SIZE = 4;
+
 const subjects = [
   ["🌍", "GK / GS", "Static GK, current affairs, history, geography, polity and science.", "ic-blue"],
   ["🧩", "Reasoning", "Verbal and non-verbal reasoning, puzzles, series and logic.", "ic-green"],
@@ -29,8 +31,23 @@ const subjects = [
 ];
 
 export default function Subjects() {
-  const [expanded, setExpanded] = useState(false);
-  const visibleSubjects = expanded ? subjects : subjects.slice(0, 5);
+  const [visibleExtraCount, setVisibleExtraCount] = useState(0);
+  const extraSubjects = subjects.slice(5);
+  const hasMore = visibleExtraCount < extraSubjects.length;
+  const hasShown = visibleExtraCount > 0;
+
+  function handleToggle(event) {
+    const clickedLess = event.target.closest(".subject-action-less");
+
+    if (clickedLess) {
+      setVisibleExtraCount((count) => Math.max(0, count - BATCH_SIZE));
+      return;
+    }
+
+    setVisibleExtraCount((count) =>
+      Math.min(extraSubjects.length, count + BATCH_SIZE),
+    );
+  }
 
   return (
     <section id="subjects">
@@ -42,25 +59,45 @@ export default function Subjects() {
             <p>Choose a subject and start practising.</p>
           </div>
         </div>
+
         <div className="subject-grid">
-          {visibleSubjects.map(([icon, title, description, color], index) => (
-            <article className={`subject ${index >= 5 ? "subject-extra" : ""}`} key={title}>
-              <div className={`subject-icon ${color}`}>{icon}</div>
-              <h3>{title}</h3>
-              <p>{description}</p>
-              <div className="subject-actions">
-                <a href="mocktest/">Practice now →</a>
-                <a href="mocktest/" className="subject-explore-link">Explore now →</a>
-              </div>
-            </article>
-          ))}
+          {subjects.map(([icon, title, description, color], index) => {
+            const isExtra = index >= 5;
+            const isHidden = isExtra && index - 5 >= visibleExtraCount;
+
+            return (
+              <article
+                className={`subject ${isExtra ? "subject-extra" : ""}`}
+                key={title}
+                hidden={isHidden}
+              >
+                <div className={`subject-icon ${color}`}>{icon}</div>
+                <h3>{title}</h3>
+                <p>{description}</p>
+                <div className="subject-actions">
+                  <a href="mocktest/">Practice now →</a>
+                  <a href="mocktest/" className="subject-explore-link">
+                    Explore now →
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+
           <button
             id="show-more-subjects"
-            className="subject subject-more-toggle"
+            className={`subject subject-more-toggle ${hasShown ? "is-expanded" : ""} ${!hasMore && hasShown ? "is-at-end" : ""}`}
             type="button"
-            aria-label={expanded ? "Show fewer subjects" : "Show more subjects"}
-            aria-expanded={expanded}
-            onClick={() => setExpanded((value) => !value)}
+            aria-label={
+              hasMore && hasShown
+                ? "Show more or show less subjects"
+                : hasMore
+                  ? "Show more subjects"
+                  : "Show less subjects"
+            }
+            aria-expanded={hasShown}
+            hidden={!hasMore && !hasShown}
+            onClick={handleToggle}
           >
             <span className="subject-action-more">
               <span className="subject-action-icon" aria-hidden="true">＋</span>
