@@ -52,14 +52,7 @@
   box-shadow: 0 4px 12px rgb(121 77 15 / 20%);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .practice-filters .practice-search:hover {
-    width: calc(100% + 10px);
-    height: 54px;
-    margin: -5px;
-    transform: none;
-  }
-}
+.practice-filters .practice-search:hover { transform: none; }
 
 .practice-form :is(select, button):focus-visible {
   outline: 2px solid #99712b;
@@ -93,7 +86,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .practice-title-now {
+  .practice-title-now.is-animated {
     animation: practice-now-pulse 2s ease-in-out infinite, practice-now-gradient 5s linear infinite;
   }
 }

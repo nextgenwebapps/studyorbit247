@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import TestHeader from "../../components/layout/TestHeader.jsx";
+import PracticeHeader from "./PracticeHeader.jsx";
 import { mount } from "../../mount.jsx";
 import { subjects } from "../home/Subjects.jsx";
 import { exams } from "../home/Exams.jsx";
@@ -310,9 +310,9 @@ function PracticePage() {
 
   return (
     <>
-      <TestHeader category="QUESTION BANK" mode="PRACTICE NOW" onInstructions={() => setShowInstructions((value) => !value)} />
+      <PracticeHeader onInstructions={() => setShowInstructions((value) => !value)} />
       <main className="practice-page">
-        <h1 className="practice-title">Practice <span className="practice-title-now">Now</span></h1>
+        <h1 className="practice-title">Practice <span className={searchNumber === 0 ? "practice-title-now is-animated" : "practice-title-now"}>Now</span></h1>
         {showInstructions && <p role="status">Choose filters and select Search. Check your answers as you go, or use Question Palette to jump to another question.</p>}
         <form className="practice-form" onSubmit={search} aria-label="Question search">
           <div className="practice-filters">

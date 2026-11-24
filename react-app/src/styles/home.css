@@ -1222,19 +1222,10 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 
 
 
-/* Keep header sizing content-responsive while reducing its former minimum height by 25%. */
-.site-header .nav{
-  min-height:57px!important; /* 76px × 75% */
-  height:auto!important;
+.site-header .nav {
+  min-height: calc(var(--so-header-height) - 1px) !important;
+  height: auto !important;
 }
-@media(max-width:650px){
-  .site-header .nav{
-    min-height:49.5px!important; /* 66px × 75% */
-    height:auto!important;
-  }
-}
-
-
 
 /* Anchor the drawer to the full-width sticky header. */
 .site-header .nav{position:static!important}

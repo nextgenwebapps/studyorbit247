@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { mount } from "../../mount.jsx";
-import TestHeader from "../../components/layout/TestHeader.jsx";
 import { Question } from "./Question.jsx";
 import { emptyAnswer, hasAnswer, displayAnswer, scoreQuestion } from "./answers.js";
 import questionBank from "./questions.json";
@@ -154,13 +153,28 @@ function MockTest() {
   return (
     <>
       <div className="app-shell">
-        <TestHeader
-          category="GENERAL KNOWLEDGE"
-          mode="FULL MOCK TEST"
-          homeHref="../index.html"
-          instructionsId="instructionsBtn"
-          onInstructions={() => setModal("instructions")}
-        />
+        <header className="topbar">
+          <a className="brand" href="../index.html">
+            <span>
+              Study<em>Orbit</em>247
+            </span>
+          </a>
+          <div className="test-meta">
+            <span className="live-dot"></span>
+            <span>GENERAL KNOWLEDGE</span>
+            <span className="meta-divider">/</span>
+            <span>FULL MOCK TEST</span>
+          </div>
+          <button
+            className="icon-btn"
+            id="instructionsBtn"
+            onClick={() => setModal("instructions")}
+            title="Instructions"
+            aria-label="Instructions"
+          >
+            ⓘ
+          </button>
+        </header>
         <main id="app">
           <section className={screen === "intro" ? "intro-screen" : "intro-screen hidden"} id="introScreen">
             <div className="intro-copy">

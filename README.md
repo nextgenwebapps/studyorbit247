@@ -21,3 +21,7 @@ From the repository root:
 From a first-level page folder such as `user/` or `mocktest/`, prefix paths with `../`.
 
 Do not add generated, duplicate, unlicensed, or unused assets. Optimize raster images before committing them.
+
+## Page headers
+
+Use the shared `--so-header-height` token from `react-app/src/styles/tokens.css` for new page headers so they match the homepage on desktop and mobile.
