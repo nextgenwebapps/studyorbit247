@@ -308,31 +308,26 @@
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 68%, 0 100%);
 }
 
-.practice-filters-toggle,
-.practice-filters-hint { display: none; }
+.practice-form[data-collapsed="true"] { display: none; }
 
-@media (max-width: 699px) {
-  .practice-form[data-collapsed="true"] { display: none; }
+.practice-filters-hint {
+  display: inline-block;
+  margin-inline-start: 10px;
+  color: #71521a;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  vertical-align: middle;
+}
 
-  .practice-filters-hint {
-    display: inline-block;
-    margin-inline-start: 10px;
-    color: #71521a;
-    font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: normal;
-    vertical-align: middle;
-  }
-
-  .practice-filters-toggle {
-    display: block;
-    position: absolute;
-    inset: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 4px;
-    background: transparent;
-    cursor: pointer;
-    scroll-margin-top: 16px;
-  }
+.practice-filters-toggle {
+  display: block;
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  scroll-margin-top: 16px;
 }
