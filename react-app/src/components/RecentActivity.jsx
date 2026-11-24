@@ -1,17 +1,29 @@
 import { useEffect, useState } from "react";
 
+const ACTIVITY_KEY = "studyorbit_recent_activity";
+
+function readActivities() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || "[]");
+    return Array.isArray(saved) ? saved.slice(0, 8) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function RecentActivity() {
   const [activities, setActivities] = useState([]);
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(
-        localStorage.getItem("studyorbit_learning_activity_v1") || "[]",
-      );
-      setActivities(Array.isArray(saved) ? saved.slice(0, 4) : []);
-    } catch {
-      setActivities([]);
-    }
+    const refresh = () => setActivities(readActivities());
+    refresh();
+    window.addEventListener("studyorbit:recent-activity", refresh);
+    window.addEventListener("storage", refresh);
+
+    return () => {
+      window.removeEventListener("studyorbit:recent-activity", refresh);
+      window.removeEventListener("storage", refresh);
+    };
   }, []);
 
   return (
@@ -26,22 +38,25 @@ export default function RecentActivity() {
         </div>
         <div id="recent-activity-list" className="recent-activity-list">
           {activities.length ? (
-            activities.map((activity) => (
+            activities.map((activity, index) => (
               <a
                 className="recent-activity-item"
-                href={activity.url || "mocktest/"}
-                key={activity.id}
+                href={activity.url || "#"}
+                key={activity.id || `${activity.title || "activity"}-${index}`}
               >
-                <span className="recent-activity-icon" aria-hidden="true">◷</span>
+                <span className="recent-activity-icon" aria-hidden="true">
+                  {activity.type === "Exam" ? "📝" : "↗"}
+                </span>
                 <span>
-                  <strong>{activity.title || "Learning activity"}</strong>
-                  <small>{activity.detail || "Continue learning"}</small>
+                  <strong>{activity.title || activity.name || "Learning activity"}</strong>
+                  <small>{activity.type || "Recently opened"}</small>
                 </span>
               </a>
             ))
           ) : (
             <div className="recent-empty">
-              Your recent learning activity will appear here as you explore StudyOrbit247.
+              Sign in or start exploring. Your recent tests, subjects and lectures
+              will be saved on this device.
             </div>
           )}
         </div>

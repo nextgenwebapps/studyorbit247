@@ -3,31 +3,31 @@ import { useState } from "react";
 const BATCH_SIZE = 4;
 
 const subjects = [
-  ["🌍", "GK / GS", "Static GK, current affairs, history, geography, polity and science.", "ic-blue"],
-  ["🧩", "Reasoning", "Verbal and non-verbal reasoning, puzzles, series and logic.", "ic-green"],
-  ["➗", "Quantitative Aptitude", "Arithmetic, algebra, number system, DI and advanced maths.", "ic-orange"],
-  ["🔤", "English", "Grammar, vocabulary, comprehension, cloze test and usage.", "ic-purple"],
-  ["अ", "Hindi", "व्याकरण, शब्दावली, अपठित गद्यांश और भाषा अभ्यास।", "ic-pink"],
-  ["📜", "History", "Ancient, medieval and modern Indian history topics.", "ic-blue"],
-  ["🗺️", "Geography", "Physical, Indian and world geography practice.", "ic-green"],
-  ["⚖️", "Indian Polity", "Constitution, governance, Parliament and public policy.", "ic-orange"],
-  ["💹", "Indian Economy", "Basic economics, budget, banking and economic updates.", "ic-purple"],
-  ["🔬", "General Science", "Everyday science and exam-focused science concepts.", "ic-pink"],
-  ["📰", "Current Affairs", "Important national and international events.", "ic-blue"],
-  ["⚡", "Physics", "Motion, force, energy, light and basic physics.", "ic-green"],
-  ["🧪", "Chemistry", "Elements, reactions, acids, bases and everyday chemistry.", "ic-orange"],
-  ["🧬", "Biology", "Human body, plants, cells and life science.", "ic-purple"],
-  ["💻", "Computer Awareness", "Computer fundamentals, internet and digital knowledge.", "ic-pink"],
-  ["🔗", "Analogy", "Word, number and figure analogy questions.", "ic-blue"],
-  ["🔢", "Number Series", "Missing number, pattern and sequence practice.", "ic-green"],
-  ["🔐", "Coding-Decoding", "Letter, number and symbol coding questions.", "ic-orange"],
-  ["👥", "Blood Relations", "Family tree and relationship-based reasoning.", "ic-purple"],
-  ["🧭", "Direction Sense", "Direction, distance and position problems.", "ic-pink"],
-  ["🔍", "Syllogism", "Statements, conclusions and logical deductions.", "ic-blue"],
-  ["🧩", "Puzzles", "Seating arrangement and logical puzzle practice.", "ic-green"],
-  ["➕", "Simplification", "BODMAS, fractions, decimals and approximation.", "ic-orange"],
-  ["🔣", "Number System", "Integers, divisibility, factors and remainders.", "ic-purple"],
-  ["📊", "Data Interpretation", "Tables, charts, graphs and data-based questions.", "ic-pink"],
+  ["🌍", "GK / GS", "Static GK, current affairs, history, geography, polity and science.", "ic-blue", "mocktest/"],
+  ["🧩", "Reasoning", "Verbal and non-verbal reasoning, puzzles, series and logic.", "ic-green", "#reasoning"],
+  ["➗", "Quantitative Aptitude", "Arithmetic, algebra, number system, DI and advanced maths.", "ic-orange", "#quant"],
+  ["🔤", "English", "Grammar, vocabulary, comprehension, cloze test and usage.", "ic-purple", "#english"],
+  ["अ", "Hindi", "व्याकरण, शब्दावली, अपठित गद्यांश और भाषा अभ्यास।", "ic-pink", "#hindi"],
+  ["📜", "History", "Ancient, medieval and modern Indian history topics.", "ic-blue", "mocktest/"],
+  ["🗺️", "Geography", "Physical, Indian and world geography practice.", "ic-green", "mocktest/"],
+  ["⚖️", "Indian Polity", "Constitution, governance, Parliament and public policy.", "ic-orange", "mocktest/"],
+  ["💹", "Indian Economy", "Basic economics, budget, banking and economic updates.", "ic-purple", "mocktest/"],
+  ["🔬", "General Science", "Everyday science and exam-focused science concepts.", "ic-pink", "mocktest/"],
+  ["📰", "Current Affairs", "Important national and international events.", "ic-blue", "mocktest/"],
+  ["⚡", "Physics", "Motion, force, energy, light and basic physics.", "ic-green", "mocktest/"],
+  ["🧪", "Chemistry", "Elements, reactions, acids, bases and everyday chemistry.", "ic-orange", "mocktest/"],
+  ["🧬", "Biology", "Human body, plants, cells and life science.", "ic-purple", "mocktest/"],
+  ["💻", "Computer Awareness", "Computer fundamentals, internet and digital knowledge.", "ic-pink", "mocktest/"],
+  ["🔗", "Analogy", "Word, number and figure analogy questions.", "ic-blue", "mocktest/"],
+  ["🔢", "Number Series", "Missing number, pattern and sequence practice.", "ic-green", "mocktest/"],
+  ["🔐", "Coding-Decoding", "Letter, number and symbol coding questions.", "ic-orange", "mocktest/"],
+  ["👥", "Blood Relations", "Family tree and relationship-based reasoning.", "ic-purple", "mocktest/"],
+  ["🧭", "Direction Sense", "Direction, distance and position problems.", "ic-pink", "mocktest/"],
+  ["🔍", "Syllogism", "Statements, conclusions and logical deductions.", "ic-blue", "mocktest/"],
+  ["🧩", "Puzzles", "Seating arrangement and logical puzzle practice.", "ic-green", "mocktest/"],
+  ["➕", "Simplification", "BODMAS, fractions, decimals and approximation.", "ic-orange", "mocktest/"],
+  ["🔣", "Number System", "Integers, divisibility, factors and remainders.", "ic-purple", "mocktest/"],
+  ["📊", "Data Interpretation", "Tables, charts, graphs and data-based questions.", "ic-pink", "mocktest/"],
 ];
 
 export default function Subjects() {
@@ -37,9 +37,7 @@ export default function Subjects() {
   const hasShown = visibleExtraCount > 0;
 
   function handleToggle(event) {
-    const clickedLess = event.target.closest(".subject-action-less");
-
-    if (clickedLess) {
+    if (event.target.closest(".subject-action-less")) {
       setVisibleExtraCount((count) => Math.max(0, count - BATCH_SIZE));
       return;
     }
@@ -61,7 +59,7 @@ export default function Subjects() {
         </div>
 
         <div className="subject-grid">
-          {subjects.map(([icon, title, description, color], index) => {
+          {subjects.map(([icon, title, description, color, href], index) => {
             const isExtra = index >= 5;
             const isHidden = isExtra && index - 5 >= visibleExtraCount;
 
@@ -75,10 +73,10 @@ export default function Subjects() {
                 <h3>{title}</h3>
                 <p>{description}</p>
                 <div className="subject-actions">
-                  <a href="mocktest/">Practice now →</a>
-                  <a href="mocktest/" className="subject-explore-link">
-                    Explore now →
+                  <a href={href}>
+                    {title === "Hindi" ? "अभ्यास करें →" : "Practice now →"}
                   </a>
+                  <a href={href} className="subject-explore-link">Explore now →</a>
                 </div>
               </article>
             );
