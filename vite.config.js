@@ -14,6 +14,7 @@ export default defineConfig({
       input: {
         home: entry("./index.html"),
         user: entry("./user/index.html"),
+        practice: entry("./practice/index.html"),
         mocktest: entry("./mocktest/index.html"),
         adminLogin: entry("./admin/index.html"),
         adminDashboard: entry("./admin/app.html"),

@@ -11,7 +11,7 @@ export default function Practice() {
               Small daily progress can build strong exam readiness.
             </p>
           </div>
-          <a className="btn" href="mocktest/">Start Practising →</a>
+          <a className="btn" href="practice/">Start Practising →</a>
         </div>
       </div>
     </section>

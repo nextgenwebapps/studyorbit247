@@ -73,7 +73,7 @@ export default function Subjects() {
                 <h3>{title}</h3>
                 <p>{description}</p>
                 <div className="subject-actions">
-                  <a href={href}>
+                  <a href={`practice/?subject=${encodeURIComponent(title)}`}>
                     {title === "Hindi" ? "अभ्यास करें →" : "Practice now →"}
                   </a>
                   <a href={href} className="subject-explore-link">Explore now →</a>

@@ -18,7 +18,7 @@ const searchableItems = [
   })),
   ...exams.map(([, , title, description]) => ({ title, description, href: "#exams" })),
   ...features.map(([, title, description]) => ({ title, description, href: "#features" })),
-  { title: "Start Practising", description: "Try the General Knowledge demo mock test.", href: "mocktest/" },
+  { title: "Start Practising", description: "Find practice questions by subject, exam, chapter, topic and level.", href: "practice/" },
 ];
 
 export default function App() {

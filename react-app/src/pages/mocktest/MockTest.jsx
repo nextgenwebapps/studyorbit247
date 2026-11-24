@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { mount } from "../../mount.jsx";
 import { Question } from "./Question.jsx";
+import { emptyAnswer, hasAnswer, displayAnswer, scoreQuestion } from "./answers.js";
 import questionBank from "./questions.json";
 
 const { questions, durationSeconds: duration } = questionBank;
@@ -11,23 +12,8 @@ function formatTime(seconds) {
   return [Math.floor(seconds / 60), seconds % 60].map((value) => String(value).padStart(2, "0")).join(":");
 }
 
-function emptyAnswer(question) {
-  if (["multi", "gateMsq"].includes(question.type)) return [];
-  if (["match", "ordering", "matrix"].includes(question.type)) return {};
-  return "";
-}
 
-function hasAnswer(answer) {
-  if (Array.isArray(answer)) return answer.length > 0;
-  if (answer && typeof answer === "object") return Object.values(answer).some((value) => value !== "");
-  return Boolean(String(answer ?? "").trim());
-}
 
-function displayAnswer(answer) {
-  if (!hasAnswer(answer)) return "Not attempted";
-  if (Array.isArray(answer)) return answer.join(", ");
-  return typeof answer === "object" ? JSON.stringify(answer) : answer;
-}
 
 const typeLabels = {
   mcq: "SINGLE CORRECT",
@@ -49,21 +35,6 @@ const typeLabels = {
   di: "DATA INTERPRETATION",
   hotspot: "IMAGE / HOTSPOT",
 };
-function scoreQuestion(q, a) {
-  const c = q.correct;
-  const norm = (x) =>
-    String(x ?? "")
-      .trim()
-      .toLowerCase();
-  if (["multi", "gateMsq"].includes(q.type))
-    return Array.isArray(a) && Array.isArray(c) && a.length === c.length && a.every((x) => c.includes(x));
-  if (["match", "ordering", "matrix"].includes(q.type)) {
-    let keys = Object.keys(c || {});
-    return keys.length > 0 && keys.every((k) => String(a[k] ?? "") === String(c[k]));
-  }
-  if (Array.isArray(c)) return c.some((x) => norm(x) === norm(a));
-  return norm(a) === norm(c);
-}
 function saveLearningActivity(entry) {
   try {
     const key = "studyorbit_learning_activity_v1";

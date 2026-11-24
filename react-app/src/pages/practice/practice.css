@@ -1,0 +1,75 @@
+.practice-page {
+  width: min(1040px, 92%);
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 56px) 0;
+}
+
+.practice-page h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  letter-spacing: -0.04em;
+}
+
+.practice-page > p, .practice-question-meta {
+  color: #62594b;
+}
+
+.practice-form, .practice-question {
+  padding: clamp(16px, 4vw, 28px);
+}
+
+.practice-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.practice-field {
+  display: grid;
+  gap: 7px;
+  font-weight: 700;
+}
+
+.practice-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--so-line);
+  border-radius: var(--so-radius-sm);
+  background: var(--so-white);
+  color: var(--so-ink);
+  font: inherit;
+}
+
+.practice-field select:disabled, .practice-check:disabled {
+  opacity: 0.6;
+}
+
+.practice-filters button {
+  min-height: 44px;
+}
+
+.practice-results {
+  display: grid;
+  gap: 16px;
+  margin-top: 26px;
+}
+
+.practice-results > h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.practice-question .question-text {
+  margin-top: 12px;
+}
+
+.practice-check {
+  margin-top: 16px;
+}
+
+.practice-feedback {
+  border-left: 3px solid var(--so-gold);
+  padding-left: 12px;
+}
