@@ -291,7 +291,6 @@ function PracticePage() {
   const [searchNumber, setSearchNumber] = useState(0);
   const resultsRef = useRef(null);
   const filtersToggleRef = useRef(null);
-  const filtersRef = useRef(null);
 
   useEffect(() => {
     if (results?.length) {
@@ -331,23 +330,18 @@ function PracticePage() {
       <PracticeHeader onInstructions={() => setShowInstructions((value) => !value)} />
       <main className="practice-page">
         <h1 className="practice-title">Practice <span className="practice-title-now" data-paused={searchNumber > 0}>Now</span>
-          {filtersCollapsed && (
-            <button
-              ref={filtersToggleRef}
-              className="practice-filters-toggle"
-              type="button"
-              aria-label="Practice Now: show search filters"
-              aria-controls="practice-search-form"
-              aria-expanded={false}
-              onClick={() => {
-                setFiltersCollapsed(false);
-                requestAnimationFrame(() => filtersRef.current?.querySelector("select")?.focus({ preventScroll: true }));
-              }}
-            />
-          )}
+          <button
+            ref={filtersToggleRef}
+            className="practice-filters-toggle"
+            type="button"
+            aria-label={filtersCollapsed ? "Practice Now: show search filters" : "Practice Now: hide search filters"}
+            aria-controls="practice-search-form"
+            aria-expanded={!filtersCollapsed}
+            onClick={() => setFiltersCollapsed((collapsed) => !collapsed)}
+          />
         </h1>
         {showInstructions && <p role="status">Choose filters and select Search. Check your answers as you go, or use Question Palette to jump to another question.</p>}
-        <form ref={filtersRef} id="practice-search-form" className="practice-form" data-collapsed={filtersCollapsed} onSubmit={search} aria-label="Question search">
+        <form id="practice-search-form" className="practice-form" data-collapsed={filtersCollapsed} onSubmit={search} aria-label="Question search">
           <div className="practice-filters">
             <Filter label="Subject" name="subject" options={subjectOptions} value={subject} onChange={changeFilter} />
             <Filter label="Exam" name="exam" options={examOptions} value={exam} onChange={changeFilter} />
