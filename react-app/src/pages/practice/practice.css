@@ -122,9 +122,17 @@
   padding: 0 10px;
   border: 1px solid #dbd0ba;
   border-radius: 8px;
-  background: #fffdf8;
+  background: var(--so-white);
   color: var(--so-ink);
   font: inherit;
+  transition: border-color .18s ease, background-color .18s ease;
+}
+
+@media (hover: hover) {
+  .practice-filters select:not(:disabled):hover {
+    border-color: #c8a95e;
+    background: #fffdf8;
+  }
 }
 
 .practice-field select:disabled, .practice-page button:disabled {
