@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" role="img" aria-labelledby="title desc">
+  <title id="title">River system schematic</title>
+  <desc id="desc">A river flows southeast across the northern plains, meets a second river flowing west from the northeast, and branches into a delta at the Bay of Bengal.</desc>
+  <rect width="640" height="370" rx="16" fill="#f8f2df"/>
+  <path d="M0 0h640v83l-39-6-39 16-44-6-39 17-53 3-47 16-37-14-53 4-31-18-41 4-38-19-41 3-47-22-42 5L0 48Z" fill="#e5dbc0"/>
+  <path d="M330 370c34-36 47-60 78-70 25-9 50-5 70-17 29-17 58-37 80-30 34 10 54 35 82 61v56Z" fill="#d7edfa"/>
+  <path d="M330 370c34-36 47-60 78-70 25-9 50-5 70-17 29-17 58-37 80-30 34 10 54 35 82 61" fill="none" stroke="#aacde3" stroke-width="2"/>
+  <g fill="none" stroke="#2373a6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M151 86c-5 22 18 35 37 42s24 22 43 35c30 21 55 12 80 31 24 19 51 4 74 21 25 19 43 18 56 31" stroke-width="7"/>
+    <path d="M572 59c-25 2-46 7-70 16-21 8-36 11-55 11-20 0-24 13-9 23 18 12 54 8 76 25 14 11 19 17 11 29-11 16-40 17-57 24-23 10-42 22-41 36 0 10 7 17 14 23" stroke-width="7"/>
+    <path d="M116 99c1 26 30 43 51 51 23 10 41 7 64 13m-1 59c28-1 55-18 81-28m259 27c-17-7-29-13-38-24-14-17-34-17-64-10" stroke-width="4"/>
+    <path d="M441 246c16 15 19 20 29 35m-29-35c-3 21-17 37-33 54m33-54c5 19 9 35 2 47" stroke-width="5"/>
+  </g>
+  <g fill="#41443b" font-family="system-ui, sans-serif" font-size="16">
+    <text x="28" y="35" font-weight="700">River system · schematic</text>
+    <text x="180" y="69">Himalayas</text>
+    <text x="136" y="261">Northern plains</text>
+    <text x="390" y="324">Delta</text>
+    <text x="509" y="343" fill="#285877">Bay of Bengal</text>
+  </g>
+  <path d="M603 111V81m-6 8 6-8 6 8" fill="none" stroke="#41443b" stroke-width="2"/>
+  <text x="597" y="74" fill="#41443b" font-family="system-ui, sans-serif" font-size="13">N</text>
+</svg>

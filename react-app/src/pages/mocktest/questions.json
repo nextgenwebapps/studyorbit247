@@ -49,7 +49,7 @@
       "id": "gk04",
       "type": "image",
       "prompt": "Study the simplified diagram and identify the Indian river system represented.",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Ganges-Brahmaputra-Meghna_basins.jpg/640px-Ganges-Brahmaputra-Meghna_basins.jpg",
+      "image": "../images/gk04-river-system.svg",
       "options": [
         "Indus river system",
         "Ganga–Brahmaputra river system",
