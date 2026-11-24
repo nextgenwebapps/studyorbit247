@@ -4,10 +4,7 @@ Shared, root-level static assets for the StudyOrbit247 website.
 
 ## Structure
 
-- `brand/studyorbit247-logo.svg` — text-only StudyOrbit247 wordmark; no standalone square emblem.
 - `css/` — shared design tokens. Page-specific CSS remains with each page until it is migrated deliberately.
-- `images/` — reserved for optimized content images (WebP/AVIF preferred).
-- `fonts/` — reserved for licensed self-hosted font files. The current site uses the system font stack.
 
 ## Brand direction
 
