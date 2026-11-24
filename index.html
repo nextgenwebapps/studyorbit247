@@ -1425,3 +1425,18 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 #show-more-exams[hidden]{display:none!important}
 @media(max-width:650px){#show-more-exams{padding:15px 10px!important}}
 </style>
+
+
+<style id="force-exam-show-less-minus-sign">
+/* Always show a minus sign for Show Less, never an upward caret. */
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less .exam-action-icon,
+#show-more-exams.is-at-end .exam-action-less .exam-action-icon{
+  font-size:0!important;
+}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less .exam-action-icon::after,
+#show-more-exams.is-at-end .exam-action-less .exam-action-icon::after{
+  content:"−"!important;
+  font-size:22px!important;
+  line-height:1!important;
+}
+</style>
