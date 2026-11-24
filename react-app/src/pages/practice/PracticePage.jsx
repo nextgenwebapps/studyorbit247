@@ -277,6 +277,7 @@ function PracticePage() {
   }
   const [searchNumber, setSearchNumber] = useState(0);
   const { subject, exam, chapter, topic, level, status, source } = filters;
+  const extraFilterCount = [level, status, source].filter(Boolean).length;
   const chapters = [...new Set(findQuestions({ subject, exam }).map((question) => question.chapter))].sort();
   const topics = [...new Set(findQuestions({ subject, exam, chapter }).map((question) => question.topic))].sort();
 
@@ -304,26 +305,34 @@ function PracticePage() {
         <a className="brand" href="../"><span>Study<em>Orbit</em>247</span></a>
       </header>
       <main className="practice-page">
-        <h1>Practice Now</h1>
-        <p>Filter the demo question bank to find questions for your next practice session.</p>
-        <form className="question-panel practice-form" onSubmit={search}>
+        <h1 className="practice-title">Practice Now</h1>
+        <form className="question-panel practice-form" onSubmit={search} aria-label="Question search">
           <div className="practice-filters">
             <Filter label="Subject" name="subject" options={subjectOptions} value={subject} onChange={changeFilter} />
             <Filter label="Exam" name="exam" options={examOptions} value={exam} onChange={changeFilter} />
             <Filter label="Chapter" name="chapter" options={chapters} value={chapter} onChange={changeFilter} disabled={!chapters.length} />
             <Filter label="Topic" name="topic" options={topics} value={topic} onChange={changeFilter} disabled={!topics.length} />
-            <Filter label="Level" name="level" options={["Easy", "Medium", "Hard"]} value={level} onChange={changeFilter} />
-            <Filter label="Status" name="status" all="All Status" options={attemptStatuses} value={status} onChange={changeFilter} />
-            <Filter label="Sources" name="source" all="All Sources" options={sourceOptions} value={source} onChange={changeFilter} />
-            <button type="submit" className="primary-btn">Search</button>
+            <button type="submit" className="primary-btn practice-search">Search</button>
           </div>
+          <details className="practice-more">
+            <summary>More filters{extraFilterCount > 0 && (
+              <span> ({extraFilterCount} selected)</span>
+            )}</summary>
+            <div className="practice-extra-filters">
+              <Filter label="Level" name="level" options={["Easy", "Medium", "Hard"]} value={level} onChange={changeFilter} />
+              <Filter label="Status" name="status" all="All Status" options={attemptStatuses} value={status} onChange={changeFilter} />
+              <Filter label="Sources" name="source" all="All Sources" options={sourceOptions} value={source} onChange={changeFilter} />
+            </div>
+          </details>
         </form>
         <p role="status" className="practice-bookmark-feedback" hidden={!bookmarkMessage}>{bookmarkMessage}</p>
-        <section className="practice-results" aria-labelledby="practice-total">
-          <h2 id="practice-total" aria-live="polite">Total Questions: {results === null ? "—" : results.length}</h2>
-          {results?.length === 0 && <p>No questions match these filters. Try changing or clearing a filter.</p>}
-          {results?.length > 0 && <PracticeSession key={searchNumber} questions={results} attempts={attempts} setAttempts={setAttempts} bookmarks={bookmarks} onBookmark={toggleBookmark} />}
-        </section>
+        {results !== null && (
+          <section className="practice-results" aria-labelledby="practice-total">
+            <h2 id="practice-total" aria-live="polite">Total Questions: {results.length}</h2>
+            {results.length === 0 && <p>No questions match these filters. Try changing or clearing a filter.</p>}
+            {results.length > 0 && <PracticeSession key={searchNumber} questions={results} attempts={attempts} setAttempts={setAttempts} bookmarks={bookmarks} onBookmark={toggleBookmark} />}
+          </section>
+        )}
       </main>
     </>
   );
