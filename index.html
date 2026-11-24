@@ -1594,3 +1594,21 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   }
 }
 </style>
+
+
+<style id="mobile-products-panel-anchor-to-header">
+/* Anchor the mobile products panel to the actual header bottom, not a guessed pixel offset. */
+@media(max-width:650px){
+  .site-header .nav{position:relative!important}
+  .site-header .account-nav .products-panel{
+    position:absolute!important;
+    top:100%!important;
+    left:50%!important;
+    right:auto!important;
+    transform:translateX(-50%)!important;
+    width:100vw!important;
+    max-width:100vw!important;
+    margin:0!important;
+  }
+}
+</style>
