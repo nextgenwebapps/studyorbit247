@@ -1447,4 +1447,9 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 #show-more-exams .exam-action-icon{
   transform:translateY(-24px);
 }
+/* In the single-action states, keep the lone icon at its original position. */
+#show-more-exams:not(.is-expanded) .exam-action-icon,
+#show-more-exams.is-at-end .exam-action-icon{
+  transform:translateY(0)!important;
+}
 </style>
