@@ -1,4 +1,0 @@
-import {api} from "./api.js";
-const form=document.querySelector("#login-form"),message=document.querySelector("#login-message"),password=document.querySelector("#password");
-document.querySelector("#toggle-password").addEventListener("click",e=>{const show=password.type==="password";password.type=show?"text":"password";e.currentTarget.textContent=show?"Hide":"Show"});
-form.addEventListener("submit",async e=>{e.preventDefault();message.className="form-message";message.textContent="Checking credentials…";message.classList.add("show");try{await api.login(document.querySelector("#email").value.trim(),password.value);message.textContent="Login successful. Opening dashboard…";message.classList.add("success");location.replace("./app.html")}catch(err){message.textContent=err.message.includes("Failed to fetch")?"Authentication API is not connected. Deploy the Cloudflare Worker and configure its API URL first.":err.message;message.classList.add("error")}});

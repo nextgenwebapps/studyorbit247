@@ -52,7 +52,9 @@ export default function Header() {
     <header className="site-header">
       <div className="container nav">
         <a className="brand" href="#" aria-label="StudyOrbit247 home">
-          <span>Study<em>Orbit</em>247</span>
+          <span>
+            Study<em>Orbit</em>247
+          </span>
         </a>
 
         <button
@@ -68,48 +70,60 @@ export default function Header() {
         <nav className={`account-nav ${mobileOpen ? "mobile-open" : ""}`}>
           <div className="auth-links">
             <a className="signup-link" href="user/">
-              <span className="nav-icon"><UserIcon /></span>
+              <span className="nav-icon">
+                <UserIcon />
+              </span>
               Login / Sign Up
             </a>
             <a className="admin-link" href="admin/">
-              <span className="nav-icon"><AdminIcon /></span>
+              <span className="nav-icon">
+                <AdminIcon />
+              </span>
               Login as Admin
             </a>
           </div>
 
-          <div className="products-menu">
-            <button
-              className="products-trigger"
-              type="button"
-              aria-expanded={productsOpen}
-              aria-controls="products-panel"
-              onClick={() => setProductsOpen((open) => !open)}
-            >
-              <span className="nav-icon"><ProductsIcon /></span>
-              Our Products
-              <span className="products-chevron" aria-hidden="true">{productsOpen ? "⌃" : "⌄"}</span>
-            </button>
+          <button
+            className="products-trigger"
+            type="button"
+            aria-expanded={productsOpen}
+            aria-controls="products-panel"
+            onClick={() => setProductsOpen((open) => !open)}
+          >
+            <span className="nav-icon">
+              <ProductsIcon />
+            </span>
+            Our Products
+            <span className="products-chevron" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path
+                  d={productsOpen ? "m2 8 4-4 4 4" : "m2 4 4 4 4-4"}
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              </svg>
+            </span>
+          </button>
 
-            <div
-              id="products-panel"
-              className={`products-panel ${productsOpen ? "products-open" : ""}`}
-              aria-label="Our Products"
-            >
-              <div className="products-panel-inner">
-                {productLinks.map(([icon, label, href]) => (
-                  <a href={href} key={label}>
-                    <span className="product-tile-icon">{icon}</span>
-                    <span>{label}</span>
-                  </a>
-                ))}
-                {comingSoon.map(([icon, label]) => (
-                  <div className="product-coming" key={label}>
-                    <span className="product-tile-icon">{icon}</span>
-                    <span>{label}</span>
-                    <small>Coming soon</small>
-                  </div>
-                ))}
-              </div>
+          <div
+            id="products-panel"
+            className={`products-panel ${productsOpen ? "products-open" : ""}`}
+            aria-label="Our Products"
+          >
+            <div className="products-panel-inner">
+              {productLinks.map(([icon, label, href]) => (
+                <a href={href} key={label}>
+                  <span className="product-tile-icon">{icon}</span>
+                  <span>{label}</span>
+                </a>
+              ))}
+              {comingSoon.map(([icon, label]) => (
+                <div className="product-coming" key={label}>
+                  <span className="product-tile-icon">{icon}</span>
+                  <span>{label}</span>
+                  <small>Coming soon</small>
+                </div>
+              ))}
             </div>
           </div>
         </nav>

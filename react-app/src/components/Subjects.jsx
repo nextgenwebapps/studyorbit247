@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const BATCH_SIZE = 4;
 
-const subjects = [
+export const subjects = [
   ["🌍", "GK / GS", "Static GK, current affairs, history, geography, polity and science.", "ic-blue", "mocktest/"],
   ["🧩", "Reasoning", "Verbal and non-verbal reasoning, puzzles, series and logic.", "ic-green", "#reasoning"],
   ["➗", "Quantitative Aptitude", "Arithmetic, algebra, number system, DI and advanced maths.", "ic-orange", "#quant"],

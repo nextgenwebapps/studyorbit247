@@ -1,13 +1,12 @@
 # StudyOrbit247 Admin UI
 
-This is a modular, static admin interface designed for the existing GitHub Pages site.
+The admin login and dashboard are React pages. Run `npm run dev` from the repository root and open `/admin/`.
 
-## Structure
-- `index.html`: login screen; credentials are sent to the Worker API, never checked in browser code.
-- `app.html`: admin workspace shell and responsive dashboard.
-- `assets/css/admin.css`: shared admin/login/dashboard styles.
-- `assets/js/login.js`, `auth.js`, `api.js`: login/session/API responsibilities.
-- `assets/js/builder.js`, `question-model.js`, `bulk-import.js`, `preview.js`: question authoring modules.
+- `index.html` and `AdminLogin.jsx` mount the local demo login.
+- `app.html` and `Dashboard.jsx` mount the question workspace.
+- `QuestionBuilder.jsx` handles authoring, import and device preview.
+- `assets/js/` holds the demo storage API, auth, question model and import parser.
+- `assets/css/admin.css` styles both admin pages.
 
 ## Current UI capabilities
 Single-question entry, multi-question session, passage/chart/caselet linked question group, CSV/JSON import, bilingual fields, common exam metadata, option/answer selection, basic validation, local draft storage, and mobile/desktop preview.

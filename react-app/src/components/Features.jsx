@@ -1,4 +1,4 @@
-const features = [
+export const features = [
   ["📝", "Chapter-wise practice", "Practice topic by topic and build confidence before moving to full-length tests."],
   ["⏱️", "Timed mock tests", "Experience exam-style tests with a timer, question palette and review options."],
   ["📊", "Performance analytics", "Review accuracy, speed, attempted questions and subject-wise strengths and gaps."],

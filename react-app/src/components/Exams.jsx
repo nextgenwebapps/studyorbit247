@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const BATCH_SIZE = 4;
 
-const exams = [
+export const exams = [
   ["🏛️", "CENTRAL GOVT.", "SSC Exams", "CGL, CHSL, MTS, GD, CPO and other SSC examinations.", "Tier-wise practice"],
   ["🏦", "BANKING", "Banking Exams", "IBPS PO/Clerk, SBI PO/Clerk, RRB and RBI preparation.", "Prelims + Mains"],
   ["🚆", "RAILWAY", "RRB Exams", "RRB NTPC, Group D, ALP, Technician and Junior Engineer preparation.", "CBT + skill tests"],

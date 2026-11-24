@@ -4,15 +4,22 @@ export default function Hero({ searchTerm, onSearchChange, searchResults }) {
       <div className="container hero-grid">
         <div>
           <div className="eyebrow">✦ YOUR COMPLETE EXAM PREPARATION HUB</div>
-          <h1>Prepare smarter.<br /><span>Achieve bigger.</span></h1>
+          <h1>
+            Prepare smarter.
+            <br />
+            <span>Achieve bigger.</span>
+          </h1>
           <p>
-            One destination for SSC, Banking, RRB, UPSC and State PCS preparation.
-            Learn concepts, practice questions, attempt mock tests and track your
-            progress — all in one orbit.
+            One destination for SSC, Banking, RRB, UPSC and State PCS preparation. Learn concepts, practice
+            questions, attempt mock tests and track your progress — all in one orbit.
           </p>
           <div className="hero-buttons">
-            <a className="btn btn-primary" href="#exams">Explore Exams <span>→</span></a>
-            <a className="btn btn-outline" href="#subjects">Explore Subjects</a>
+            <a className="btn btn-primary" href="#exams">
+              Explore Exams <span>→</span>
+            </a>
+            <a className="btn btn-outline" href="#subjects">
+              Explore Subjects
+            </a>
           </div>
           <div className="hero-search">
             <div className="site-search-box">
@@ -32,20 +39,14 @@ export default function Hero({ searchTerm, onSearchChange, searchResults }) {
             {searchTerm.trim() && (
               <div className="site-search-results" aria-live="polite">
                 {searchResults.length ? (
-                  searchResults.slice(0, 10).map((item) => (
-                    <a
-                      className="site-search-result"
-                      href={item.includes("Exam") || item.includes("SSC") || item.includes("UPSC") ? "#exams" : "#subjects"}
-                      key={item}
-                    >
-                      <strong>{item}</strong>
-                      <small>Open {item} on StudyOrbit247</small>
+                  searchResults.slice(0, 10).map(({ title, description, href }) => (
+                    <a className="site-search-result" href={href} key={title}>
+                      <strong>{title}</strong>
+                      <small>{description}</small>
                     </a>
                   ))
                 ) : (
-                  <div className="site-search-empty">
-                    No matching content found. Try another keyword.
-                  </div>
+                  <div className="site-search-empty">No matching content found. Try another keyword.</div>
                 )}
               </div>
             )}

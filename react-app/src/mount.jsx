@@ -1,0 +1,11 @@
+import "./tailwind.css";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+
+export function mount(Page) {
+  createRoot(document.getElementById("root")).render(
+    <StrictMode>
+      <Page />
+    </StrictMode>,
+  );
+}

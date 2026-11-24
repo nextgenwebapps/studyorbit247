@@ -3,8 +3,8 @@
 This directory contains the standalone mock-test attempt experience. It is intentionally separate from the main homepage.
 
 ## Open
-- GitHub Pages: `/mocktest/`
-- Local: serve this directory over HTTP (for example, VS Code Live Server). The question bank is loaded from `questions.json`, so opening the HTML directly with `file://` may block fetch.
+- Development: run `npm run dev` from the repository root, then open `/mocktest/`.
+- Production: deploy the root `npm run build` output (`dist-react/`). The bundled question bank is sourced from `questions.json`.
 
 ## Current demo
 - General Knowledge mixed-format test, 12 sample questions

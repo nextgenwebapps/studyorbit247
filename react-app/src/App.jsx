@@ -1,35 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import Hero from "./components/Hero.jsx";
 import Stats from "./components/Stats.jsx";
 import RecentActivity from "./components/RecentActivity.jsx";
-import Subjects from "./components/Subjects.jsx";
-import Exams from "./components/Exams.jsx";
-import Features from "./components/Features.jsx";
+import Subjects, { subjects } from "./components/Subjects.jsx";
+import Exams, { exams } from "./components/Exams.jsx";
+import Features, { features } from "./components/Features.jsx";
 import Practice from "./components/Practice.jsx";
 
 const ACTIVITY_KEY = "studyorbit_recent_activity";
+const searchableItems = [
+  ...subjects.map(([, title, description, , href]) => ({
+    title,
+    description,
+    href: href === "mocktest/" ? href : "#subjects",
+  })),
+  ...exams.map(([, , title, description]) => ({ title, description, href: "#exams" })),
+  ...features.map(([, title, description]) => ({ title, description, href: "#features" })),
+  { title: "Start Practising", description: "Try the General Knowledge demo mock test.", href: "mocktest/" },
+];
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
-  const searchableItems = useMemo(
-    () => [
-      "GK / GS", "Reasoning", "Quantitative Aptitude", "English", "Hindi",
-      "History", "Geography", "Indian Polity", "Indian Economy",
-      "General Science", "Current Affairs", "Physics", "Chemistry", "Biology",
-      "Computer Awareness", "Analogy", "Number Series", "Coding-Decoding",
-      "Blood Relations", "Direction Sense", "Syllogism", "Puzzles",
-      "Simplification", "Number System", "Data Interpretation",
-      "SSC Exams", "Banking Exams", "RRB Exams", "UPSC", "State PCS",
-      "UGC NET", "College Entrance Exams", "Defence Exams", "Teaching Exams",
-    ],
-    [],
-  );
-
-  const searchResults = searchTerm.trim()
-    ? searchableItems.filter((item) =>
-        item.toLowerCase().includes(searchTerm.trim().toLowerCase()),
+  const query = searchTerm.trim().toLowerCase();
+  const searchResults = query
+    ? searchableItems.filter(({ title, description }) =>
+        `${title} ${description}`.toLowerCase().includes(query),
       )
     : [];
 
@@ -39,18 +36,20 @@ export default function App() {
 
       const examCard = event.target.closest("main .exam");
       const link = event.target.closest("main a[href]");
+      if (link?.getAttribute("href") === "#recent-activity") return;
       let title = "";
       let url = "";
       let type = "Learning";
 
       if (examCard) {
         title = examCard.querySelector("h3")?.textContent?.trim() || "";
-        url = link?.closest(".exam") === examCard
-          ? link.getAttribute("href")
-          : "#exams";
+        url = link?.closest(".exam") === examCard ? link.getAttribute("href") : "#exams";
         type = "Exam";
       } else if (link && link.getAttribute("href") !== "#") {
-        title = (link.textContent || "").trim().replace(/\\s+/g, " ").slice(0, 90);
+        title = (link.closest(".subject")?.querySelector("h3")?.textContent || link.textContent || "")
+          .trim()
+          .replace(/\s+/g, " ")
+          .slice(0, 90);
         url = link.getAttribute("href") || "";
         type = link.closest(".subject") ? "Subject" : "Learning";
       }
@@ -79,11 +78,7 @@ export default function App() {
     <div className="min-h-screen antialiased">
       <Header />
       <main className="home-content">
-        <Hero
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          searchResults={searchResults}
-        />
+        <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} searchResults={searchResults} />
         <Stats />
         <RecentActivity />
         <Subjects />
