@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { createQuestion, typeLabel } from "./assets/js/question-model.js";
-import { QUESTION_TYPES } from "./assets/js/config.js";
-import { csvTemplate, parseImportFile } from "./assets/js/bulk-import.js";
+import { createQuestion, typeLabel } from "./lib/question-model.js";
+import { QUESTION_TYPES } from "./lib/config.js";
+import { csvTemplate, parseImportFile } from "./lib/bulk-import.js";
 
 const additionalFormats = [
   ["reading_comprehension", "Reading comprehension", "passage"],

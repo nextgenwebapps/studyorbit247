@@ -5,8 +5,8 @@ The admin login and dashboard are React pages. Run `npm run dev` from the reposi
 - `index.html` and `../react-app/src/pages/admin/AdminLogin.jsx` mount the local demo login.
 - `app.html` and `../react-app/src/pages/admin/Dashboard.jsx` mount the question workspace.
 - `../react-app/src/pages/admin/QuestionBuilder.jsx` handles authoring, import and device preview.
-- `../react-app/src/pages/admin/assets/js/` holds the demo storage API, auth, question model and import parser.
-- `../react-app/src/pages/admin/assets/css/admin.css` styles both admin pages.
+- `../react-app/src/pages/admin/lib/` holds the demo storage API, auth, question model and import parser.
+- `../react-app/src/pages/admin/admin.css` styles both admin pages.
 
 ## Current UI capabilities
 Single-question entry, multi-question session, passage/chart/caselet linked question group, CSV/JSON import, bilingual fields, common exam metadata, option/answer selection, basic validation, local draft storage, and mobile/desktop preview.

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { mount } from "../../mount.jsx";
 
-function Student() {
+function UserAccount() {
   const [signup, setSignup] = useState(false);
   const [feedback, setFeedback] = useState("");
 
@@ -165,4 +165,4 @@ function Student() {
   );
 }
 
-mount(Student);
+mount(UserAccount);

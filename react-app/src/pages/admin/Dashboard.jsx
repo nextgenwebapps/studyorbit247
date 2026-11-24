@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { mount } from "../../mount.jsx";
-import { api } from "./assets/js/api.js";
-import { requireAdmin, signOut } from "./assets/js/auth.js";
-import { STORAGE_KEY } from "./assets/js/config.js";
-import { validateQuestion, typeLabel } from "./assets/js/question-model.js";
+import { api } from "./lib/api.js";
+import { requireAdmin, signOut } from "./lib/auth.js";
+import { STORAGE_KEY } from "./lib/config.js";
+import { validateQuestion, typeLabel } from "./lib/question-model.js";
 import { newQuestion, QuestionBuilder, QuestionPreview } from "./QuestionBuilder.jsx";
 
 const titles = {

@@ -1,10 +1,10 @@
 # StudyOrbit247 assets
 
-Shared, root-level static assets for the StudyOrbit247 website.
+Shared visual guidelines for the StudyOrbit247 website.
 
 ## Structure
 
-- `css/` — shared design tokens. Page-specific CSS remains with each page until it is migrated deliberately.
+- `../react-app/src/styles/tokens.css` holds shared design tokens. Page-specific styles live alongside their React pages.
 
 ## Brand direction
 
@@ -15,7 +15,7 @@ Use the name **StudyOrbit247** as the only brand signature. Keep the visual them
 From the repository root:
 
 ```html
-<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="react-app/src/styles/tokens.css">
 ```
 
 From a first-level page folder such as `user/` or `mocktest/`, prefix paths with `../`.

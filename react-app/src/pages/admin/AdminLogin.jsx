@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { mount } from "../../mount.jsx";
-import { api } from "./assets/js/api.js";
+import { api } from "./lib/api.js";
 
 function AdminLogin() {
   const [visible, setVisible] = useState(false);
