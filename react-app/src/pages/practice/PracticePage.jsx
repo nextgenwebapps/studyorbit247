@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { mount } from "../../mount.jsx";
 import { subjects } from "../home/Subjects.jsx";
 import { exams } from "../home/Exams.jsx";
 import { Question } from "../mocktest/Question.jsx";
 import { displayAnswer, emptyAnswer, hasAnswer, scoreQuestion } from "../mocktest/answers.js";
-import { findQuestions } from "./catalog.js";
+import { findQuestions, matchesPracticeFilters } from "./catalog.js";
 import "../mocktest/mocktest.css";
 import "./practice.css";
 
@@ -24,6 +24,19 @@ function Filter({ label, name, options, value, onChange, disabled = false, all =
 }
 
 const PALETTE_PAGE_SIZE = 20;
+const attemptStatuses = ["Bookmarked", "Unattempted", "Attempted", "Correct", "Incorrect"];
+const sourceOptions = ["Practice Questions Only", "PYQs Only"];
+const ATTEMPTS_KEY = "studyorbit_practice_attempts_v1";
+
+function readAttempts() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ATTEMPTS_KEY) || "{}");
+    return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+  } catch {
+    return {};
+  }
+}
+
 const BOOKMARKS_KEY = "studyorbit_practice_bookmarks_v1";
 
 function readBookmarks() {
@@ -41,7 +54,7 @@ const statusLabels = {
   incorrect: "Incorrect",
 };
 
-function QuestionPalette({ questions, current, attempts, visited, onSelect }) {
+function QuestionPalette({ questions, current, attempts, bookmarks, visited, onSelect }) {
   const [page, setPage] = useState(() => Math.floor(current / PALETTE_PAGE_SIZE));
   const pageCount = Math.ceil(questions.length / PALETTE_PAGE_SIZE);
   const start = page * PALETTE_PAGE_SIZE;
@@ -53,6 +66,7 @@ function QuestionPalette({ questions, current, attempts, visited, onSelect }) {
         {questions.slice(start, start + PALETTE_PAGE_SIZE).map((question, offset) => {
           const index = start + offset;
           const attempt = attempts[question.id];
+          const bookmarked = bookmarks.includes(question.id);
           const status = attempt?.status ?? (visited.has(index) ? "opened" : "unvisited");
           return (
             <button
@@ -61,10 +75,11 @@ function QuestionPalette({ questions, current, attempts, visited, onSelect }) {
               data-status={status}
               data-review={Boolean(attempt?.review)}
               aria-current={current === index ? "step" : undefined}
-              aria-label={`Question ${index + 1}, ${statusLabels[status]}${attempt?.review ? ", marked for review" : ""}`}
+              aria-label={`Question ${index + 1}, ${statusLabels[status]}${attempt?.review ? ", marked for review" : ""}${bookmarked ? ", bookmarked" : ""}`}
               onClick={() => onSelect(index)}
             >
               {index + 1}
+              {bookmarked && <svg className="practice-palette-bookmark" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v16l-6-4-6 4z" /></svg>}
             </button>
           );
         })}
@@ -79,6 +94,7 @@ function QuestionPalette({ questions, current, attempts, visited, onSelect }) {
       <ul className="practice-legend">
         {Object.entries(statusLabels).map(([status, label]) => <li key={status} data-status={status}>{label}</li>)}
         <li data-status="review">Review</li>
+        <li data-status="bookmarked">Bookmarked</li>
       </ul>
     </nav>
   );
@@ -144,17 +160,16 @@ function QuestionReport({ questionId, onClose }) {
   );
 }
 
-function PracticeSession({ questions, bookmarks, onBookmark }) {
+function PracticeSession({ questions, attempts, setAttempts, bookmarks, onBookmark }) {
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [visited, setVisited] = useState(() => new Set([0]));
-  const [attempts, setAttempts] = useState({});
   const question = questions[current];
   const bookmarked = bookmarks.includes(question.id);
   const attempt = attempts[question.id];
   const answer = attempt?.answer ?? emptyAnswer(question);
-  const checked = Object.values(attempts).filter((item) => item.status).length;
+  const checked = questions.filter(({ id }) => attempts[id]?.status).length;
 
   function updateAttempt(changes) {
     setAttempts((items) => ({
@@ -223,6 +238,7 @@ function PracticeSession({ questions, bookmarks, onBookmark }) {
           questions={questions}
           current={current}
           attempts={attempts}
+          bookmarks={bookmarks}
           visited={visited}
           onSelect={changeQuestion}
         />}
@@ -234,11 +250,18 @@ function PracticeSession({ questions, bookmarks, onBookmark }) {
 function PracticePage() {
   const [filters, setFilters] = useState(() => {
     const subject = new URLSearchParams(window.location.search).get("subject");
-    return { subject: subjectOptions.includes(subject) ? subject : "", exam: "", chapter: "", topic: "", level: "" };
+    return { subject: subjectOptions.includes(subject) ? subject : "", exam: "", chapter: "", topic: "", level: "", status: "", source: "" };
   });
   const [results, setResults] = useState(null);
   const [bookmarks, setBookmarks] = useState(readBookmarks);
-  const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
+  const [attempts, setAttempts] = useState(readAttempts);
+  useEffect(() => {
+    try {
+      localStorage.setItem(ATTEMPTS_KEY, JSON.stringify(attempts));
+    } catch {
+      // Search can still use this session's attempts if storage is unavailable.
+    }
+  }, [attempts]);
   const [bookmarkMessage, setBookmarkMessage] = useState("");
 
   function toggleBookmark(id) {
@@ -253,7 +276,7 @@ function PracticePage() {
     }
   }
   const [searchNumber, setSearchNumber] = useState(0);
-  const { subject, exam, chapter, topic, level } = filters;
+  const { subject, exam, chapter, topic, level, status, source } = filters;
   const chapters = [...new Set(findQuestions({ subject, exam }).map((question) => question.chapter))].sort();
   const topics = [...new Set(findQuestions({ subject, exam, chapter }).map((question) => question.topic))].sort();
 
@@ -271,7 +294,7 @@ function PracticePage() {
   function search(event) {
     event.preventDefault();
     const matches = findQuestions(filters);
-    setResults(bookmarkedOnly ? matches.filter(({ id }) => bookmarks.includes(id)) : matches);
+    setResults(matches.filter((question) => matchesPracticeFilters(question, filters, bookmarks, attempts)));
     setSearchNumber((value) => value + 1);
   }
 
@@ -290,18 +313,16 @@ function PracticePage() {
             <Filter label="Chapter" name="chapter" options={chapters} value={chapter} onChange={changeFilter} disabled={!chapters.length} />
             <Filter label="Topic" name="topic" options={topics} value={topic} onChange={changeFilter} disabled={!topics.length} />
             <Filter label="Level" name="level" options={["Easy", "Medium", "Hard"]} value={level} onChange={changeFilter} />
+            <Filter label="Status" name="status" all="All Status" options={attemptStatuses} value={status} onChange={changeFilter} />
+            <Filter label="Sources" name="source" all="All Sources" options={sourceOptions} value={source} onChange={changeFilter} />
             <button type="submit" className="primary-btn">Search</button>
           </div>
-          <label className="practice-bookmark-filter">
-            <input type="checkbox" checked={bookmarkedOnly} onChange={(event) => setBookmarkedOnly(event.target.checked)} />
-            Bookmarked only ({bookmarks.length})
-          </label>
         </form>
         <p role="status" className="practice-bookmark-feedback" hidden={!bookmarkMessage}>{bookmarkMessage}</p>
         <section className="practice-results" aria-labelledby="practice-total">
           <h2 id="practice-total" aria-live="polite">Total Questions: {results === null ? "—" : results.length}</h2>
-          {results?.length === 0 && <p>No questions match these filters. Try a different subject or exam, or clear a filter.</p>}
-          {results?.length > 0 && <PracticeSession key={searchNumber} questions={results} bookmarks={bookmarks} onBookmark={toggleBookmark} />}
+          {results?.length === 0 && <p>No questions match these filters. Try changing or clearing a filter.</p>}
+          {results?.length > 0 && <PracticeSession key={searchNumber} questions={results} attempts={attempts} setAttempts={setAttempts} bookmarks={bookmarks} onBookmark={toggleBookmark} />}
         </section>
       </main>
     </>

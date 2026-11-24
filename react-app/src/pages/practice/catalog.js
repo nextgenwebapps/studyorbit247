@@ -101,3 +101,19 @@ export function findQuestions(filters) {
     (!level || question.level === level),
   );
 }
+
+export function matchesPracticeFilters(question, { status, source }, bookmarks, attempts) {
+  const isPyq = question.isPyq === true || question.source === "pyq";
+  if (source === "PYQs Only" && !isPyq) return false;
+  if (source === "Practice Questions Only" && isPyq) return false;
+
+  const outcome = attempts[question.id]?.status;
+  switch (status) {
+    case "Bookmarked": return bookmarks.includes(question.id);
+    case "Unattempted": return !outcome;
+    case "Attempted": return Boolean(outcome);
+    case "Correct": return outcome === "correct";
+    case "Incorrect": return outcome === "incorrect";
+    default: return true;
+  }
+}

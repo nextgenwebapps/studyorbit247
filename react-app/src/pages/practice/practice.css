@@ -153,14 +153,6 @@
 }
 
 .practice-session-bar-heading button { min-height: 44px; }
-.practice-bookmark-filter {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-  font-weight: 700;
-}
-.practice-bookmark-filter input { accent-color: var(--so-gold); }
 .practice-bookmark-feedback { margin: 12px 0 0; }
 
 .practice-question-tools {
@@ -195,4 +187,19 @@
 @media (max-width: 767px) {
   .practice-question-tools button { padding: 0; }
   .practice-question-tools span { display: none; }
+}
+
+.practice-palette-bookmark {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  width: 13px;
+  height: 13px;
+  color: #85611d;
+}
+.practice-legend [data-status="bookmarked"]::before {
+  border: 0;
+  border-radius: 0;
+  background: #85611d;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 68%, 0 100%);
 }
