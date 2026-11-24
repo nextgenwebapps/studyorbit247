@@ -289,15 +289,13 @@ function PracticePage() {
     }
   }
   const [searchNumber, setSearchNumber] = useState(0);
-  const resultsRef = useRef(null);
   const filtersToggleRef = useRef(null);
 
   useEffect(() => {
     if (results?.length) {
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const mobile = window.matchMedia("(max-width: 699px)").matches;
-      const target = mobile ? filtersToggleRef.current : resultsRef.current;
-      if (mobile) target?.focus({ preventScroll: true });
+      const target = filtersToggleRef.current;
+      target?.focus({ preventScroll: true });
       target?.scrollIntoView({ behavior: reduceMotion ? "instant" : "smooth", block: "start" });
     }
   }, [results]);
@@ -364,7 +362,7 @@ function PracticePage() {
         </form>
         <p role="status" className="practice-bookmark-feedback" hidden={!bookmarkMessage}>{bookmarkMessage}</p>
         {results !== null && (
-          <section ref={resultsRef} className="practice-results" aria-labelledby="practice-total">
+          <section className="practice-results" aria-labelledby="practice-total">
             <h2 id="practice-total" aria-live="polite">Total Questions: {results.length}</h2>
             {results.length === 0 && <p>No questions match these filters. Try changing or clearing a filter.</p>}
             {results.length > 0 && <PracticeSession key={searchNumber} questions={results} attempts={attempts} setAttempts={setAttempts} bookmarks={bookmarks} onBookmark={toggleBookmark} />}
