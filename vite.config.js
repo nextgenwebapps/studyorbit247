@@ -13,7 +13,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         home: entry("./index.html"),
-        student: entry("./user/index.html"),
+        user: entry("./user/index.html"),
         mocktest: entry("./mocktest/index.html"),
         adminLogin: entry("./admin/index.html"),
         adminDashboard: entry("./admin/app.html"),
