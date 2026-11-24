@@ -1,4 +1,4 @@
-@import "../../home/home.css";
+@import "./styles/home.css";
 
 :root {
   color-scheme: light;
