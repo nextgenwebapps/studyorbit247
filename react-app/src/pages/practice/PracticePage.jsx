@@ -218,8 +218,8 @@ function PracticeSession({ questions, attempts, setAttempts, bookmarks, onBookma
                 </svg>
                 <span>{bookmarked ? "Bookmarked" : "Bookmark"}</span>
               </button>
-              <button type="button" className="secondary-btn" ref={reportButtonRef} aria-label={reportOpen ? "Close report form" : "Report question"} aria-expanded={reportOpen} aria-controls={reportOpen ? "practice-report-form" : undefined} onClick={() => setReportQuestionId((id) => id === question.id ? null : question.id)}>
-                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <button type="button" className="secondary-btn practice-report-toggle" ref={reportButtonRef} aria-label={reportOpen ? "Close report form" : "Report question"} aria-expanded={reportOpen} aria-controls={reportOpen ? "practice-report-form" : undefined} onClick={() => setReportQuestionId((id) => id === question.id ? null : question.id)}>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill={reportOpen ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 21V4m0 1h14l-3 4 3 4H5" />
                 </svg>
                 <span>{reportOpen ? "Close Report" : "Report"}</span>
@@ -265,6 +265,7 @@ function PracticePage() {
     return { subject: subjectOptions.includes(subject) ? subject : "", exam: "", chapter: "", topic: "", level: "", status: "", source: "" };
   });
   const [results, setResults] = useState(null);
+  const [filtersCollapsed, setFiltersCollapsed] = useState(false);
   const [bookmarks, setBookmarks] = useState(readBookmarks);
   const [attempts, setAttempts] = useState(readAttempts);
   useEffect(() => {
@@ -289,11 +290,16 @@ function PracticePage() {
   }
   const [searchNumber, setSearchNumber] = useState(0);
   const resultsRef = useRef(null);
+  const filtersToggleRef = useRef(null);
+  const filtersRef = useRef(null);
 
   useEffect(() => {
     if (results?.length) {
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      resultsRef.current?.scrollIntoView({ behavior: reduceMotion ? "instant" : "smooth", block: "start" });
+      const mobile = window.matchMedia("(max-width: 699px)").matches;
+      const target = mobile ? filtersToggleRef.current : resultsRef.current;
+      if (mobile) target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ behavior: reduceMotion ? "instant" : "smooth", block: "start" });
     }
   }, [results]);
   const { subject, exam, chapter, topic, level, status, source } = filters;
@@ -314,7 +320,9 @@ function PracticePage() {
   function search(event) {
     event.preventDefault();
     const matches = findQuestions(filters);
-    setResults(matches.filter((question) => matchesPracticeFilters(question, filters, bookmarks, attempts)));
+    const matchingQuestions = matches.filter((question) => matchesPracticeFilters(question, filters, bookmarks, attempts));
+    setResults(matchingQuestions);
+    setFiltersCollapsed(matchingQuestions.length > 0);
     setSearchNumber((value) => value + 1);
   }
 
@@ -322,9 +330,24 @@ function PracticePage() {
     <>
       <PracticeHeader onInstructions={() => setShowInstructions((value) => !value)} />
       <main className="practice-page">
-        <h1 className="practice-title">Practice <span className="practice-title-now" data-paused={searchNumber > 0}>Now</span></h1>
+        <h1 className="practice-title">Practice <span className="practice-title-now" data-paused={searchNumber > 0}>Now</span>
+          {filtersCollapsed && (
+            <button
+              ref={filtersToggleRef}
+              className="practice-filters-toggle"
+              type="button"
+              aria-label="Practice Now: show search filters"
+              aria-controls="practice-search-form"
+              aria-expanded={false}
+              onClick={() => {
+                setFiltersCollapsed(false);
+                requestAnimationFrame(() => filtersRef.current?.querySelector("select")?.focus({ preventScroll: true }));
+              }}
+            />
+          )}
+        </h1>
         {showInstructions && <p role="status">Choose filters and select Search. Check your answers as you go, or use Question Palette to jump to another question.</p>}
-        <form className="practice-form" onSubmit={search} aria-label="Question search">
+        <form ref={filtersRef} id="practice-search-form" className="practice-form" data-collapsed={filtersCollapsed} onSubmit={search} aria-label="Question search">
           <div className="practice-filters">
             <Filter label="Subject" name="subject" options={subjectOptions} value={subject} onChange={changeFilter} />
             <Filter label="Exam" name="exam" options={examOptions} value={exam} onChange={changeFilter} />
