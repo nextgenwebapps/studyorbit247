@@ -54,7 +54,7 @@
 
 .practice-filters .practice-search:hover { transform: none; }
 
-.practice-form :is(select, button):focus-visible {
+.practice-form button:focus-visible {
   outline: 2px solid #99712b;
   outline-offset: 3px;
 }
@@ -128,11 +128,15 @@
   transition: border-color .18s ease;
 }
 
+.practice-filters select:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: #99712b;
+}
+
 @media (hover: hover) {
   .practice-filters select:not(:disabled):hover {
     border-color: #c8a95e;
-    outline: none;
-    box-shadow: none;
   }
 }
 

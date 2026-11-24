@@ -226,7 +226,7 @@ function PracticeSession({ questions, attempts, setAttempts, bookmarks, onBookma
               </button>
             </div>
           </div>
-          {reportOpen && <QuestionReport key={question.id} questionId={question.id} onClose={closeReport} />}
+          {reportOpen && <QuestionReport questionId={question.id} onClose={closeReport} />}
           <Question key={question.id} question={question} answer={answer} onAnswer={(value) => updateAttempt({ answer: value, status: null })} />
           <div className="practice-question-actions">
             <button type="button" className="secondary-btn" disabled={current === 0} onClick={() => changeQuestion(current - 1)}>Previous</button>
