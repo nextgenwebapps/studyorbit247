@@ -1529,3 +1529,14 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 /* Keep collapsed subject cards hidden even when the grid gives cards flex layout. */
 #subjects .subject-grid>.subject[hidden]{display:none!important}
 </style>
+
+
+<style id="subject-exam-hover-grow">
+/* Enlarge subject and exam cards evenly from the centre on hover.
+   Scaling the whole card also scales its contents proportionally; no upward lift. */
+#subjects .subject-grid>.subject:not(#show-more-subjects):hover,
+#exams .exam-grid>.exam:not(#show-more-exams):hover{
+  transform:scale(1.04)!important;
+  transform-origin:center center!important;
+}
+</style>
