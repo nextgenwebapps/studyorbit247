@@ -4,7 +4,7 @@ Shared visual guidelines for the StudyOrbit247 website.
 
 ## Structure
 
-- `../react-app/src/styles/tokens.css` holds shared design tokens. Page-specific styles live alongside their React pages.
+- `react-app/src/styles/tokens.css` holds shared design tokens. Page-specific styles live alongside their React pages.
 
 ## Brand direction
 
