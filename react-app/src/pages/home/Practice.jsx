@@ -4,11 +4,10 @@ export default function Practice() {
       <div className="container">
         <div className="practice">
           <div>
-            <h2>Your next step starts here.</h2>
+            <h2>Get ready for your next mock test.</h2>
             <p>
-              Choose an exam, select a subject and begin with a focused practice
-              session.<br />
-              Small daily progress can build strong exam readiness.
+              Practise exam-style questions before your next timed mock test.<br />
+              Review your answers and work on the topics that need more practice.
             </p>
           </div>
           <a className="btn" href="practice/">Start Practising →</a>
