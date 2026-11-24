@@ -162,3 +162,37 @@
 }
 .practice-bookmark-filter input { accent-color: var(--so-gold); }
 .practice-bookmark-feedback { margin: 12px 0 0; }
+
+.practice-question-tools {
+  display: flex;
+  gap: 8px;
+}
+.practice-question-tools button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+}
+.practice-report-form {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 16px;
+  border: 1px solid var(--so-line);
+  border-radius: var(--so-radius-sm);
+  background: var(--so-ivory);
+}
+.practice-report-form p { margin: 0; }
+.practice-report-form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--so-line);
+  border-radius: var(--so-radius-sm);
+  font: inherit;
+  resize: vertical;
+}
+@media (max-width: 767px) {
+  .practice-question-tools button { padding: 0; }
+  .practice-question-tools span { display: none; }
+}

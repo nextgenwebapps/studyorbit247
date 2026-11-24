@@ -84,9 +84,70 @@ function QuestionPalette({ questions, current, attempts, visited, onSelect }) {
   );
 }
 
+const REPORTS_KEY = "studyorbit_practice_reports_v1";
+const reportReasons = ["Incorrect answer", "Error in question or options", "Missing or broken image", "Other"];
+
+function QuestionReport({ questionId, onClose }) {
+  const [message, setMessage] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  function submit(event) {
+    event.preventDefault();
+    const fields = new FormData(event.currentTarget);
+    const reason = fields.get("reason");
+    if (!reportReasons.includes(reason)) return;
+
+    try {
+      const previous = JSON.parse(localStorage.getItem(REPORTS_KEY) || "{}");
+      const reports = previous && typeof previous === "object" && !Array.isArray(previous) ? previous : {};
+      localStorage.setItem(REPORTS_KEY, JSON.stringify({
+        ...reports,
+        [questionId]: {
+          questionId,
+          reason,
+          details: String(fields.get("details") || "").trim(),
+          createdAt: new Date().toISOString(),
+        },
+      }));
+      setSaved(true);
+      setMessage("Report saved on this device.");
+    } catch {
+      setMessage("Could not save the report on this device.");
+    }
+  }
+
+  return (
+    <form className="practice-report-form" id="practice-report-form" onSubmit={submit}>
+      <strong>Report this question</strong>
+      <p>Reports are saved on this device.</p>
+      {!saved && (
+        <>
+          <label className="practice-field">
+            Reason
+            <select name="reason" defaultValue="" required>
+              <option value="" disabled>Choose a reason</option>
+              {reportReasons.map((reason) => <option key={reason}>{reason}</option>)}
+            </select>
+          </label>
+          <label className="practice-field">
+            Details (optional)
+            <textarea name="details" rows={3} maxLength={500} />
+          </label>
+        </>
+      )}
+      <div className="practice-question-actions">
+        {!saved && <button type="submit" className="primary-btn">Save Report</button>}
+        <button type="button" className="secondary-btn" onClick={onClose}>{saved ? "Done" : "Cancel"}</button>
+      </div>
+      <div role="status">{message}</div>
+    </form>
+  );
+}
+
 function PracticeSession({ questions, bookmarks, onBookmark }) {
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [visited, setVisited] = useState(() => new Set([0]));
   const [attempts, setAttempts] = useState({});
   const question = questions[current];
@@ -103,6 +164,7 @@ function PracticeSession({ questions, bookmarks, onBookmark }) {
   }
 
   function changeQuestion(index) {
+    if (index !== current) setReportOpen(false);
     setCurrent(index);
     setVisited((items) => new Set([...items, index]));
   }
@@ -123,10 +185,22 @@ function PracticeSession({ questions, bookmarks, onBookmark }) {
         <article className="question-panel practice-question">
           <div className="practice-session-bar-heading">
             <p className="practice-question-meta">{question.chapter} · {question.topic} · {question.level}</p>
-            <button type="button" className="secondary-btn practice-review" aria-pressed={bookmarked} onClick={() => onBookmark(question.id)}>
-              {bookmarked ? "★ Bookmarked" : "☆ Bookmark"}
-            </button>
+            <div className="practice-question-tools">
+              <button type="button" className="secondary-btn practice-review" aria-label={bookmarked ? "Remove bookmark" : "Bookmark question"} aria-pressed={bookmarked} onClick={() => onBookmark(question.id)}>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+                  <path d="M6 4h12v16l-6-4-6 4z" />
+                </svg>
+                <span>{bookmarked ? "Bookmarked" : "Bookmark"}</span>
+              </button>
+              <button type="button" className="secondary-btn" aria-label="Report question" aria-expanded={reportOpen} aria-controls={reportOpen ? "practice-report-form" : undefined} onClick={() => setReportOpen(!reportOpen)}>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 21V4m0 1h14l-3 4 3 4H5" />
+                </svg>
+                <span>Report</span>
+              </button>
+            </div>
           </div>
+          {reportOpen && <QuestionReport key={question.id} questionId={question.id} onClose={() => setReportOpen(false)} />}
           <Question key={question.id} question={question} answer={answer} onAnswer={(value) => updateAttempt({ answer: value, status: null })} />
           <div className="practice-question-actions">
             <button type="button" className="secondary-btn" disabled={current === 0} onClick={() => changeQuestion(current - 1)}>Previous</button>
