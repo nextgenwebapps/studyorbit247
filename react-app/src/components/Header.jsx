@@ -87,7 +87,7 @@ export default function Header() {
             >
               <span className="nav-icon"><ProductsIcon /></span>
               Our Products
-              <span className="products-chevron">⌄</span>
+              <span className="products-chevron" aria-hidden="true">{productsOpen ? "⌃" : "⌄"}</span>
             </button>
 
             <div
