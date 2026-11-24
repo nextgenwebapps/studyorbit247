@@ -143,3 +143,22 @@
 @media (max-width: 819px) {
   .practice-palette { grid-row: 1; }
 }
+
+.practice-session-bar-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.practice-session-bar-heading button { min-height: 44px; }
+.practice-bookmark-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-weight: 700;
+}
+.practice-bookmark-filter input { accent-color: var(--so-gold); }
+.practice-bookmark-feedback { margin: 12px 0 0; }

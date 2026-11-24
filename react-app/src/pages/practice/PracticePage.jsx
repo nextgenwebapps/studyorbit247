@@ -24,6 +24,16 @@ function Filter({ label, name, options, value, onChange, disabled = false, all =
 }
 
 const PALETTE_PAGE_SIZE = 20;
+const BOOKMARKS_KEY = "studyorbit_practice_bookmarks_v1";
+
+function readBookmarks() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || "[]");
+    return Array.isArray(saved) ? saved.filter((id) => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
 const statusLabels = {
   unvisited: "Unvisited",
   opened: "Opened",
@@ -74,12 +84,13 @@ function QuestionPalette({ questions, current, attempts, visited, onSelect }) {
   );
 }
 
-function PracticeSession({ questions }) {
+function PracticeSession({ questions, bookmarks, onBookmark }) {
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
   const [visited, setVisited] = useState(() => new Set([0]));
   const [attempts, setAttempts] = useState({});
   const question = questions[current];
+  const bookmarked = bookmarks.includes(question.id);
   const attempt = attempts[question.id];
   const answer = attempt?.answer ?? emptyAnswer(question);
   const checked = Object.values(attempts).filter((item) => item.status).length;
@@ -110,7 +121,12 @@ function PracticeSession({ questions }) {
       </div>
       <div className={open ? "practice-workspace palette-visible" : "practice-workspace"}>
         <article className="question-panel practice-question">
-          <p className="practice-question-meta">{question.chapter} · {question.topic} · {question.level}</p>
+          <div className="practice-session-bar-heading">
+            <p className="practice-question-meta">{question.chapter} · {question.topic} · {question.level}</p>
+            <button type="button" className="secondary-btn practice-review" aria-pressed={bookmarked} onClick={() => onBookmark(question.id)}>
+              {bookmarked ? "★ Bookmarked" : "☆ Bookmark"}
+            </button>
+          </div>
           <Question key={question.id} question={question} answer={answer} onAnswer={(value) => updateAttempt({ answer: value, status: null })} />
           <div className="practice-question-actions">
             <button type="button" className="secondary-btn" disabled={current === 0} onClick={() => changeQuestion(current - 1)}>Previous</button>
@@ -147,6 +163,21 @@ function PracticePage() {
     return { subject: subjectOptions.includes(subject) ? subject : "", exam: "", chapter: "", topic: "", level: "" };
   });
   const [results, setResults] = useState(null);
+  const [bookmarks, setBookmarks] = useState(readBookmarks);
+  const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
+  const [bookmarkMessage, setBookmarkMessage] = useState("");
+
+  function toggleBookmark(id) {
+    const removing = bookmarks.includes(id);
+    const next = removing ? bookmarks.filter((item) => item !== id) : [...bookmarks, id];
+    try {
+      localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(next));
+      setBookmarks(next);
+      setBookmarkMessage(removing ? "Bookmark removed." : "Question bookmarked.");
+    } catch {
+      setBookmarkMessage("Bookmarks could not be saved in this browser.");
+    }
+  }
   const [searchNumber, setSearchNumber] = useState(0);
   const { subject, exam, chapter, topic, level } = filters;
   const chapters = [...new Set(findQuestions({ subject, exam }).map((question) => question.chapter))].sort();
@@ -165,7 +196,8 @@ function PracticePage() {
 
   function search(event) {
     event.preventDefault();
-    setResults(findQuestions(filters));
+    const matches = findQuestions(filters);
+    setResults(bookmarkedOnly ? matches.filter(({ id }) => bookmarks.includes(id)) : matches);
     setSearchNumber((value) => value + 1);
   }
 
@@ -186,11 +218,16 @@ function PracticePage() {
             <Filter label="Level" name="level" options={["Easy", "Medium", "Hard"]} value={level} onChange={changeFilter} />
             <button type="submit" className="primary-btn">Search</button>
           </div>
+          <label className="practice-bookmark-filter">
+            <input type="checkbox" checked={bookmarkedOnly} onChange={(event) => setBookmarkedOnly(event.target.checked)} />
+            Bookmarked only ({bookmarks.length})
+          </label>
         </form>
+        <p role="status" className="practice-bookmark-feedback" hidden={!bookmarkMessage}>{bookmarkMessage}</p>
         <section className="practice-results" aria-labelledby="practice-total">
           <h2 id="practice-total" aria-live="polite">Total Questions: {results === null ? "—" : results.length}</h2>
           {results?.length === 0 && <p>No questions match these filters. Try a different subject or exam, or clear a filter.</p>}
-          {results?.length > 0 && <PracticeSession key={searchNumber} questions={results} />}
+          {results?.length > 0 && <PracticeSession key={searchNumber} questions={results} bookmarks={bookmarks} onBookmark={toggleBookmark} />}
         </section>
       </main>
     </>
