@@ -330,6 +330,7 @@ function PracticePage() {
       <PracticeHeader onInstructions={() => setShowInstructions((value) => !value)} />
       <main className="practice-page">
         <h1 className="practice-title">Practice <span className="practice-title-now" data-paused={searchNumber > 0}>Now</span>
+          {filtersCollapsed && <span className="practice-filters-hint" aria-hidden="true">Tap to open filters</span>}
           <button
             ref={filtersToggleRef}
             className="practice-filters-toggle"
