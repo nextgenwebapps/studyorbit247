@@ -113,7 +113,8 @@ $("#status-filter").onchange = renderList;
 builder = initBuilder({
   onPreview: question => renderPreview(question, $("#preview-stage"), $(".device-switch .selected")?.dataset.device || "mobile"),
   onChanged: save,
-  onToast: showToast
+  onToast: showToast,
+  initialQuestions: drafts
 });
 $("#validate-btn").onclick = () => {
   const box = $("#validation-results");
