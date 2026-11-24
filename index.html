@@ -1540,3 +1540,14 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
   transform-origin:center center!important;
 }
 </style>
+
+
+<style id="reduce-header-height-25px">
+/* Reduce the desktop and mobile header heights by 25px. */
+.site-header .nav{min-height:51px!important}
+@media(max-width:650px){
+  .site-header .nav{min-height:41px!important}
+  .account-nav{top:41px!important;max-height:calc(100vh - 41px)!important}
+  .links.mobile-open{top:41px!important}
+}
+</style>
