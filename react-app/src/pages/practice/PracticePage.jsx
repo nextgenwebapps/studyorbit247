@@ -312,7 +312,7 @@ function PracticePage() {
     <>
       <PracticeHeader onInstructions={() => setShowInstructions((value) => !value)} />
       <main className="practice-page">
-        <h1 className="practice-title">Practice <span className={searchNumber === 0 ? "practice-title-now is-animated" : "practice-title-now"}>Now</span></h1>
+        <h1 className="practice-title">Practice <span className="practice-title-now" data-paused={searchNumber > 0}>Now</span></h1>
         {showInstructions && <p role="status">Choose filters and select Search. Check your answers as you go, or use Question Palette to jump to another question.</p>}
         <form className="practice-form" onSubmit={search} aria-label="Question search">
           <div className="practice-filters">

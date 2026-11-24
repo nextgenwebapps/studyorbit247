@@ -86,10 +86,12 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .practice-title-now.is-animated {
+  .practice-title-now {
     animation: practice-now-pulse 2s ease-in-out infinite, practice-now-gradient 5s linear infinite;
   }
 }
+
+.practice-title-now[data-paused="true"] { animation-play-state: paused; }
 
 @keyframes practice-now-gradient {
   0% { --practice-now-angle: 0deg; background-position: 50% 50%; }
