@@ -23,8 +23,7 @@
   padding: clamp(16px, 4vw, 28px);
 }
 
-.practice-filters,
-.practice-extra-filters {
+.practice-filters {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
@@ -38,41 +37,40 @@
   min-width: 0;
 }
 
-.practice-more {
-  margin-top: 8px;
-  color: #71521a;
-}
-
-.practice-more summary {
-  width: fit-content;
-  min-height: 36px;
-  padding: 6px 2px;
-  font-size: .85rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.practice-extra-filters {
-  padding-top: 8px;
-  border-top: 1px solid var(--so-line);
-}
-
 .practice-filters .practice-search {
-  grid-column: 1 / -1;
-  background: var(--so-black);
-  color: var(--so-gold-light);
-  padding-inline: 22px;
+  justify-self: center;
+  width: 110px;
+  height: 44px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 10px;
+  background: linear-gradient(120deg, #f3d98f, #d3a449 62%, #bd802d);
+  color: #231706;
+  box-shadow: 0 4px 12px rgb(121 77 15 / 20%);
+  transform-origin: center;
 }
 
-.practice-form :is(select, button, summary):focus-visible {
+.practice-form :is(select, button):focus-visible {
   outline: 2px solid #99712b;
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 @media (min-width: 700px) {
-  .practice-filters { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; }
-  .practice-extra-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .practice-filters .practice-search { grid-column: auto; }
+  .practice-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .practice-filters .practice-search { justify-self: end; margin-inline-end: 3px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .practice-search { animation: practice-search-pulse 2s ease-in-out 2; }
+  .practice-search:hover { animation-iteration-count: infinite; }
+}
+
+/* Scale from the 110 × 44 px base to 115 × 49 and 105 × 39. */
+@keyframes practice-search-pulse {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.045455, 1.113636); }
+  60% { transform: scale(.954545, .886364); }
+  85% { transform: scale(1.045455, 1.113636); }
 }
 
 .practice-field {
@@ -94,10 +92,6 @@
 
 .practice-field select:disabled, .practice-page button:disabled {
   opacity: 0.6;
-}
-
-.practice-filters button {
-  min-height: 44px;
 }
 
 .practice-results {
