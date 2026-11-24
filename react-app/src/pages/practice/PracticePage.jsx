@@ -218,8 +218,8 @@ function PracticeSession({ questions, attempts, setAttempts, bookmarks, onBookma
                 </svg>
                 <span>{bookmarked ? "Bookmarked" : "Bookmark"}</span>
               </button>
-              <button type="button" className="secondary-btn practice-report-toggle" ref={reportButtonRef} aria-label={reportOpen ? "Close report form" : "Report question"} aria-expanded={reportOpen} aria-controls={reportOpen ? "practice-report-form" : undefined} onClick={() => setReportQuestionId((id) => id === question.id ? null : question.id)}>
-                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill={reportOpen ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <button type="button" className="secondary-btn" ref={reportButtonRef} aria-label={reportOpen ? "Close report form" : "Report question"} aria-expanded={reportOpen} aria-controls={reportOpen ? "practice-report-form" : undefined} onClick={() => setReportQuestionId((id) => id === question.id ? null : question.id)}>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 21V4m0 1h14l-3 4 3 4H5" />
                 </svg>
                 <span>{reportOpen ? "Close Report" : "Report"}</span>

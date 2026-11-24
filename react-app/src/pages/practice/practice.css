@@ -193,7 +193,7 @@
 
 .practice-session-bar span { color: var(--so-gold-light); font-size: .85rem; }
 .practice-session-bar progress { grid-column: 1 / -1; width: 100%; height: 6px; accent-color: var(--so-gold); }
-.practice-toggle[aria-expanded="true"], .practice-report-toggle[aria-expanded="true"], .practice-review[aria-pressed="true"] { background: #f6e7bd; }
+.practice-toggle[aria-expanded="true"], .practice-review[aria-pressed="true"] { background: #f6e7bd; }
 .practice-workspace { display: grid; gap: 16px; align-items: start; }
 .practice-workspace > * { min-width: 0; }
 .practice-question-actions { margin-top: 20px; }
