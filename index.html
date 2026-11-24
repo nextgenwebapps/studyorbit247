@@ -390,7 +390,7 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 <div class="exam exam-extra exam-template" hidden><div class="exam-top"><div class="exam-icon">🏦</div><span class="tag">TEST TEMPLATE 18</span></div><h3>NABARD Exams</h3><p>Agriculture, rural development and banking preparation.</p><div class="exam-foot"><span>Temporary demo card</span><b>Explore →</b></div></div>
 <div class="exam exam-extra exam-template" hidden><div class="exam-top"><div class="exam-icon">📈</div><span class="tag">TEST TEMPLATE 19</span></div><h3>SEBI Exams</h3><p>Securities market and regulatory recruitment preparation.</p><div class="exam-foot"><span>Temporary demo card</span><b>Explore →</b></div></div>
 <div class="exam exam-extra exam-template" hidden><div class="exam-top"><div class="exam-icon">🗂️</div><span class="tag">TEST TEMPLATE 20</span></div><h3>PSU Recruitment</h3><p>Public sector undertaking recruitment examination practice.</p><div class="exam-foot"><span>Temporary demo card</span><b>Explore →</b></div></div>
-<button id="show-more-exams" class="btn btn-outline" type="button" aria-label="Show more exams"><span class="exam-action-more"><span class="exam-action-icon" aria-hidden="true">＋</span><span>Show More</span></span><span class="exam-action-less"><span class="exam-action-icon" aria-hidden="true">⌃</span><span>Show Less</span></span></button></div></div></section>
+<button id="show-more-exams" class="exam subject-more-toggle" type="button" aria-label="Show more exams"><span class="exam-action-more subject-action-more"><span class="exam-action-icon subject-action-icon" aria-hidden="true">＋</span><span>Show More</span></span><span class="exam-action-less subject-action-less"><span class="exam-action-icon subject-action-icon" aria-hidden="true">−</span><span>Show Less</span></span></button></div></div></section>
 <section id="features"><div class="container"><div class="section-head"><div><div class="kicker">A SMARTER WAY TO PREPARE</div><h2>Everything in your learning orbit</h2><p>Tools that help turn preparation into measurable progress.</p></div></div>
 <div class="feature-grid">
 <div class="feature" id="chapter-practice"><div class="feature-icon">📝</div><h3>Chapter-wise practice</h3><p>Practice topic by topic and build confidence before moving to full-length tests.</p></div>
@@ -1390,3 +1390,38 @@ footer{background:linear-gradient(115deg,#050505 0%,#171512 65%,#3b1a18 100%)!im
 #exams .exam-grid>.exam.exam-template[hidden]{display:none!important}
 </style>
 
+
+
+<style id="exam-toggle-match-subject-toggle-exactly">
+/* Explore Exams toggle deliberately mirrors the Explore Subjects toggle. */
+#exams .exam-grid{align-items:stretch!important}
+#show-more-exams{
+  width:100%!important;min-width:0!important;min-height:100%!important;
+  margin:0!important;padding:18px 12px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  gap:10px!important;text-align:center!important;
+  border:1px solid #e6dfd2!important;border-radius:17px!important;
+  background:#fff!important;color:#987024!important;
+  box-shadow:0 8px 25px #20170b0a!important;
+  font:inherit!important;font-size:13px!important;font-weight:800!important;
+  cursor:pointer;transition:.2s;
+}
+#show-more-exams .exam-action-more,
+#show-more-exams .exam-action-less{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+}
+#show-more-exams .exam-action-less{display:none}
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-more,
+#show-more-exams.is-expanded:not(.is-at-end) .exam-action-less{display:flex!important}
+#show-more-exams.is-at-end .exam-action-more{display:none!important}
+#show-more-exams.is-at-end .exam-action-less{display:flex!important}
+#show-more-exams .exam-action-icon{
+  width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;
+  border-radius:50%;background:#f2eee5;border:1px solid #e6d9bb;
+  color:#987024;font-size:22px;font-weight:500;line-height:1;
+}
+#show-more-exams:hover{transform:translateY(-4px);border-color:#c4a45d!important;box-shadow:0 15px 32px #8c67201b!important}
+#show-more-exams[hidden]{display:none!important}
+@media(max-width:650px){#show-more-exams{padding:15px 10px!important}}
+</style>
