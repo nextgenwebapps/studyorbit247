@@ -6,11 +6,13 @@ CREATE TABLE IF NOT EXISTS content_uploads (
   expected_size INTEGER NOT NULL,
   actual_size INTEGER,
   uploaded_by TEXT NOT NULL,
-  status TEXT NOT NULL CHECK (status IN ('uploading', 'completed', 'completed_unverified', 'aborted')),
+  status TEXT NOT NULL CHECK (status IN ('uploading', 'completed', 'completed_with_issues', 'completed_unverified', 'aborted')),
   question_count INTEGER,
   added_count INTEGER NOT NULL DEFAULT 0,
   updated_count INTEGER NOT NULL DEFAULT 0,
   removed_count INTEGER NOT NULL DEFAULT 0,
+  duplicate_count INTEGER NOT NULL DEFAULT 0,
+  validation_issues_json TEXT NOT NULL DEFAULT '[]',
   duplicate_count INTEGER NOT NULL DEFAULT 0,
   validation_issues_json TEXT NOT NULL DEFAULT '[]',
   schema_version TEXT,
@@ -63,3 +65,6 @@ CREATE TABLE IF NOT EXISTS question_topic_sequences (
   last_number INTEGER NOT NULL DEFAULT 0 CHECK (last_number BETWEEN 0 AND 999999),
   updated_at TEXT NOT NULL
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_question_taxonomy_subject_code
+  ON question_taxonomy_nodes(code) WHERE kind='subject';
