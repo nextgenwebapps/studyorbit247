@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { mount } from "../../mount.jsx";
 import { api } from "./lib/api.js";
 import { requireAdmin, signOut } from "./lib/auth.js";
-import { STORAGE_KEY } from "./lib/config.js";
+import { API_BASE, STORAGE_KEY } from "./lib/config.js";
 import { validateQuestion, typeLabel } from "./lib/question-model.js";
 import { newQuestion, QuestionBuilder, QuestionPreview } from "./QuestionBuilder.jsx";
 
@@ -58,6 +58,7 @@ function Dashboard() {
   const [uploadPath, setUploadPath] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
+  const [uploadResult, setUploadResult] = useState("");
   const toastTimer = useRef();
 
   useEffect(() => {
@@ -196,6 +197,7 @@ function Dashboard() {
     let uploadId;
     setUploading(true);
     setUploadProgress("Preparing secure upload…");
+    setUploadResult("");
     try {
       const started = await api.startUpload({
         key,
@@ -214,12 +216,31 @@ function Dashboard() {
         setUploadProgress("Uploading part " + partNumber + " of " + count + " · " + Math.round((partNumber / count) * 100) + "%");
       }
       await api.completeUpload({ key, uploadId, parts });
+      let resultMessage = "Uploaded to R2: " + key;
+      const publicUrl = API_BASE.replace(/\\/api$/, "") + "/api/content/" + key.split("/").map(encodeURIComponent).join("/") + "?verify=" + Date.now();
+      try {
+        const check = await fetch(publicUrl, { method: "HEAD", cache: "no-store" });
+        if (!check.ok) {
+          resultMessage += " — upload finished, but the public read check returned " + check.status + ".";
+        } else if (/\\.json$/i.test(key) && uploadFile.size <= 10 * 1024 * 1024) {
+          const response = await fetch(publicUrl, { cache: "no-store" });
+          const data = await response.json().catch(() => null);
+          resultMessage = Array.isArray(data?.questions)
+            ? "Verified in R2: " + data.questions.length + " questions at " + key
+            : "Uploaded to R2, but this JSON has no top-level questions list: " + key;
+        } else {
+          resultMessage = "Verified in R2: " + key;
+        }
+      } catch {
+        resultMessage += " — upload completed, but automatic verification could not run.";
+      }
+      setUploadResult(resultMessage);
       setUploadProgress("");
       setUploadFile(null);
       setUploadPath("");
       const input = document.getElementById("r2-file");
       if (input) input.value = "";
-      notify("Uploaded to R2: " + key);
+      notify(resultMessage);
     } catch (error) {
       if (uploadId) {
         try { await api.abortUpload({ key, uploadId }); } catch { /* Keep the original error. */ }
@@ -617,7 +638,7 @@ function Dashboard() {
                 <div>
                   <div className="eyebrow">CLOUDFLARE R2</div>
                   <h1>Upload content</h1>
-                  <p className="muted">Files upload through the authenticated Worker into the StudyOrbit247 bucket.</p>
+                  <p className="muted">Files upload through the secure Worker into the StudyOrbit247 bucket and are checked after upload.</p>
                 </div>
               </div>
               <article className="panel r2-upload-panel">
@@ -636,8 +657,9 @@ function Dashboard() {
                     </select>
                   </div>
                   <div className="field">
-                    <label htmlFor="r2-path">File path inside folder</label>
-                    <input id="r2-path" value={uploadPath} disabled={uploading} onChange={(event) => setUploadPath(event.target.value)} placeholder={uploadType === "question-bank" ? "gk/latest.json" : "gk/river-map.png"} />
+                    <label htmlFor="r2-path">File path inside folder (optional)</label>
+                    <input id="r2-path" value={uploadPath} disabled={uploading} onChange={(event) => setUploadPath(event.target.value)} placeholder={uploadType === "question-bank" ? "studyorbit-gk-100-questions.json" : "gk/river-map.png"} />
+                    <small>Type only the path after the selected folder. Do not type “question-bank/” here.</small>
                   </div>
                   <div className="field full-width">
                     <label htmlFor="r2-file">Choose file (up to 500 MiB)</label>
@@ -645,9 +667,10 @@ function Dashboard() {
                   </div>
                 </div>
                 <p className="import-help">
-                  Destination: <code>{uploadType}/{uploadPath.trim() || uploadFile?.name || "your-file"}</code>. Large files upload in 8 MiB parts. Question-bank and media objects can be read by the student site.
+                  Destination: <code>{uploadType}/{uploadPath.trim() || uploadFile?.name || "your-file"}</code>. For the current 100-question GK file, leave the path empty and select that JSON; it uploads as <code>question-bank/studyorbit-gk-100-questions.json</code>. Large files upload in 8 MiB parts.
                 </p>
                 {uploadProgress && <div className="upload-progress" role="status">{uploadProgress}</div>}
+                {uploadResult && <p className="import-help" role="status">{uploadResult}</p>}
                 <button className="primary" type="button" onClick={uploadToR2} disabled={uploading || !uploadFile}>
                   {uploading ? "Uploading…" : "Upload to R2"}
                 </button>
