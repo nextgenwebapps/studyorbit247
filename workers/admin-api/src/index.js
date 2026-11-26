@@ -62,9 +62,9 @@ async function route(request,env){
    return json({ok:true});
   }
   const partPieces=path.split("/");
-  if(partMatch&&request.method==="PUT"){
-   let uploadId;try{uploadId=decodeURIComponent(partMatch[1])}catch{return json({error:"Invalid upload ID."},400)}
-   const partNumber=Number(partMatch[2]);const key=url.searchParams.get("key");
+  if(partPieces.length===7&&partPieces[1]==="api"&&partPieces[2]==="admin"&&partPieces[3]==="uploads"&&partPieces[5]==="parts"&&request.method==="PUT"){
+   let uploadId;try{uploadId=decodeURIComponent(partPieces[4])}catch{return json({error:"Invalid upload ID."},400)}
+   const partNumber=Number(partPieces[6]);const key=url.searchParams.get("key");
    if(!safeUploadKey(key)||!uploadId||uploadId.length>512||!Number.isInteger(partNumber)||partNumber<1||partNumber>100)return json({error:"Invalid upload part request."},400);
    if(!request.body)return json({error:"Upload part is empty."},400);
    const result=await env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId).uploadPart(partNumber,request.body);
