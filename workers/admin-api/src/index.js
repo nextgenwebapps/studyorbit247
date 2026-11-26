@@ -36,7 +36,7 @@ function validateQuestionBank(data){
  if(!map)issues.push("Question IDs are missing or duplicated.");
  const seen=new Set();let duplicates=0;
  for(const [index,item] of data.questions.entries()){
-  const text=String(item.prompt??item.question?.en??item.question??item.text??"").normalize("NFKC").trim().toLowerCase().replace(/\\s+/g," ");
+  const text=String(item.prompt??item.question?.en??item.question??item.text??"").normalize("NFKC").trim().toLowerCase().replace(/\s+/g," ");
   if(!text)issues.push("Question "+(index+1)+" has no prompt.");
   if(text&&seen.has(text))duplicates++;else if(text)seen.add(text);
   const type=String(item.type||"").toLowerCase();
@@ -98,7 +98,7 @@ async function route(request,env){
   if(!env.CONTENT_BUCKET)return json({error:"R2 content storage is not configured."},503);
   if(path==="/api/admin/uploads/history"&&request.method==="GET"){
     const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit")||20)));
-    const {results=[]}=await env.DB.prepare("SELECT upload_id,object_key,original_file_name,content_type,expected_size,actual_size,uploaded_by,status,question_count,added_count,updated_count,removed_count,schema_version,bank_version,sha256,r2_etag,started_at,completed_at FROM content_uploads ORDER BY started_at DESC LIMIT ?").bind(limit).all();
+    const {results=[]}=await env.DB.prepare("SELECT upload_id,object_key,original_file_name,content_type,expected_size,actual_size,uploaded_by,status,question_count,added_count,updated_count,removed_count,duplicate_count,validation_issues_json,schema_version,bank_version,sha256,r2_etag,started_at,completed_at FROM content_uploads ORDER BY started_at DESC LIMIT ?").bind(limit).all();
     return json({uploads:results});
   }
   if(path==="/api/admin/uploads/start"&&request.method==="POST"){
