@@ -5,12 +5,13 @@ import { subjects } from "../home/Subjects.jsx";
 import { exams } from "../home/Exams.jsx";
 import { Question } from "../mocktest/Question.jsx";
 import { displayAnswer, emptyAnswer, hasAnswer, scoreQuestion } from "../mocktest/answers.js";
-import { findQuestions, matchesPracticeFilters } from "./catalog.js";
+import { findQuestions, mapQuestionBank, matchesPracticeFilters, questions as bundledPracticeQuestions } from "./catalog.js";
 import "../mocktest/mocktest.css";
 import "./practice.css";
 
 const subjectOptions = subjects.map(([, title]) => title);
 const examOptions = exams.map(([, , title]) => title);
+const CONTENT_API = "https://studyorbit247-api.studyorbit247.workers.dev/api/content/question-bank/gk/latest.json";
 
 function Filter({ label, name, options, value, onChange, disabled = false, all = label === "Level" ? "Any level" : "All " + label.toLowerCase() + "s" }) {
   return (
@@ -267,6 +268,24 @@ function PracticePage() {
   const [results, setResults] = useState(null);
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
   const [bookmarks, setBookmarks] = useState(readBookmarks);
+  const [practiceQuestions, setPracticeQuestions] = useState(bundledPracticeQuestions);
+
+  useEffect(() => {
+    let active = true;
+    fetch(`${CONTENT_API}?v=${Date.now()}`, { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error("Question bank could not be loaded");
+        return response.json();
+      })
+      .then((bank) => {
+        if (!active || !Array.isArray(bank?.questions) || bank.questions.length === 0) return;
+        setPracticeQuestions(mapQuestionBank(bank));
+      })
+      .catch(() => {
+        // Keep the bundled practice questions available if R2 cannot be reached.
+      });
+    return () => { active = false; };
+  }, []);
   const [attempts, setAttempts] = useState(readAttempts);
   useEffect(() => {
     try {
@@ -300,8 +319,8 @@ function PracticePage() {
     }
   }, [results]);
   const { subject, exam, chapter, topic, level, status, source } = filters;
-  const chapters = [...new Set(findQuestions({ subject, exam }).map((question) => question.chapter))].sort();
-  const topics = [...new Set(findQuestions({ subject, exam, chapter }).map((question) => question.topic))].sort();
+  const chapters = [...new Set(findQuestions({ subject, exam }, practiceQuestions).map((question) => question.chapter))].sort();
+  const topics = [...new Set(findQuestions({ subject, exam, chapter }, practiceQuestions).map((question) => question.topic))].sort();
 
   function changeFilter(event) {
     const { name, value } = event.target;
@@ -316,7 +335,7 @@ function PracticePage() {
 
   function search(event) {
     event.preventDefault();
-    const matches = findQuestions(filters);
+    const matches = findQuestions(filters, practiceQuestions);
     const matchingQuestions = matches.filter((question) => matchesPracticeFilters(question, filters, bookmarks, attempts));
     setResults(matchingQuestions);
     setFiltersCollapsed(matchingQuestions.length > 0);
