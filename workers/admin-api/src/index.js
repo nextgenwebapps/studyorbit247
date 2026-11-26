@@ -71,6 +71,24 @@ async function recordQuestionChanges(env,changes,key,uploadId,actor,changedAt){
 }
 
 function same(a,b){if(typeof a!=="string"||typeof b!=="string")return false;const x=new TextEncoder().encode(a),y=new TextEncoder().encode(b);let diff=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)diff|=(x[i]||0)^(y[i]||0);return diff===0}
+const ownerEmail=env=>String(env.ADMIN_EMAIL||"").trim().toLowerCase();
+function isOwner(email,env){return String(email||"").trim().toLowerCase()===ownerEmail(env)}
+async function passwordHash(password,saltText){
+ const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(password),"PBKDF2",false,["deriveBits"]);
+ const bits=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:fromB64url(saltText),iterations:210000},key,256);
+ return b64url(bits);
+}
+async function getAccess(email,env){
+ if(isOwner(email,env))return {isOwner:true,permissions:["*"],roles:["owner"],jobTitle:"Owner / Founder"};
+ const user=await env.DB.prepare("SELECT u.id,u.email,u.display_name,j.title AS job_title FROM admin_users u JOIN admin_job_titles j ON j.code=u.job_title_code WHERE lower(u.email)=lower(?) AND u.is_active=1").bind(email).first();
+ if(!user)return null;
+ const {results=[]}=await env.DB.prepare("SELECT DISTINCT r.code AS role,p.code AS permission FROM admin_user_roles ur JOIN admin_access_roles r ON r.id=ur.role_id AND r.is_active=1 JOIN admin_role_permissions rp ON rp.role_id=r.id JOIN admin_permissions p ON p.code=rp.permission_code WHERE ur.user_id=?").bind(user.id).all();
+ return {isOwner:false,userId:user.id,permissions:[...new Set(results.map(x=>x.permission))],roles:[...new Set(results.map(x=>x.role))],jobTitle:user.job_title,displayName:user.display_name};
+}
+function has(access,permission){return Boolean(access&&(access.permissions.includes("*")||access.permissions.includes(permission)))}
+async function auditTeam(env,actor,action,id,email,details={}){
+ await env.DB.prepare("INSERT INTO admin_audit_log (id,actor_email,action,target_user_id,target_email,details_json,created_at) VALUES (?,?,?,?,?,?,?)").bind(crypto.randomUUID(),actor,action,id||null,email||null,JSON.stringify(details),new Date().toISOString()).run();
+}
 async function route(request,env){
  const url=new URL(request.url),path=url.pathname.replace(/\/$/,"");
  if(request.method==="OPTIONS")return new Response(null,{status:204});
@@ -87,15 +105,79 @@ async function route(request,env){
   return new Response(object.body,{headers});
  }
  if(path==="/api/admin/login"&&request.method==="POST"){
-  const body=await readBody(request);
-  if(!body||!env.ADMIN_EMAIL||!env.ADMIN_PASSWORD||!env.SESSION_SECRET)return json({error:"Admin authentication is not configured."},503);
-  if(!same(String(body.email||"").trim().toLowerCase(),env.ADMIN_EMAIL.trim().toLowerCase())||!same(String(body.password||""),env.ADMIN_PASSWORD))return json({error:"Email or password is incorrect."},401);
-  const token=await issueSession(env.ADMIN_EMAIL,env);
-  return json({ok:true,email:env.ADMIN_EMAIL},200,{"Set-Cookie":cookie(token,SESSION_SECONDS)});
+  const body=await readBody(request),email=String(body?.email||"").trim().toLowerCase(),password=String(body?.password||"");
+  if(!body||!env.SESSION_SECRET)return json({error:"Admin authentication is not configured."},503);
+  let valid=false,canonicalEmail=email;
+  if(isOwner(email,env))valid=Boolean(env.ADMIN_PASSWORD&&same(password,env.ADMIN_PASSWORD)),canonicalEmail=env.ADMIN_EMAIL;
+  else {
+   const user=await env.DB.prepare("SELECT id,email,password_salt,password_hash FROM admin_users WHERE lower(email)=? AND is_active=1").bind(email).first();
+   if(user){valid=same(await passwordHash(password,user.password_salt),user.password_hash);canonicalEmail=user.email;if(valid)await env.DB.prepare("UPDATE admin_users SET last_login_at=? WHERE id=?").bind(new Date().toISOString(),user.id).run();}
+  }
+  if(!valid)return json({error:"Email or password is incorrect."},401);
+  const token=await issueSession(canonicalEmail,env);
+  return json({ok:true,email:canonicalEmail},200,{"Set-Cookie":cookie(token,SESSION_SECONDS)});
  }
- if(path==="/api/admin/me"&&request.method==="GET"){const session=await getSession(request,env);return session?json({ok:true,email:session.email}):json({error:"Authentication required."},401)}
+ if(path==="/api/admin/me"&&request.method==="GET"){
+  const session=await getSession(request,env);if(!session)return json({error:"Authentication required."},401);
+  const access=await getAccess(session.email,env);return access?json({ok:true,email:session.email,...access}):json({error:"Account is disabled or unavailable."},401);
+ }
  if(path==="/api/admin/logout"&&request.method==="POST")return json({ok:true},200,{"Set-Cookie":cookie("",0)});
  const session=await getSession(request,env);if(!session)return json({error:"Authentication required."},401);
+ const access=await getAccess(session.email,env);if(!access)return json({error:"Account is disabled or unavailable."},401);
+ const teamPath=path==="/api/admin/team/options"||path==="/api/admin/team/users"||path.startsWith("/api/admin/team/users/");
+ if(teamPath&&!has(access,"admin.team.manage"))return json({error:"You do not have permission to manage team accounts."},403);
+ if(teamPath&&path==="/api/admin/team/options"&&request.method==="GET"){
+  const [titles,roles]=await Promise.all([
+   env.DB.prepare("SELECT code,title,hierarchy_level,category FROM admin_job_titles ORDER BY hierarchy_level,title").all(),
+   env.DB.prepare("SELECT code,name,description FROM admin_access_roles WHERE is_active=1 ORDER BY hierarchy_rank,name").all()
+  ]);
+  return json({titles:titles.results||[],roles:roles.results||[]});
+ }
+ if(teamPath&&path==="/api/admin/team/users"&&request.method==="GET"){
+  const {results=[]}=await env.DB.prepare("SELECT u.id,u.email,u.display_name,u.job_title_code,j.title AS job_title,u.is_active,u.created_at,u.last_login_at,group_concat(r.code, ',') AS role_codes,group_concat(r.name, ', ') AS role_names FROM admin_users u JOIN admin_job_titles j ON j.code=u.job_title_code LEFT JOIN admin_user_roles ur ON ur.user_id=u.id LEFT JOIN admin_access_roles r ON r.id=ur.role_id GROUP BY u.id ORDER BY u.created_at DESC").all();
+  return json({users:results.map(u=>({...u,roles:u.role_codes?u.role_codes.split(","):[]}))});
+ }
+ if(teamPath&&path==="/api/admin/team/users"&&request.method==="POST"){
+  const body=await readBody(request),displayName=String(body?.displayName||"").trim(),email=String(body?.email||"").trim().toLowerCase(),jobTitleCode=String(body?.jobTitleCode||""),roleCode=String(body?.roleCode||""),password=String(body?.password||"");
+  if(displayName.length<2||displayName.length>100||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||password.length<12||password.length>256)return json({error:"Provide a valid name and email, and an initial password of at least 12 characters."},400);
+  if(email===ownerEmail(env))return json({error:"Owner email already uses the Super Admin account."},409);
+  const title=await env.DB.prepare("SELECT code FROM admin_job_titles WHERE code=?").bind(jobTitleCode).first();
+  const role=await env.DB.prepare("SELECT id,code FROM admin_access_roles WHERE code=? AND is_active=1").bind(roleCode).first();
+  if(!title||!role)return json({error:"Choose a listed job title and access role."},400);
+  const existing=await env.DB.prepare("SELECT id FROM admin_users WHERE lower(email)=?").bind(email).first();if(existing)return json({error:"An account with this email already exists."},409);
+  const id=crypto.randomUUID(),salt=b64url(crypto.getRandomValues(new Uint8Array(16))),hash=await passwordHash(password,salt),now=new Date().toISOString();
+  await env.DB.batch([
+   env.DB.prepare("INSERT INTO admin_users (id,email,display_name,job_title_code,password_salt,password_hash,created_by,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?)").bind(id,email,displayName,jobTitleCode,salt,hash,session.email,now,now),
+   env.DB.prepare("INSERT INTO admin_user_roles (user_id,role_id,assigned_by,assigned_at) VALUES (?,?,?,?)").bind(id,role.id,session.email,now),
+   env.DB.prepare("INSERT INTO admin_audit_log (id,actor_email,action,target_user_id,target_email,details_json,created_at) VALUES (?,?,?,?,?,?,?)").bind(crypto.randomUUID(),session.email,"staff_created",id,email,JSON.stringify({jobTitleCode,roleCode}),now)
+  ]);
+  return json({ok:true,id,email,displayName,jobTitleCode,roleCode,createdAt:now},201);
+ }
+ if(teamPath&&path.startsWith("/api/admin/team/users/")&&request.method==="PATCH"){
+  const id=decodeURIComponent(path.slice("/api/admin/team/users/".length)),body=await readBody(request);
+  const user=await env.DB.prepare("SELECT id,email FROM admin_users WHERE id=?").bind(id).first();if(!user)return json({error:"Staff account not found."},404);
+  const now=new Date().toISOString();
+  if(body?.action==="active"&&typeof body.active==="boolean"){
+   await env.DB.prepare("UPDATE admin_users SET is_active=?,updated_at=? WHERE id=?").bind(body.active?1:0,now,id).run();
+   await auditTeam(env,session.email,body.active?"staff_enabled":"staff_disabled",id,user.email);
+  }else if(body?.action==="role"&&typeof body.roleCode==="string"){
+   const role=await env.DB.prepare("SELECT id FROM admin_access_roles WHERE code=? AND is_active=1").bind(body.roleCode).first();if(!role)return json({error:"Choose an active access role."},400);
+   await env.DB.batch([env.DB.prepare("DELETE FROM admin_user_roles WHERE user_id=?").bind(id),env.DB.prepare("INSERT INTO admin_user_roles (user_id,role_id,assigned_by,assigned_at) VALUES (?,?,?,?)").bind(id,role.id,session.email,now),env.DB.prepare("UPDATE admin_users SET updated_at=? WHERE id=?").bind(now,id)]);
+   await auditTeam(env,session.email,"staff_role_changed",id,user.email,{roleCode:body.roleCode});
+  }else if(body?.action==="password"&&typeof body.password==="string"&&body.password.length>=12&&body.password.length<=256){
+   const salt=b64url(crypto.getRandomValues(new Uint8Array(16))),hash=await passwordHash(body.password,salt);
+   await env.DB.prepare("UPDATE admin_users SET password_salt=?,password_hash=?,updated_at=? WHERE id=?").bind(salt,hash,now,id);
+   await auditTeam(env,session.email,"staff_password_reset",id,user.email);
+  }else return json({error:"Invalid staff account update."},400);
+  return json({ok:true});
+ }
+ const required=path.startsWith("/api/admin/uploads/")?(path.endsWith("/history")?"audit.read":"r2.upload")
+  :path==="/api/admin/taxonomy"?(request.method==="GET"?"question.read":"taxonomy.manage")
+  :path==="/api/admin/questions/next-id"?"taxonomy.manage"
+  :path==="/api/admin/questions/history"?"audit.read"
+  :path==="/api/admin/questions/drafts"?(request.method==="GET"?"question.read":"question.write")
+  :path==="/api/admin/questions/publish"?"question.review":null;
+ if(required&&!has(access,required))return json({error:"You do not have permission to perform this action."},403);
  if(path.startsWith("/api/admin/uploads/")){
   if(!env.CONTENT_BUCKET)return json({error:"R2 content storage is not configured."},503);
   if(path==="/api/admin/uploads/history"&&request.method==="GET"){
