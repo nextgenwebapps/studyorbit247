@@ -37,10 +37,9 @@ The configured origins are exact and contain no path: `https://studyorbit247.web
 
 ## Apply the audit and taxonomy migration
 
-After pulling the repository, apply pending migrations before deploying the Worker:
+After pulling the repository, apply pending migrations first, then run the deploy command below:
 
     npx wrangler d1 migrations apply studyorbit247 --remote
-    npx wrangler deploy
 
 Migration 0003 adds R2 upload history, per-question change snapshots, controlled subject/chapter/topic codes, and per-topic ID counters. The admin R2 upload screen records actor email, file name, object key, timestamps, size, question count, content hash, validation findings, and added/updated/removed IDs. Only uploads made through the authenticated admin screen are recorded; direct dashboard or CLI uploads bypass this audit trail.
 
