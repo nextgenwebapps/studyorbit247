@@ -28,7 +28,7 @@ The deployed API will serve these at `/api/content/question-bank/gk/latest.zip` 
 
 ## Configure secrets
 
-The site origins are set in `wrangler.toml`. Set the three authentication secrets before using the admin login routes. Use the administrator email for `ADMIN_EMAIL`, choose an initial `ADMIN_PASSWORD`, and generate a long random `SESSION_SECRET` (for example, `openssl rand -base64 32`).
+The site origins are set in `wrangler.toml`. Set the three authentication secrets before using admin login or browser uploads. Enter these only in your own terminal prompts; never commit them or send them in chat. Use the administrator email for `ADMIN_EMAIL`, choose an initial `ADMIN_PASSWORD`, and generate a long random `SESSION_SECRET` (for example, `openssl rand -base64 32`).
 
     npx wrangler secret put ADMIN_EMAIL
     npx wrangler secret put ADMIN_PASSWORD
@@ -45,7 +45,7 @@ If using a separate Worker URL, set window.STUDYORBIT_ADMIN_API before the modul
 
 - POST /api/admin/login — validates secrets and issues an HttpOnly, Secure session cookie.
 - GET /api/admin/me — checks the signed session.
-- POST /api/admin/logout — clears the session cookie.
+- POST /api/admin/logout — clears the session cookie.\n- POST /api/admin/uploads/start, PUT /api/admin/uploads/:id/parts/:number, POST /api/admin/uploads/complete — authenticated multipart uploads into the R2 bucket.\n- POST /api/admin/uploads/abort — cancels an incomplete multipart upload.
 - GET|POST /api/admin/questions/drafts — read/save question drafts in D1.
 - POST /api/admin/questions/publish — marks selected drafts published in D1.
 - GET|HEAD /api/content/question-bank/* — serves question-bank files from R2.
@@ -53,4 +53,4 @@ If using a separate Worker URL, set window.STUDYORBIT_ADMIN_API before the modul
 
 ## Current implementation boundary
 
-The D1 migrations include admin questions plus student profiles, mock-test attempts/results, and bookmarks. The student tables are a storage schema foundation; secure student authentication and the user-facing save/read API must be connected before those records are used. R2 file delivery is separate from D1 question publishing; uploading a question-bank file does not automatically publish D1 question records. AI translation, OCR, Word/PDF parsing, browser-based uploads, audit logs, rate limiting and multi-admin roles are future integrations.
+The D1 migrations include admin questions plus student profiles, mock-test attempts/results, and bookmarks. The student tables are a storage schema foundation; secure student authentication and the user-facing save/read API must be connected before those records are used. R2 file delivery is separate from D1 question publishing; uploading a question-bank file does not automatically publish D1 question records. AI translation, OCR, Word/PDF parsing, The admin website can upload files up to 500 MiB to `question-bank/` or `media/` using 8 MiB parts; R2 credentials remain bound to the Worker. The question builder still stores drafts and demo-published items in the browser. Uploading a file to R2 does not import it into the builder or publish it automatically. Audit logs, rate limiting and multi-admin roles are future integrations.
