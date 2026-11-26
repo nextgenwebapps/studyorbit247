@@ -27,8 +27,17 @@ export const api = {
   },
   async me() { return request("/admin/me"); },
   async logout() { return request("/admin/logout", { method: "POST" }); },
-  async startUpload({ key, size, contentType }) {
-    return request("/admin/uploads/start", { method: "POST", body: JSON.stringify({ key, size, contentType }) });
+  async startUpload({ key, size, contentType, fileName }) {
+    return request("/admin/uploads/start", { method: "POST", body: JSON.stringify({ key, size, contentType, fileName }) });
+  },
+  async getUploadHistory(limit = 20) {
+    const query = new URLSearchParams({ limit: String(limit) });
+    return request("/admin/uploads/history?" + query);
+  },
+  async getQuestionHistory(limit = 20, questionId = "") {
+    const query = new URLSearchParams({ limit: String(limit) });
+    if (questionId) query.set("questionId", questionId);
+    return request("/admin/questions/history?" + query);
   },
   async uploadPart({ key, uploadId, partNumber, body }) {
     const query = new URLSearchParams({ key });
