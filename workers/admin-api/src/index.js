@@ -1,7 +1,7 @@
 const COOKIE="so_admin_session";
 const SESSION_SECONDS=60*60*8;
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...headers}});
-const cors=(request,env)=>{const origin=request.headers.get("Origin")||"";const allowed=[env.ADMIN_ORIGIN,env.PUBLIC_ORIGIN].filter(Boolean);if(!allowed.includes(origin))return {};return {"Access-Control-Allow-Origin":origin,"Access-Control-Allow-Credentials":origin===env.ADMIN_ORIGIN?"true":"false","Access-Control-Allow-Headers":"Content-Type,Range","Access-Control-Allow-Methods":"GET,HEAD,POST,OPTIONS","Vary":"Origin"};};
+const cors=(request,env)=>{const origin=request.headers.get("Origin")||"";const allowed=[env.ADMIN_ORIGIN,env.PUBLIC_ORIGIN].filter(Boolean);if(!allowed.includes(origin))return {};return {"Access-Control-Allow-Origin":origin,"Access-Control-Allow-Credentials":origin===env.ADMIN_ORIGIN?"true":"false","Access-Control-Allow-Headers":"Content-Type,Range","Access-Control-Allow-Methods":"GET,HEAD,POST,PUT,OPTIONS","Vary":"Origin"};};
 const b64url=bytes=>btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const fromB64url=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0));
 async function sign(value,secret){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);return b64url(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(value)));}
@@ -9,6 +9,8 @@ async function issueSession(email,env){const payload=b64url(new TextEncoder().en
 async function getSession(request,env){const raw=request.headers.get("Cookie")||"";const token=raw.split(";").map(x=>x.trim()).find(x=>x.startsWith(COOKIE+"="))?.slice(COOKIE.length+1);if(!token||!env.SESSION_SECRET)return null;const parts=token.split(".");if(parts.length!==2)return null;const [payload,signature]=parts;const expected=await sign(payload,env.SESSION_SECRET);if(signature!==expected)return null;try{const data=JSON.parse(new TextDecoder().decode(fromB64url(payload)));return data.exp>Date.now()/1000?data:null}catch{return null}}
 const cookie=(value,maxAge)=>COOKIE+"="+value+"; Path=/api/admin; HttpOnly; Secure; SameSite=None; Max-Age="+maxAge;
 const readBody=async request=>{try{return await request.json()}catch{return null}};
+const safeUploadKey=key=>typeof key==="string"&&key.length<=1024&&/^(question-bank|media)\\//.test(key)&&!key.includes("\\\\")&&key.split("/").every(part=>part&&part!=="."&&part!==".."&&!/[\\u0000-\\u001f\\u007f]/.test(part));
+const MAX_UPLOAD_BYTES=500*1024*1024;
 function same(a,b){if(typeof a!=="string"||typeof b!=="string")return false;const x=new TextEncoder().encode(a),y=new TextEncoder().encode(b);let diff=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)diff|=(x[i]||0)^(y[i]||0);return diff===0}
 async function route(request,env){
  const url=new URL(request.url),path=url.pathname.replace(/\/$/,"");
@@ -35,6 +37,41 @@ async function route(request,env){
  if(path==="/api/admin/me"&&request.method==="GET"){const session=await getSession(request,env);return session?json({ok:true,email:session.email}):json({error:"Authentication required."},401)}
  if(path==="/api/admin/logout"&&request.method==="POST")return json({ok:true},200,{"Set-Cookie":cookie("",0)});
  const session=await getSession(request,env);if(!session)return json({error:"Authentication required."},401);
+ if(path.startsWith("/api/admin/uploads/")){
+  if(!env.CONTENT_BUCKET)return json({error:"R2 content storage is not configured."},503);
+  if(path==="/api/admin/uploads/start"&&request.method==="POST"){
+   const body=await readBody(request);const {key,size,contentType}=body||{};
+   if(!safeUploadKey(key))return json({error:"Use a file path under question-bank/ or media/."},400);
+   if(!Number.isSafeInteger(size)||size<1||size>MAX_UPLOAD_BYTES)return json({error:"File size must be between 1 byte and 500 MiB."},400);
+   const upload=await env.CONTENT_BUCKET.createMultipartUpload(key,{httpMetadata:{contentType:typeof contentType==="string"&&contentType.length<=200?contentType:"application/octet-stream"}});
+   return json({ok:true,uploadId:upload.uploadId,key,partSize:8*1024*1024});
+  }
+  if(path==="/api/admin/uploads/complete"&&request.method==="POST"){
+   const body=await readBody(request);const {key,uploadId,parts}=body||{};
+   if(!safeUploadKey(key)||typeof uploadId!=="string"||uploadId.length>512||!Array.isArray(parts)||parts.length<1||parts.length>100)return json({error:"Invalid upload completion request."},400);
+   const clean=parts.map(p=>({partNumber:Number(p.partNumber),etag:String(p.etag||"")}));
+   if(clean.some((p,i)=>!Number.isInteger(p.partNumber)||p.partNumber!==i+1||!p.etag||p.etag.length>200))return json({error:"Invalid uploaded parts list."},400);
+   const upload=env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId);
+   const object=await upload.complete(clean);
+   return json({ok:true,key,size:object.size,etag:object.httpEtag});
+  }
+  if(path==="/api/admin/uploads/abort"&&request.method==="POST"){
+   const body=await readBody(request);const {key,uploadId}=body||{};
+   if(!safeUploadKey(key)||typeof uploadId!=="string"||uploadId.length>512)return json({error:"Invalid upload abort request."},400);
+   await env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId).abort();
+   return json({ok:true});
+  }
+  const partMatch=path.match(/^\\/api\\/admin\\/uploads\\/([^/]+)\\/parts\\/(\\d+)$/);
+  if(partMatch&&request.method==="PUT"){
+   let uploadId;try{uploadId=decodeURIComponent(partMatch[1])}catch{return json({error:"Invalid upload ID."},400)}
+   const partNumber=Number(partMatch[2]);const key=url.searchParams.get("key");
+   if(!safeUploadKey(key)||!uploadId||uploadId.length>512||!Number.isInteger(partNumber)||partNumber<1||partNumber>100)return json({error:"Invalid upload part request."},400);
+   if(!request.body)return json({error:"Upload part is empty."},400);
+   const result=await env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId).uploadPart(partNumber,request.body);
+   return json({ok:true,partNumber:result.partNumber,etag:result.etag});
+  }
+  return json({error:"Not found."},404);
+ }
  if(path==="/api/admin/questions/drafts"&&request.method==="GET"){
   const {results=[]}=await env.DB.prepare("SELECT id,status,question_type,subject,exam,payload_json,created_at,updated_at FROM questions WHERE status!='published' ORDER BY updated_at DESC LIMIT 1000").all();
   return json({questions:results.map(r=>({...JSON.parse(r.payload_json),status:r.status}))});
