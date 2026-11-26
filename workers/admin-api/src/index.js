@@ -12,9 +12,13 @@ const readBody=async request=>{try{return await request.json()}catch{return null
 const safeUploadKey=key=>typeof key==="string"&&key.length<=1024&&(key.startsWith("question-bank/")||key.startsWith("media/"))&&!key.includes(String.fromCharCode(92))&&key.split("/").every(part=>part&&part!=="."&&part!==".."&&[...part].every(char=>char.charCodeAt(0)>=32&&char.charCodeAt(0)!==127));
 const MAX_UPLOAD_BYTES=500*1024*1024;
 const MAX_AUDIT_JSON_BYTES=10*1024*1024;
-async function readSmallJson(object){
- if(!object||object.size>MAX_AUDIT_JSON_BYTES)return null;
- try{return JSON.parse(await object.text())}catch{return null}
+async function readSmallObject(object,parseJson=false){
+ if(!object||object.size>MAX_AUDIT_JSON_BYTES)return {data:null,sha256:null};
+ const bytes=await object.arrayBuffer();
+ const sha256=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",bytes))).map(x=>x.toString(16).padStart(2,"0")).join("");
+ let data=null;
+ if(parseJson){try{data=JSON.parse(new TextDecoder().decode(bytes))}catch{}}
+ return {data,sha256};
 }
 function questionMap(data){
  if(!Array.isArray(data?.questions))return null;
@@ -96,19 +100,21 @@ async function route(request,env){
    const clean=parts.map(p=>({partNumber:Number(p.partNumber),etag:String(p.etag||"")}));
    if(clean.some((p,i)=>!Number.isInteger(p.partNumber)||p.partNumber!==i+1||!p.etag||p.etag.length>200))return json({error:"Invalid uploaded parts list."},400);
    const oldObject=await env.CONTENT_BUCKET.get(key);
-   const oldData=key.startsWith("question-bank/")&&key.toLowerCase().endsWith(".json")?await readSmallJson(oldObject):null;
+   const isQuestionJson=key.startsWith("question-bank/")&&key.toLowerCase().endsWith(".json");
+   const oldSnapshot=oldObject?await readSmallObject(oldObject,isQuestionJson):{data:null,sha256:null};
+   const oldData=oldSnapshot.data;
    const oldMap=questionMap(oldData);
    const upload=env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId);
    const object=await upload.complete(clean);
    const completedAt=new Date().toISOString();
    const currentObject=await env.CONTENT_BUCKET.get(key);
    const isQuestionJson=key.startsWith("question-bank/")&&key.toLowerCase().endsWith(".json");
-   const currentData=isQuestionJson?await readSmallJson(currentObject):null;
+   const currentSnapshot=currentObject?await readSmallObject(currentObject,isQuestionJson):{data:null,sha256:null};
+   const currentData=currentSnapshot.data;
    const currentMap=questionMap(currentData);
    const changes=isQuestionJson&&currentMap?changesBetween(oldMap,currentMap):[];
    if(changes.length)await recordQuestionChanges(env,changes,key,uploadId,session.email,completedAt);
-   const digestBytes=currentObject&&currentObject.size<=MAX_AUDIT_JSON_BYTES?await currentObject.arrayBuffer():null;
-   const sha256=digestBytes?Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",digestBytes))).map(x=>x.toString(16).padStart(2,"0")).join(""):null;
+   const sha256=currentSnapshot.sha256;
    const addedCount=changes.filter(x=>x.action==="created").length;
    const updatedCount=changes.filter(x=>x.action==="updated").length;
    const removedCount=changes.filter(x=>x.action==="removed").length;
@@ -120,6 +126,7 @@ async function route(request,env){
    const body=await readBody(request);const {key,uploadId}=body||{};
    if(!safeUploadKey(key)||typeof uploadId!=="string"||uploadId.length>512)return json({error:"Invalid upload abort request."},400);
    await env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId).abort();
+   await env.DB.prepare("UPDATE content_uploads SET status='aborted',completed_at=? WHERE upload_id=? AND status='uploading'").bind(new Date().toISOString(),uploadId).run();
    return json({ok:true});
   }
   const partPieces=path.split("/");
