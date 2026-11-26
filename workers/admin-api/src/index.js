@@ -172,13 +172,13 @@ async function route(request,env){
   const code=String(body?.code||"").trim().toUpperCase();
   const nameEn=String(body?.nameEn||"").trim();
   const nameHi=String(body?.nameHi||"").trim();
-  const parentCode=String(body?.parentCode||"").trim().toUpperCase();
+  const requestedParentId=String(body?.parentId||"").trim();
   if(!["subject","chapter","topic"].includes(kind)||!/^[A-Z0-9]{2,8}$/.test(code)||!nameEn||nameEn.length>120||nameHi.length>120)return json({error:"Provide kind, a 2–8 character code and a valid English name."},400);
   let parentId=null;
-  if(kind==="subject"&&parentCode)return json({error:"A subject cannot have a parent."},400);
+  if(kind==="subject"&&requestedParentId)return json({error:"A subject cannot have a parent."},400);
   if(kind!=="subject"){
    const parentKind=kind==="chapter"?"subject":"chapter";
-   const parent=await env.DB.prepare("SELECT id FROM question_taxonomy_nodes WHERE kind=? AND code=? AND is_active=1").bind(parentKind,parentCode).first();
+   const parent=await env.DB.prepare("SELECT id FROM question_taxonomy_nodes WHERE kind=? AND id=? AND is_active=1").bind(parentKind,requestedParentId).first();
    if(!parent)return json({error:"Choose an existing active "+parentKind+" code as parent."},400);
    parentId=parent.id;
   }
