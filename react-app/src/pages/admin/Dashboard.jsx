@@ -46,7 +46,7 @@ function Dashboard() {
   const [jobTitles, setJobTitles] = useState([]);
   const [accessRoles, setAccessRoles] = useState([]);
   const [teamMessage, setTeamMessage] = useState("");
-  const [teamForm, setTeamForm] = useState({ displayName: "", email: "", jobTitleCode: "ASSOCIATE", roleCode: "read_only", password: "" });
+  const [teamForm, setTeamForm] = useState({ displayName: "", email: "", jobTitleCode: "ASSOCIATE", roleCode: "read_only", department: "General", reportsTo: "", password: "" });
   const [drafts, setDrafts] = useState(readDrafts);
   const [published, setPublished] = useState([]);
   const [view, setView] = useState("overview");
@@ -782,6 +782,8 @@ function Dashboard() {
                   <label className="field">Full name<input required minLength={2} maxLength={100} value={teamForm.displayName} onChange={(e) => setTeamForm({...teamForm, displayName:e.target.value})} /></label>
                   <label className="field">Work email<input required type="email" value={teamForm.email} onChange={(e) => setTeamForm({...teamForm, email:e.target.value})} /></label>
                   <label className="field">Job title<select value={teamForm.jobTitleCode} onChange={(e) => setTeamForm({...teamForm, jobTitleCode:e.target.value})}>{jobTitles.map((t)=><option key={t.code} value={t.code}>{t.title} · {t.category}</option>)}</select></label>
+                  <label className="field">Department<select value={teamForm.department} onChange={(e) => setTeamForm({...teamForm, department:e.target.value})}>{["General","Content","Product & Engineering","Marketing","Operations","Finance","People & HR","Customer Support","Legal"].map((d)=><option key={d} value={d}>{d}</option>)}</select></label>
+                  <label className="field">Reports to<select value={teamForm.reportsTo} onChange={(e) => setTeamForm({...teamForm, reportsTo:e.target.value})}><option value="">No reporting manager yet</option>{teamUsers.filter((u)=>u.is_active).map((u)=><option key={u.id} value={u.id}>{u.display_name} · {u.job_title}</option>)}</select></label>
                   <label className="field">Access role<select value={teamForm.roleCode} onChange={(e) => setTeamForm({...teamForm, roleCode:e.target.value})}>{accessRoles.map((r)=><option key={r.code} value={r.code}>{r.name} — {r.description}</option>)}</select></label>
                   <label className="field">Initial password<input required type="password" minLength={12} autoComplete="new-password" value={teamForm.password} onChange={(e) => setTeamForm({...teamForm, password:e.target.value})} /></label>
                   <button className="primary" type="submit">Create staff account</button>
@@ -792,7 +794,7 @@ function Dashboard() {
                 <div className="panel-heading"><div><h2>Staff accounts</h2><p className="muted">Disable access immediately when a person leaves or changes responsibilities.</p></div></div>
                 <div className={teamUsers.length ? "question-list" : "empty-state"}>
                   {teamUsers.length ? teamUsers.map((user) => <div className="question-row" key={user.id}>
-                    <div><strong>{user.display_name} · {user.job_title}</strong><small>{user.email} · {user.is_active ? "Active" : "Disabled"} · Last login: {user.last_login_at ? new Date(user.last_login_at).toLocaleString() : "Never"}</small></div>
+                    <div><strong>{user.display_name} · {user.job_title}</strong><small>{user.email} · {user.department || "General"} · Reports to {user.manager_name || "Owner"} · {user.is_active ? "Active" : "Disabled"} · Last login: {user.last_login_at ? new Date(user.last_login_at).toLocaleString() : "Never"}</small></div>
                     <div className="review-actions">
                       <select aria-label={"Access role for " + user.email} value={user.roles?.[0] || "read_only"} onChange={(e) => changeStaffRole(user,e.target.value)}>{accessRoles.map((r)=><option key={r.code} value={r.code}>{r.name}</option>)}</select>
                       <button className="text-button" onClick={() => resetStaffPassword(user)}>Reset password</button>
