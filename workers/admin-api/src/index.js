@@ -29,6 +29,27 @@ function questionMap(data){
  }
  return map;
 }
+function validateQuestionBank(data){
+ const issues=[];
+ const map=questionMap(data);
+ if(!Array.isArray(data?.questions))return {map:null,duplicates:0,issues:["Missing top-level questions array."]};
+ if(!map)issues.push("Question IDs are missing or duplicated.");
+ const seen=new Set();let duplicates=0;
+ for(const [index,item] of data.questions.entries()){
+  const text=String(item.prompt??item.question?.en??item.question??item.text??"").normalize("NFKC").trim().toLowerCase().replace(/\\s+/g," ");
+  if(!text)issues.push("Question "+(index+1)+" has no prompt.");
+  if(text&&seen.has(text))duplicates++;else if(text)seen.add(text);
+  const type=String(item.type||"").toLowerCase();
+  if(type==="mcq"||type==="single_mcq"||type==="multiple_mcq"){
+   if(!Array.isArray(item.options)||item.options.length<2)issues.push("Question "+(index+1)+" has fewer than two options.");
+   const answer=item.correct??item.answer;
+   if(answer==null||answer==="")issues.push("Question "+(index+1)+" has no correct answer.");
+   else if(Array.isArray(item.options)&&item.options.every(x=>typeof x==="string")&&typeof answer==="string"&&!item.options.includes(answer))issues.push("Question "+(index+1)+" answer is not one of its options.");
+  }
+ }
+ if(duplicates)issues.push(duplicates+" exact duplicate prompt(s) found.");
+ return {map,duplicates,issues};
+}
 function changesBetween(before,after){
  const changes=[];
  if(after)for(const [id,item] of after){
@@ -110,7 +131,8 @@ async function route(request,env){
    const currentObject=await env.CONTENT_BUCKET.get(key);
    const currentSnapshot=currentObject?await readSmallObject(currentObject,isQuestionJson):{data:null,sha256:null};
    const currentData=currentSnapshot.data;
-   const currentMap=questionMap(currentData);
+   const validation=isQuestionJson?validateQuestionBank(currentData):{map:null,duplicates:0,issues:[]};
+   const currentMap=validation.map;
    const changes=isQuestionJson&&currentMap?changesBetween(oldMap,currentMap):[];
    if(changes.length)await recordQuestionChanges(env,changes,key,uploadId,session.email,completedAt);
    const sha256=currentSnapshot.sha256;
@@ -118,8 +140,9 @@ async function route(request,env){
    const updatedCount=changes.filter(x=>x.action==="updated").length;
    const removedCount=changes.filter(x=>x.action==="removed").length;
    const validQuestionJson=!isQuestionJson||currentMap!==null;
-   await env.DB.prepare("UPDATE content_uploads SET status=?,actual_size=?,question_count=?,added_count=?,updated_count=?,removed_count=?,schema_version=?,bank_version=?,sha256=?,r2_etag=?,completed_at=? WHERE upload_id=?").bind(validQuestionJson?"completed":"completed_unverified",object.size,isQuestionJson&&currentMap?currentMap.size:null,addedCount,updatedCount,removedCount,currentData&&currentData.schemaVersion!=null?String(currentData.schemaVersion):null,currentData&&currentData.bankVersion!=null?String(currentData.bankVersion):null,sha256,object.httpEtag,completedAt,uploadId).run();
-   return json({ok:true,key,size:object.size,etag:object.httpEtag,uploadedBy:session.email,completedAt,status:validQuestionJson?"completed":"completed_unverified",questionCount:isQuestionJson&&currentMap?currentMap.size:null,changes:{added:addedCount,updated:updatedCount,removed:removedCount},sha256});
+   const auditStatus=validQuestionJson?(validation.issues.length?"completed_with_issues":"completed"):"completed_unverified";
+   await env.DB.prepare("UPDATE content_uploads SET status=?,actual_size=?,question_count=?,added_count=?,updated_count=?,removed_count=?,duplicate_count=?,validation_issues_json=?,schema_version=?,bank_version=?,sha256=?,r2_etag=?,completed_at=? WHERE upload_id=?").bind(auditStatus,object.size,isQuestionJson&&currentMap?currentMap.size:null,addedCount,updatedCount,removedCount,validation.duplicates,JSON.stringify(validation.issues),currentData&&currentData.schemaVersion!=null?String(currentData.schemaVersion):null,currentData&&currentData.bankVersion!=null?String(currentData.bankVersion):null,sha256,object.httpEtag,completedAt,uploadId).run();
+   return json({ok:true,key,size:object.size,etag:object.httpEtag,uploadedBy:session.email,completedAt,status:auditStatus,questionCount:isQuestionJson&&currentMap?currentMap.size:null,changes:{added:addedCount,updated:updatedCount,removed:removedCount},duplicateCount:validation.duplicates,validationIssues:validation.issues,sha256});
   }
   if(path==="/api/admin/uploads/abort"&&request.method==="POST"){
    const body=await readBody(request);const {key,uploadId}=body||{};
@@ -138,6 +161,45 @@ async function route(request,env){
    return json({ok:true,partNumber:result.partNumber,etag:result.etag});
   }
   return json({error:"Not found."},404);
+ }
+ if(path==="/api/admin/taxonomy"&&request.method==="GET"){
+  const {results=[]}=await env.DB.prepare("SELECT id,kind,parent_id,code,name_en,name_hi,is_active,created_at,created_by FROM question_taxonomy_nodes ORDER BY kind,parent_id,code").all();
+  return json({taxonomy:results});
+ }
+ if(path==="/api/admin/taxonomy"&&request.method==="POST"){
+  const body=await readBody(request);
+  const kind=String(body?.kind||"");
+  const code=String(body?.code||"").trim().toUpperCase();
+  const nameEn=String(body?.nameEn||"").trim();
+  const nameHi=String(body?.nameHi||"").trim();
+  const parentCode=String(body?.parentCode||"").trim().toUpperCase();
+  if(!["subject","chapter","topic"].includes(kind)||!/^[A-Z0-9]{2,8}$/.test(code)||!nameEn||nameEn.length>120||nameHi.length>120)return json({error:"Provide kind, a 2–8 character code and a valid English name."},400);
+  let parentId=null;
+  if(kind==="subject"&&parentCode)return json({error:"A subject cannot have a parent."},400);
+  if(kind!=="subject"){
+   const parentKind=kind==="chapter"?"subject":"chapter";
+   const parent=await env.DB.prepare("SELECT id FROM question_taxonomy_nodes WHERE kind=? AND code=? AND is_active=1").bind(parentKind,parentCode).first();
+   if(!parent)return json({error:"Choose an existing active "+parentKind+" code as parent."},400);
+   parentId=parent.id;
+  }
+  const id=crypto.randomUUID(),createdAt=new Date().toISOString();
+  await env.DB.prepare("INSERT INTO question_taxonomy_nodes (id,kind,parent_id,code,name_en,name_hi,created_at,created_by) VALUES (?,?,?,?,?,?,?,?)").bind(id,kind,parentId,code,nameEn,nameHi||null,createdAt,session.email).run();
+  return json({ok:true,id,kind,code,parentId,nameEn,nameHi:nameHi||null,createdAt,createdBy:session.email},201);
+ }
+ if(path==="/api/admin/questions/next-id"&&request.method==="POST"){
+  const body=await readBody(request);
+  const subjectCode=String(body?.subjectCode||"").toUpperCase();
+  const chapterCode=String(body?.chapterCode||"").toUpperCase();
+  const topicCode=String(body?.topicCode||"").toUpperCase();
+  const level=String(body?.level||"").toUpperCase();
+  if(!["E","M","H"].includes(level))return json({error:"Level must be E, M or H."},400);
+  const topic=await env.DB.prepare("SELECT s.code AS subject_code,c.code AS chapter_code,t.id AS topic_id,t.code AS topic_code FROM question_taxonomy_nodes s JOIN question_taxonomy_nodes c ON c.parent_id=s.id AND c.kind='chapter' JOIN question_taxonomy_nodes t ON t.parent_id=c.id AND t.kind='topic' WHERE s.kind='subject' AND s.code=? AND s.is_active=1 AND c.code=? AND c.is_active=1 AND t.code=? AND t.is_active=1").bind(subjectCode,chapterCode,topicCode).first();
+  if(!topic)return json({error:"Subject, chapter or topic code is missing or mismatched."},400);
+  const now=new Date().toISOString();
+  const sequence=await env.DB.prepare("INSERT INTO question_topic_sequences (topic_id,last_number,updated_at) VALUES (?,1,?) ON CONFLICT(topic_id) DO UPDATE SET last_number=last_number+1,updated_at=excluded.updated_at WHERE last_number<999999 RETURNING last_number").bind(topic.topic_id,now).first();
+  if(!sequence)return json({error:"This topic has reached its 999999 question ID limit."},409);
+  const serial=String(sequence.last_number).padStart(6,"0");
+  return json({recordId:crypto.randomUUID(),questionId:subjectCode+"-"+chapterCode+"-"+topicCode+"-"+level+"-"+serial,sequence:sequence.last_number,topicCode,level,createdAt:now,createdBy:session.email},201);
  }
  if(path==="/api/admin/questions/history"&&request.method==="GET"){
   const questionId=url.searchParams.get("questionId");
