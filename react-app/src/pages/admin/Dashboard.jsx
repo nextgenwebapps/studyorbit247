@@ -191,7 +191,7 @@ function Dashboard() {
     if (uploadFile.size < 1) return notify("The selected file is empty.");
     const maxBytes = 500 * 1024 * 1024;
     if (uploadFile.size > maxBytes) return notify("Maximum supported file size is 500 MiB.");
-    const relativePath = (uploadPath.trim() || uploadFile.name).replace(/^\\/+/, "");
+    const relativePath = (uploadPath.trim() || uploadFile.name).split("/").filter(Boolean).join("/");
     const key = uploadType + "/" + relativePath;
     let uploadId;
     setUploading(true);
