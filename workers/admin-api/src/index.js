@@ -11,6 +11,38 @@ const cookie=(value,maxAge)=>COOKIE+"="+value+"; Path=/api/admin; HttpOnly; Secu
 const readBody=async request=>{try{return await request.json()}catch{return null}};
 const safeUploadKey=key=>typeof key==="string"&&key.length<=1024&&(key.startsWith("question-bank/")||key.startsWith("media/"))&&!key.includes(String.fromCharCode(92))&&key.split("/").every(part=>part&&part!=="."&&part!==".."&&[...part].every(char=>char.charCodeAt(0)>=32&&char.charCodeAt(0)!==127));
 const MAX_UPLOAD_BYTES=500*1024*1024;
+const MAX_AUDIT_JSON_BYTES=10*1024*1024;
+async function readSmallJson(object){
+ if(!object||object.size>MAX_AUDIT_JSON_BYTES)return null;
+ try{return JSON.parse(await object.text())}catch{return null}
+}
+function questionMap(data){
+ if(!Array.isArray(data?.questions))return null;
+ const map=new Map();
+ for(const item of data.questions){
+  if(!item||typeof item.id!=="string"||!item.id.trim()||map.has(item.id))return null;
+  map.set(item.id,item);
+ }
+ return map;
+}
+function changesBetween(before,after){
+ const changes=[];
+ if(after)for(const [id,item] of after){
+  if(!before||!before.has(id))changes.push({id,action:"created",before:null,after:item});
+  else if(JSON.stringify(before.get(id))!==JSON.stringify(item))changes.push({id,action:"updated",before:before.get(id),after:item});
+ }
+ if(before)for(const [id,item] of before)if(!after||!after.has(id))changes.push({id,action:"removed",before:item,after:null});
+ return changes;
+}
+async function recordQuestionChanges(env,changes,key,uploadId,actor,changedAt){
+ for(let offset=0;offset<changes.length;offset+=100){
+  const batch=changes.slice(offset,offset+100).map(item=>env.DB.prepare(
+   "INSERT INTO question_change_log (id,question_id,action,object_key,upload_id,changed_by,changed_at,before_json,after_json) VALUES (?,?,?,?,?,?,?,?,?)"
+  ).bind(crypto.randomUUID(),item.id,item.action,key,uploadId,actor,changedAt,item.before?JSON.stringify(item.before):null,item.after?JSON.stringify(item.after):null));
+  if(batch.length)await env.DB.batch(batch);
+ }
+}
+
 function same(a,b){if(typeof a!=="string"||typeof b!=="string")return false;const x=new TextEncoder().encode(a),y=new TextEncoder().encode(b);let diff=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)diff|=(x[i]||0)^(y[i]||0);return diff===0}
 async function route(request,env){
  const url=new URL(request.url),path=url.pathname.replace(/\/$/,"");
@@ -40,20 +72,49 @@ async function route(request,env){
  if(path.startsWith("/api/admin/uploads/")){
   if(!env.CONTENT_BUCKET)return json({error:"R2 content storage is not configured."},503);
   if(path==="/api/admin/uploads/start"&&request.method==="POST"){
-   const body=await readBody(request);const {key,size,contentType}=body||{};
+   if(path==="/api/admin/uploads/history"&&request.method==="GET"){
+    const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit")||20)));
+    const {results=[]}=await env.DB.prepare("SELECT upload_id,object_key,original_file_name,content_type,expected_size,actual_size,uploaded_by,status,question_count,added_count,updated_count,removed_count,schema_version,bank_version,sha256,r2_etag,started_at,completed_at FROM content_uploads ORDER BY started_at DESC LIMIT ?").bind(limit).all();
+    return json({uploads:results});
+   }
+   const body=await readBody(request);const {key,size,contentType,fileName}=body||{};
    if(!safeUploadKey(key))return json({error:"Use a file path under question-bank/ or media/."},400);
    if(!Number.isSafeInteger(size)||size<1||size>MAX_UPLOAD_BYTES)return json({error:"File size must be between 1 byte and 500 MiB."},400);
    const upload=await env.CONTENT_BUCKET.createMultipartUpload(key,{httpMetadata:{contentType:typeof contentType==="string"&&contentType.length<=200?contentType:"application/octet-stream"}});
-   return json({ok:true,uploadId:upload.uploadId,key,partSize:8*1024*1024});
+   const startedAt=new Date().toISOString();
+   try{
+    await env.DB.prepare("INSERT INTO content_uploads (upload_id,object_key,original_file_name,content_type,expected_size,uploaded_by,status,started_at) VALUES (?,?,?,?,?,?,'uploading',?)").bind(upload.uploadId,key,typeof fileName==="string"&&fileName.length<=255?fileName:key.split("/").pop(),typeof contentType==="string"?contentType:"application/octet-stream",size,session.email,startedAt).run();
+   }catch(error){
+    try{await upload.abort()}catch{}
+    throw error;
+   }
+   return json({ok:true,uploadId:upload.uploadId,key,partSize:8*1024*1024,startedAt});
   }
   if(path==="/api/admin/uploads/complete"&&request.method==="POST"){
    const body=await readBody(request);const {key,uploadId,parts}=body||{};
    if(!safeUploadKey(key)||typeof uploadId!=="string"||uploadId.length>512||!Array.isArray(parts)||parts.length<1||parts.length>100)return json({error:"Invalid upload completion request."},400);
    const clean=parts.map(p=>({partNumber:Number(p.partNumber),etag:String(p.etag||"")}));
    if(clean.some((p,i)=>!Number.isInteger(p.partNumber)||p.partNumber!==i+1||!p.etag||p.etag.length>200))return json({error:"Invalid uploaded parts list."},400);
+   const oldObject=await env.CONTENT_BUCKET.get(key);
+   const oldData=key.startsWith("question-bank/")&&key.toLowerCase().endsWith(".json")?await readSmallJson(oldObject):null;
+   const oldMap=questionMap(oldData);
    const upload=env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId);
    const object=await upload.complete(clean);
-   return json({ok:true,key,size:object.size,etag:object.httpEtag});
+   const completedAt=new Date().toISOString();
+   const currentObject=await env.CONTENT_BUCKET.get(key);
+   const isQuestionJson=key.startsWith("question-bank/")&&key.toLowerCase().endsWith(".json");
+   const currentData=isQuestionJson?await readSmallJson(currentObject):null;
+   const currentMap=questionMap(currentData);
+   const changes=isQuestionJson&&currentMap?changesBetween(oldMap,currentMap):[];
+   if(changes.length)await recordQuestionChanges(env,changes,key,uploadId,session.email,completedAt);
+   const digestBytes=currentObject&&currentObject.size<=MAX_AUDIT_JSON_BYTES?await currentObject.arrayBuffer():null;
+   const sha256=digestBytes?Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",digestBytes))).map(x=>x.toString(16).padStart(2,"0")).join(""):null;
+   const addedCount=changes.filter(x=>x.action==="created").length;
+   const updatedCount=changes.filter(x=>x.action==="updated").length;
+   const removedCount=changes.filter(x=>x.action==="removed").length;
+   const validQuestionJson=!isQuestionJson||currentMap!==null;
+   await env.DB.prepare("UPDATE content_uploads SET status=?,actual_size=?,question_count=?,added_count=?,updated_count=?,removed_count=?,schema_version=?,bank_version=?,sha256=?,r2_etag=?,completed_at=? WHERE upload_id=?").bind(validQuestionJson?"completed":"completed_unverified",object.size,isQuestionJson&&currentMap?currentMap.size:null,addedCount,updatedCount,removedCount,currentData&&currentData.schemaVersion!=null?String(currentData.schemaVersion):null,currentData&&currentData.bankVersion!=null?String(currentData.bankVersion):null,sha256,object.httpEtag,completedAt,uploadId).run();
+   return json({ok:true,key,size:object.size,etag:object.httpEtag,uploadedBy:session.email,completedAt,status:validQuestionJson?"completed":"completed_unverified",questionCount:isQuestionJson&&currentMap?currentMap.size:null,changes:{added:addedCount,updated:updatedCount,removed:removedCount},sha256});
   }
   if(path==="/api/admin/uploads/abort"&&request.method==="POST"){
    const body=await readBody(request);const {key,uploadId}=body||{};
@@ -71,6 +132,15 @@ async function route(request,env){
    return json({ok:true,partNumber:result.partNumber,etag:result.etag});
   }
   return json({error:"Not found."},404);
+ }
+ if(path==="/api/admin/questions/history"&&request.method==="GET"){
+  const questionId=url.searchParams.get("questionId");
+  const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit")||20)));
+  const query=questionId
+   ?env.DB.prepare("SELECT id,question_id,action,object_key,upload_id,changed_by,changed_at,before_json,after_json FROM question_change_log WHERE question_id=? ORDER BY changed_at DESC LIMIT ?").bind(questionId,limit)
+   :env.DB.prepare("SELECT id,question_id,action,object_key,upload_id,changed_by,changed_at,before_json,after_json FROM question_change_log ORDER BY changed_at DESC LIMIT ?").bind(limit);
+  const {results=[]}=await query.all();
+  return json({changes:results});
  }
  if(path==="/api/admin/questions/drafts"&&request.method==="GET"){
   const {results=[]}=await env.DB.prepare("SELECT id,status,question_type,subject,exam,payload_json,created_at,updated_at FROM questions WHERE status!='published' ORDER BY updated_at DESC LIMIT 1000").all();
