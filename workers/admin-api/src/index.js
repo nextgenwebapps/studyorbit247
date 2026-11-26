@@ -1,7 +1,7 @@
 const COOKIE="so_admin_session";
 const SESSION_SECONDS=60*60*8;
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...headers}});
-const cors=(request,env)=>{const origin=request.headers.get("Origin")||"";const allowed=env.ADMIN_ORIGIN||"";if(!allowed||origin!==allowed)return {};return {"Access-Control-Allow-Origin":origin,"Access-Control-Allow-Credentials":"true","Access-Control-Allow-Headers":"Content-Type","Access-Control-Allow-Methods":"GET,POST,OPTIONS","Vary":"Origin"};};
+const cors=(request,env)=>{const origin=request.headers.get("Origin")||"";const allowed=[env.ADMIN_ORIGIN,env.PUBLIC_ORIGIN].filter(Boolean);if(!allowed.includes(origin))return {};return {"Access-Control-Allow-Origin":origin,"Access-Control-Allow-Credentials":origin===env.ADMIN_ORIGIN?"true":"false","Access-Control-Allow-Headers":"Content-Type,Range","Access-Control-Allow-Methods":"GET,HEAD,POST,OPTIONS","Vary":"Origin"};};
 const b64url=bytes=>btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const fromB64url=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0));
 async function sign(value,secret){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);return b64url(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(value)));}
@@ -13,6 +13,18 @@ function same(a,b){if(typeof a!=="string"||typeof b!=="string")return false;cons
 async function route(request,env){
  const url=new URL(request.url),path=url.pathname.replace(/\/$/,"");
  if(request.method==="OPTIONS")return new Response(null,{status:204});
+ // Public, read-only access to published question-bank files and media in R2.
+ if(path.startsWith("/api/content/")&&(request.method==="GET"||request.method==="HEAD")){
+  if(!env.CONTENT_BUCKET)return json({error:"R2 content storage is not configured."},503);
+  let key;try{key=decodeURIComponent(path.slice("/api/content/".length))}catch{return json({error:"Invalid object key."},400)}
+  if(!key||key.split("/").some(part=>!part||part==="."||part==="..")||!(/^(question-bank|media)\//.test(key)))return json({error:"Content not found."},404);
+  const object=request.method==="HEAD"?await env.CONTENT_BUCKET.head(key):await env.CONTENT_BUCKET.get(key);
+  if(!object)return json({error:"Content not found."},404);
+  const headers=new Headers();object.writeHttpMetadata(headers);headers.set("ETag",object.httpEtag);
+  headers.set("Cache-Control","public, max-age=300, s-maxage=3600");
+  if(request.method==="HEAD")return new Response(null,{headers});
+  return new Response(object.body,{headers});
+ }
  if(path==="/api/admin/login"&&request.method==="POST"){
   const body=await readBody(request);
   if(!body||!env.ADMIN_EMAIL||!env.ADMIN_PASSWORD||!env.SESSION_SECRET)return json({error:"Admin authentication is not configured."},503);

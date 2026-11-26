@@ -5,8 +5,12 @@ compatibility_date = "2026-11-24"
 [[d1_databases]]
 binding = "DB"
 database_name = "studyorbit247-admin"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "f39d5f54-20cc-46ba-ad1b-2cf31afa1283"
 migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "CONTENT_BUCKET"
+bucket_name = "studyorbit247"
 
 # Add a same-domain route after connecting your domain to Cloudflare:
 # routes = [{ pattern = "YOUR_DOMAIN/api/*", zone_name = "YOUR_DOMAIN" }]
