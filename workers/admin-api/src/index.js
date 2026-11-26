@@ -9,7 +9,7 @@ async function issueSession(email,env){const payload=b64url(new TextEncoder().en
 async function getSession(request,env){const raw=request.headers.get("Cookie")||"";const token=raw.split(";").map(x=>x.trim()).find(x=>x.startsWith(COOKIE+"="))?.slice(COOKIE.length+1);if(!token||!env.SESSION_SECRET)return null;const parts=token.split(".");if(parts.length!==2)return null;const [payload,signature]=parts;const expected=await sign(payload,env.SESSION_SECRET);if(signature!==expected)return null;try{const data=JSON.parse(new TextDecoder().decode(fromB64url(payload)));return data.exp>Date.now()/1000?data:null}catch{return null}}
 const cookie=(value,maxAge)=>COOKIE+"="+value+"; Path=/api/admin; HttpOnly; Secure; SameSite=None; Max-Age="+maxAge;
 const readBody=async request=>{try{return await request.json()}catch{return null}};
-const safeUploadKey=key=>typeof key==="string"&&key.length<=1024&&/^(question-bank|media)\\//.test(key)&&!key.includes("\\\\")&&key.split("/").every(part=>part&&part!=="."&&part!==".."&&!/[\\u0000-\\u001f\\u007f]/.test(part));
+const safeUploadKey=key=>typeof key==="string"&&key.length<=1024&&(key.startsWith("question-bank/")||key.startsWith("media/"))&&!key.includes(String.fromCharCode(92))&&key.split("/").every(part=>part&&part!=="."&&part!==".."&&[...part].every(char=>char.charCodeAt(0)>=32&&char.charCodeAt(0)!==127));
 const MAX_UPLOAD_BYTES=500*1024*1024;
 function same(a,b){if(typeof a!=="string"||typeof b!=="string")return false;const x=new TextEncoder().encode(a),y=new TextEncoder().encode(b);let diff=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)diff|=(x[i]||0)^(y[i]||0);return diff===0}
 async function route(request,env){
@@ -61,7 +61,7 @@ async function route(request,env){
    await env.CONTENT_BUCKET.resumeMultipartUpload(key,uploadId).abort();
    return json({ok:true});
   }
-  const partMatch=path.match(/^\\/api\\/admin\\/uploads\\/([^/]+)\\/parts\\/(\\d+)$/);
+  const partPieces=path.split("/");
   if(partMatch&&request.method==="PUT"){
    let uploadId;try{uploadId=decodeURIComponent(partMatch[1])}catch{return json({error:"Invalid upload ID."},400)}
    const partNumber=Number(partMatch[2]);const key=url.searchParams.get("key");
