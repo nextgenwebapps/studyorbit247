@@ -134,24 +134,25 @@ async function route(request,env){
   return json({titles:titles.results||[],roles:roles.results||[]});
  }
  if(teamPath&&path==="/api/admin/team/users"&&request.method==="GET"){
-  const {results=[]}=await env.DB.prepare("SELECT u.id,u.email,u.display_name,u.job_title_code,j.title AS job_title,u.is_active,u.created_at,u.last_login_at,group_concat(r.code, ',') AS role_codes,group_concat(r.name, ', ') AS role_names FROM admin_users u JOIN admin_job_titles j ON j.code=u.job_title_code LEFT JOIN admin_user_roles ur ON ur.user_id=u.id LEFT JOIN admin_access_roles r ON r.id=ur.role_id GROUP BY u.id ORDER BY u.created_at DESC").all();
+  const {results=[]}=await env.DB.prepare("SELECT u.id,u.email,u.display_name,u.job_title_code,j.title AS job_title,u.department,u.reports_to,m.display_name AS manager_name,u.is_active,u.created_at,u.last_login_at,group_concat(r.code, ',') AS role_codes,group_concat(r.name, ', ') AS role_names FROM admin_users u JOIN admin_job_titles j ON j.code=u.job_title_code LEFT JOIN admin_users m ON m.id=u.reports_to LEFT JOIN admin_user_roles ur ON ur.user_id=u.id LEFT JOIN admin_access_roles r ON r.id=ur.role_id GROUP BY u.id ORDER BY u.created_at DESC").all();
   return json({users:results.map(u=>({...u,roles:u.role_codes?u.role_codes.split(","):[]}))});
  }
  if(teamPath&&path==="/api/admin/team/users"&&request.method==="POST"){
-  const body=await readBody(request),displayName=String(body?.displayName||"").trim(),email=String(body?.email||"").trim().toLowerCase(),jobTitleCode=String(body?.jobTitleCode||""),roleCode=String(body?.roleCode||""),password=String(body?.password||"");
+  const body=await readBody(request),displayName=String(body?.displayName||"").trim(),email=String(body?.email||"").trim().toLowerCase(),jobTitleCode=String(body?.jobTitleCode||""),roleCode=String(body?.roleCode||""),password=String(body?.password||""),department=String(body?.department||"General").trim(),reportsTo=String(body?.reportsTo||"").trim();
   if(displayName.length<2||displayName.length>100||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||password.length<12||password.length>256)return json({error:"Provide a valid name and email, and an initial password of at least 12 characters."},400);
   if(email===ownerEmail(env))return json({error:"Owner email already uses the Super Admin account."},409);
   const title=await env.DB.prepare("SELECT code FROM admin_job_titles WHERE code=?").bind(jobTitleCode).first();
   const role=await env.DB.prepare("SELECT id,code FROM admin_access_roles WHERE code=? AND is_active=1").bind(roleCode).first();
   if(!title||!role)return json({error:"Choose a listed job title and access role."},400);
   const existing=await env.DB.prepare("SELECT id FROM admin_users WHERE lower(email)=?").bind(email).first();if(existing)return json({error:"An account with this email already exists."},409);
+  if(reportsTo){const manager=await env.DB.prepare("SELECT id FROM admin_users WHERE id=? AND is_active=1").bind(reportsTo).first();if(!manager)return json({error:"Choose an active staff member for Reports to."},400);}
   const id=crypto.randomUUID(),salt=b64url(crypto.getRandomValues(new Uint8Array(16))),hash=await passwordHash(password,salt),now=new Date().toISOString();
   await env.DB.batch([
-   env.DB.prepare("INSERT INTO admin_users (id,email,display_name,job_title_code,password_salt,password_hash,created_by,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?)").bind(id,email,displayName,jobTitleCode,salt,hash,session.email,now,now),
+   env.DB.prepare("INSERT INTO admin_users (id,email,display_name,job_title_code,department,reports_to,password_salt,password_hash,created_by,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)").bind(id,email,displayName,jobTitleCode,department,reportsTo||null,salt,hash,session.email,now,now),
    env.DB.prepare("INSERT INTO admin_user_roles (user_id,role_id,assigned_by,assigned_at) VALUES (?,?,?,?)").bind(id,role.id,session.email,now),
-   env.DB.prepare("INSERT INTO admin_audit_log (id,actor_email,action,target_user_id,target_email,details_json,created_at) VALUES (?,?,?,?,?,?,?)").bind(crypto.randomUUID(),session.email,"staff_created",id,email,JSON.stringify({jobTitleCode,roleCode}),now)
+   env.DB.prepare("INSERT INTO admin_audit_log (id,actor_email,action,target_user_id,target_email,details_json,created_at) VALUES (?,?,?,?,?,?,?)").bind(crypto.randomUUID(),session.email,"staff_created",id,email,JSON.stringify({jobTitleCode,department,reportsTo:reportsTo||null,roleCode}),now)
   ]);
-  return json({ok:true,id,email,displayName,jobTitleCode,roleCode,createdAt:now},201);
+  return json({ok:true,id,email,displayName,jobTitleCode,department,reportsTo:reportsTo||null,roleCode,createdAt:now},201);
  }
  if(teamPath&&path.startsWith("/api/admin/team/users/")&&request.method==="PATCH"){
   const id=decodeURIComponent(path.slice("/api/admin/team/users/".length)),body=await readBody(request);
