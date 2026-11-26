@@ -235,8 +235,10 @@ function Dashboard() {
         parts.push({ partNumber, etag: result.etag });
         setUploadProgress("Uploading part " + partNumber + " of " + count + " · " + Math.round((partNumber / count) * 100) + "%");
       }
-      await api.completeUpload({ key, uploadId, parts });
-      let resultMessage = "Uploaded to R2: " + key;
+      const completion = await api.completeUpload({ key, uploadId, parts });
+      let resultMessage = completion.status === "completed_unverified"
+        ? "File uploaded to R2, but the question JSON needs fixing before verification: " + key
+        : "Upload recorded: " + (completion.questionCount ?? "file") + " questions at " + key + ". Added " + completion.changes.added + ", updated " + completion.changes.updated + ", removed " + completion.changes.removed + ".";
       const workerOrigin = API_BASE.endsWith("/api") ? API_BASE.slice(0, -4) : API_BASE;
       const publicUrl = workerOrigin + "/api/content/" + key.split("/").map(encodeURIComponent).join("/") + "?verify=" + Date.now();
       try {
@@ -706,6 +708,7 @@ function Dashboard() {
                         <strong>{item.original_file_name}</strong>
                         <small>{item.object_key} · {item.status} · {item.question_count ?? "—"} questions</small>
                         <small>Uploaded by {item.uploaded_by} · {item.completed_at ? new Date(item.completed_at).toLocaleString() : new Date(item.started_at).toLocaleString()}</small>
+                        <small>{item.duplicate_count || 0} exact duplicate prompt(s){item.validation_issues_json && JSON.parse(item.validation_issues_json).length ? " · " + JSON.parse(item.validation_issues_json).join(" ") : ""}</small>
                       </div>
                       <small>+{item.added_count} · ~{item.updated_count} · −{item.removed_count}</small>
                     </div>
@@ -720,6 +723,9 @@ function Dashboard() {
                       <div>
                         <strong>{item.question_id} · {item.action}</strong>
                         <small>{item.object_key} · {item.changed_by} · {new Date(item.changed_at).toLocaleString()}</small>
+                        <details><summary>View change</summary>
+                          <small>Previous: {item.before_json || "—"}<br />New: {item.after_json || "—"}</small>
+                        </details>
                       </div>
                     </div>
                   )) : "No question changes recorded yet."}
