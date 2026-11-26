@@ -11,6 +11,7 @@ const titles = {
   questions: "Question bank",
   create: "Add questions",
   review: "Review & publish",
+  storage: "R2 storage",
 };
 
 function readDrafts() {
@@ -52,6 +53,11 @@ function Dashboard() {
   const [type, setType] = useState("all");
   const [validation, setValidation] = useState(null);
   const [toast, setToast] = useState("");
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadType, setUploadType] = useState("question-bank");
+  const [uploadPath, setUploadPath] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const toastTimer = useRef();
 
   useEffect(() => {
@@ -179,6 +185,52 @@ function Dashboard() {
     }
   }
 
+
+  async function uploadToR2() {
+    if (!uploadFile) return notify("Choose a file first.");
+    if (uploadFile.size < 1) return notify("The selected file is empty.");
+    const maxBytes = 500 * 1024 * 1024;
+    if (uploadFile.size > maxBytes) return notify("Maximum supported file size is 500 MiB.");
+    const relativePath = (uploadPath.trim() || uploadFile.name).replace(/^\\/+/, "");
+    const key = uploadType + "/" + relativePath;
+    let uploadId;
+    setUploading(true);
+    setUploadProgress("Preparing secure upload…");
+    try {
+      const started = await api.startUpload({
+        key,
+        size: uploadFile.size,
+        contentType: uploadFile.type || "application/octet-stream",
+      });
+      uploadId = started.uploadId;
+      const chunkSize = 8 * 1024 * 1024;
+      const parts = [];
+      const count = Math.ceil(uploadFile.size / chunkSize);
+      for (let index = 0; index < count; index += 1) {
+        const partNumber = index + 1;
+        const chunk = uploadFile.slice(index * chunkSize, Math.min((index + 1) * chunkSize, uploadFile.size));
+        const result = await api.uploadPart({ key, uploadId, partNumber, body: chunk });
+        parts.push({ partNumber, etag: result.etag });
+        setUploadProgress("Uploading part " + partNumber + " of " + count + " · " + Math.round((partNumber / count) * 100) + "%");
+      }
+      await api.completeUpload({ key, uploadId, parts });
+      setUploadProgress("");
+      setUploadFile(null);
+      setUploadPath("");
+      const input = document.getElementById("r2-file");
+      if (input) input.value = "";
+      notify("Uploaded to R2: " + key);
+    } catch (error) {
+      if (uploadId) {
+        try { await api.abortUpload({ key, uploadId }); } catch { /* Keep the original error. */ }
+      }
+      setUploadProgress("");
+      notify(error.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   if (!session) return null;
 
   return (
@@ -214,13 +266,19 @@ function Dashboard() {
             >
               ✓ <span>Review & publish</span>
             </button>
+            <button
+              className={view === "storage" ? "nav-link active" : "nav-link"}
+              onClick={() => navigate("storage")}
+            >
+              ⇧ <span>R2 storage</span>
+            </button>
           </nav>
           <div className="sidebar-bottom">
             <div className="admin-user">
               <div className="avatar">A</div>
               <div>
                 <b>Administrator</b>
-                <small id="admin-email-label">{session.email} · Demo</small>
+                <small id="admin-email-label">{session.email} · Secure</small>
               </div>
             </div>
             <button id="logout" onClick={signOut} className="nav-link logout">
@@ -247,7 +305,7 @@ function Dashboard() {
               <div className="header-subtitle">Question management workspace</div>
             </div>
             <div className="header-right">
-              <span className="status-dot">● Local demo · Cloudflare off</span>
+              <span className="status-dot">● Secure admin · R2 upload</span>
               <div className="avatar">A</div>
             </div>
           </header>
@@ -551,6 +609,52 @@ function Dashboard() {
                   </div>
                   <QuestionPreview question={mode === "single" ? question : null} device={device} />
                 </aside>
+              </div>
+            </section>
+
+            <section className={view === "storage" ? "view active" : "view"} id="view-storage">
+              <div className="page-heading">
+                <div>
+                  <div className="eyebrow">CLOUDFLARE R2</div>
+                  <h1>Upload content</h1>
+                  <p className="muted">Files upload through the authenticated Worker into the StudyOrbit247 bucket.</p>
+                </div>
+              </div>
+              <article className="panel r2-upload-panel">
+                <div className="panel-heading">
+                  <div>
+                    <h2>Secure file upload</h2>
+                    <p className="muted">R2 credentials stay on Cloudflare. The browser only uses the secure admin session.</p>
+                  </div>
+                </div>
+                <div className="field-grid">
+                  <div className="field">
+                    <label htmlFor="r2-type">Storage folder</label>
+                    <select id="r2-type" value={uploadType} disabled={uploading} onChange={(event) => { setUploadType(event.target.value); setUploadPath(""); }}>
+                      <option value="question-bank">Question bank</option>
+                      <option value="media">Media</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="r2-path">File path inside folder</label>
+                    <input id="r2-path" value={uploadPath} disabled={uploading} onChange={(event) => setUploadPath(event.target.value)} placeholder={uploadType === "question-bank" ? "gk/latest.json" : "gk/river-map.png"} />
+                  </div>
+                  <div className="field full-width">
+                    <label htmlFor="r2-file">Choose file (up to 500 MiB)</label>
+                    <input id="r2-file" type="file" disabled={uploading} onChange={(event) => setUploadFile(event.target.files?.[0] || null)} />
+                  </div>
+                </div>
+                <p className="import-help">
+                  Destination: <code>{uploadType}/{uploadPath.trim() || uploadFile?.name || "your-file"}</code>. Large files upload in 8 MiB parts. Question-bank and media objects can be read by the student site.
+                </p>
+                {uploadProgress && <div className="upload-progress" role="status">{uploadProgress}</div>}
+                <button className="primary" type="button" onClick={uploadToR2} disabled={uploading || !uploadFile}>
+                  {uploading ? "Uploading…" : "Upload to R2"}
+                </button>
+              </article>
+              <div className="notice-card">
+                <b>Question editor status</b>
+                <p>The question builder and its draft/publish workflow are still a local demo. Uploading a JSON or ZIP file here stores it in R2; it does not automatically import or publish its questions.</p>
               </div>
             </section>
             <section className={view === "review" ? "view active" : "view"} id="view-review">
