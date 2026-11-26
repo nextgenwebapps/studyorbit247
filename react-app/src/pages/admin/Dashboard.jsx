@@ -289,7 +289,7 @@ function Dashboard() {
           const response = await fetch(publicUrl, { cache: "no-store" });
           const data = await response.json().catch(() => null);
           resultMessage = Array.isArray(data?.questions)
-            ? "Verified in R2: " + data.questions.length + " questions at " + key
+            ? "Verified in R2: " + data.questions.length + " questions at " + key + ". Added " + completion.changes.added + ", updated " + completion.changes.updated + ", removed " + completion.changes.removed + (completion.status === "completed_with_issues" ? ". Review the flagged items in upload history." : "")
             : "Uploaded to R2, but this JSON has no top-level questions list: " + key;
         } else {
           resultMessage = "Verified in R2: " + key;
