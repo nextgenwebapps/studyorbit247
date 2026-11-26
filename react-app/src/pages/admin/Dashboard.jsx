@@ -12,6 +12,7 @@ const titles = {
   create: "Add questions",
   review: "Review & publish",
   storage: "R2 storage",
+  taxonomy: "Taxonomy & IDs",
 };
 
 function readDrafts() {
@@ -62,6 +63,12 @@ function Dashboard() {
   const [uploadHistory, setUploadHistory] = useState([]);
   const [questionHistory, setQuestionHistory] = useState([]);
   const [historyError, setHistoryError] = useState("");
+  const [taxonomy, setTaxonomy] = useState([]);
+  const [taxonomyError, setTaxonomyError] = useState("");
+  const [taxonomyMessage, setTaxonomyMessage] = useState("");
+  const [taxForm, setTaxForm] = useState({ kind: "subject", parentId: "", code: "", nameEn: "", nameHi: "" });
+  const [idForm, setIdForm] = useState({ subjectCode: "", chapterCode: "", topicCode: "", level: "E" });
+  const [allocatedId, setAllocatedId] = useState(null);
   const toastTimer = useRef();
 
   useEffect(() => {
@@ -98,6 +105,39 @@ function Dashboard() {
       });
     return () => { active = false; };
   }, [session, view, uploadResult]);
+
+  useEffect(() => {
+    if (!session || view !== "taxonomy") return;
+    let active = true;
+    api.getTaxonomy()
+      .then((data) => { if (active) { setTaxonomy(data.taxonomy || []); setTaxonomyError(""); } })
+      .catch((error) => { if (active) setTaxonomyError(error.message || "Could not load taxonomy."); });
+    return () => { active = false; };
+  }, [session, view]);
+
+  async function saveTaxonomy(event) {
+    event.preventDefault();
+    setTaxonomyMessage("");
+    try {
+      await api.createTaxonomy(taxForm);
+      const data = await api.getTaxonomy();
+      setTaxonomy(data.taxonomy || []);
+      setTaxonomyMessage("Taxonomy code saved.");
+      setTaxForm((current) => ({ ...current, parentId: "", code: "", nameEn: "", nameHi: "" }));
+    } catch (error) {
+      setTaxonomyMessage(error.message || "Could not save taxonomy code.");
+    }
+  }
+
+  async function allocateQuestionId(event) {
+    event.preventDefault();
+    setAllocatedId(null);
+    try {
+      setAllocatedId(await api.nextQuestionId(idForm));
+    } catch (error) {
+      setTaxonomyMessage(error.message || "Could not allocate question ID.");
+    }
+  }
 
   const ready = drafts.filter((item) => validateQuestion(item).length === 0);
   const filtered = drafts.filter(
@@ -309,6 +349,12 @@ function Dashboard() {
               onClick={() => navigate("review")}
             >
               ✓ <span>Review & publish</span>
+            </button>
+            <button
+              className={view === "taxonomy" ? "nav-link active" : "nav-link"}
+              onClick={() => navigate("taxonomy")}
+            >
+              # <span>Taxonomy & IDs</span>
             </button>
             <button
               className={view === "storage" ? "nav-link active" : "nav-link"}
@@ -656,6 +702,81 @@ function Dashboard() {
               </div>
             </section>
 
+            <section className={view === "taxonomy" ? "view active" : "view"} id="view-taxonomy">
+              <div className="page-heading">
+                <div>
+                  <div className="eyebrow">QUESTION STRUCTURE</div>
+                  <h1>Taxonomy & question IDs</h1>
+                  <p className="muted">Create controlled subject, chapter and topic codes. The allocator reserves a unique number from 000001 to 999999 for each topic.</p>
+                </div>
+              </div>
+              <div className="panel-grid">
+                <article className="panel">
+                  <div className="panel-heading"><div><h2>Add a taxonomy code</h2><p className="muted">Use short codes without spaces, such as GK, POL or FR.</p></div></div>
+                  <form className="field-grid" onSubmit={saveTaxonomy}>
+                    <label className="field">Type
+                      <select value={taxForm.kind} onChange={(event) => setTaxForm((current) => ({ ...current, kind: event.target.value, parentId: "" }))}>
+                        <option value="subject">Subject</option><option value="chapter">Chapter</option><option value="topic">Topic</option>
+                      </select>
+                    </label>
+                    {taxForm.kind !== "subject" && <label className="field">Parent
+                      <select required value={taxForm.parentId} onChange={(event) => setTaxForm((current) => ({ ...current, parentId: event.target.value }))}>
+                        <option value="">Select parent</option>
+                        {taxonomy.filter((item) => item.kind === (taxForm.kind === "chapter" ? "subject" : "chapter") && item.is_active).map((item) => <option key={item.id} value={item.id}>{item.code} — {item.name_en}</option>)}
+                      </select>
+                    </label>}
+                    <label className="field">Code
+                      <input required maxLength={8} pattern="[A-Za-z0-9]{2,8}" value={taxForm.code} onChange={(event) => setTaxForm((current) => ({ ...current, code: event.target.value.toUpperCase() }))} placeholder="e.g. GK, POL, FR" />
+                    </label>
+                    <label className="field">English name
+                      <input required maxLength={120} value={taxForm.nameEn} onChange={(event) => setTaxForm((current) => ({ ...current, nameEn: event.target.value }))} />
+                    </label>
+                    <label className="field">Hindi name (optional)
+                      <input maxLength={120} value={taxForm.nameHi} onChange={(event) => setTaxForm((current) => ({ ...current, nameHi: event.target.value }))} />
+                    </label>
+                    <button className="primary" type="submit">Save code</button>
+                  </form>
+                  {taxonomyMessage && <p role="status">{taxonomyMessage}</p>}
+                  {taxonomyError && <p role="status">{taxonomyError}</p>}
+                </article>
+                <article className="panel">
+                  <div className="panel-heading"><div><h2>Reserve a question ID</h2><p className="muted">Each reserved number is permanent and is never reused.</p></div></div>
+                  <form className="field-grid" onSubmit={allocateQuestionId}>
+                    <label className="field">Subject
+                      <select required value={idForm.subjectCode} onChange={(event) => setIdForm((current) => ({ ...current, subjectCode: event.target.value, chapterCode: "", topicCode: "" }))}>
+                        <option value="">Select subject</option>
+                        {taxonomy.filter((item) => item.kind === "subject" && item.is_active).map((item) => <option key={item.id} value={item.code}>{item.code} — {item.name_en}</option>)}
+                      </select>
+                    </label>
+                    <label className="field">Chapter
+                      <select required value={idForm.chapterCode} onChange={(event) => setIdForm((current) => ({ ...current, chapterCode: event.target.value, topicCode: "" }))}>
+                        <option value="">Select chapter</option>
+                        {taxonomy.filter((item) => item.kind === "chapter" && item.parent_id === taxonomy.find((node) => node.kind === "subject" && node.code === idForm.subjectCode)?.id && item.is_active).map((item) => <option key={item.id} value={item.code}>{item.code} — {item.name_en}</option>)}
+                      </select>
+                    </label>
+                    <label className="field">Topic
+                      <select required value={idForm.topicCode} onChange={(event) => setIdForm((current) => ({ ...current, topicCode: event.target.value }))}>
+                        <option value="">Select topic</option>
+                        {taxonomy.filter((item) => item.kind === "topic" && item.parent_id === taxonomy.find((node) => node.kind === "chapter" && node.code === idForm.chapterCode && node.parent_id === taxonomy.find((n) => n.kind === "subject" && n.code === idForm.subjectCode)?.id)?.id && item.is_active).map((item) => <option key={item.id} value={item.code}>{item.code} — {item.name_en}</option>)}
+                      </select>
+                    </label>
+                    <label className="field">Level
+                      <select value={idForm.level} onChange={(event) => setIdForm((current) => ({ ...current, level: event.target.value }))}>
+                        <option value="E">Easy</option><option value="M">Medium</option><option value="H">Hard</option>
+                      </select>
+                    </label>
+                    <button className="primary" type="submit">Generate next ID</button>
+                  </form>
+                  {allocatedId && <div className="notice-card"><b>{allocatedId.questionId}</b><p>Internal record ID: {allocatedId.recordId}</p><small>Copy both IDs into the question record. The sequence is reserved for this topic.</small></div>}
+                </article>
+              </div>
+              <article className="panel">
+                <div className="panel-heading"><div><h2>Registered codes</h2><p className="muted">Names can change; codes remain stable.</p></div></div>
+                <div className={taxonomy.length ? "question-list" : "empty-state"}>
+                  {taxonomy.length ? taxonomy.map((item) => <div className="question-row" key={item.id}><div><strong>{item.code} — {item.name_en}</strong><small>{item.kind}{item.name_hi ? " · " + item.name_hi : ""}{item.is_active ? "" : " · inactive"}</small></div></div>) : "Add a subject, then its chapters and topics."}
+                </div>
+              </article>
+            </section>
             <section className={view === "storage" ? "view active" : "view"} id="view-storage">
               <div className="page-heading">
                 <div>
