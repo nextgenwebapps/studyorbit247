@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS admin_job_titles (
 INSERT OR IGNORE INTO admin_job_titles (code,title,hierarchy_level,category) VALUES
 ('OWNER','Owner / Founder',0,'Ownership'),
 ('BOARD_CHAIR','Board Chairperson',1,'Board'),
+('BOARD_DIRECTOR','Board Director',1,'Board'),
 ('CEO','Chief Executive Officer (CEO)',2,'Executive'),
 ('COO','Chief Operating Officer (COO)',2,'Executive'),
 ('CFO','Chief Financial Officer (CFO)',2,'Executive'),
