@@ -4,8 +4,8 @@ compatibility_date = "2026-11-24"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "studyorbit247-admin"
-database_id = "f39d5f54-20cc-46ba-ad1b-2cf31afa1283"
+database_name = "studyorbit247"
+database_id = "e1ccf575-99c8-4c67-9d6b-f3f7a0243d10"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
