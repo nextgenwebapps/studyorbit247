@@ -40,7 +40,7 @@ function AdminLogin() {
             name="email"
             type="email"
             autoComplete="username"
-            placeholder="abc@gmail.com"
+            placeholder="Admin email"
             required
           />
           <label htmlFor="password">Password</label>
@@ -69,12 +69,8 @@ function AdminLogin() {
           </p>
         </form>
         <div className="secure-note">
-          <strong>Demo access:</strong> abc@gmail.com
-          <br />
-          <strong>Password:</strong> 12345678
-          <br />
-          <br />
-          Demo-only login. Questions are saved in this browser; Cloudflare is not connected yet.
+          Sign in with the admin email and password configured as Cloudflare Worker secrets.
+          Your password is checked by the Worker and is never stored in this website.
         </div>
       </section>
       <a className="back-link" href="../">
