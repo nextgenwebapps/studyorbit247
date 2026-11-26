@@ -39,6 +39,13 @@ export const api = {
     if (questionId) query.set("questionId", questionId);
     return request("/admin/questions/history?" + query);
   },
+  async getTaxonomy() { return request("/admin/taxonomy"); },
+  async createTaxonomy(item) {
+    return request("/admin/taxonomy", { method: "POST", body: JSON.stringify(item) });
+  },
+  async nextQuestionId({ subjectCode, chapterCode, topicCode, level }) {
+    return request("/admin/questions/next-id", { method: "POST", body: JSON.stringify({ subjectCode, chapterCode, topicCode, level }) });
+  },
   async uploadPart({ key, uploadId, partNumber, body }) {
     const query = new URLSearchParams({ key });
     return request(`/admin/uploads/${encodeURIComponent(uploadId)}/parts/${partNumber}?${query}`, {
