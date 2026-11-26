@@ -13,8 +13,6 @@ CREATE TABLE IF NOT EXISTS content_uploads (
   removed_count INTEGER NOT NULL DEFAULT 0,
   duplicate_count INTEGER NOT NULL DEFAULT 0,
   validation_issues_json TEXT NOT NULL DEFAULT '[]',
-  duplicate_count INTEGER NOT NULL DEFAULT 0,
-  validation_issues_json TEXT NOT NULL DEFAULT '[]',
   schema_version TEXT,
   bank_version TEXT,
   sha256 TEXT,
@@ -31,6 +29,7 @@ CREATE INDEX IF NOT EXISTS idx_content_uploads_actor_time
 CREATE TABLE IF NOT EXISTS question_change_log (
   id TEXT PRIMARY KEY,
   question_id TEXT NOT NULL,
+  question_code TEXT NOT NULL,
   action TEXT NOT NULL CHECK (action IN ('created', 'updated', 'removed')),
   object_key TEXT NOT NULL,
   upload_id TEXT NOT NULL REFERENCES content_uploads(upload_id),
@@ -68,3 +67,7 @@ CREATE TABLE IF NOT EXISTS question_topic_sequences (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_question_taxonomy_subject_code
   ON question_taxonomy_nodes(code) WHERE kind='subject';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_question_taxonomy_child_name
+  ON question_taxonomy_nodes(kind, parent_id, name_en) WHERE kind!='subject';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_question_taxonomy_subject_name
+  ON question_taxonomy_nodes(name_en) WHERE kind='subject';
