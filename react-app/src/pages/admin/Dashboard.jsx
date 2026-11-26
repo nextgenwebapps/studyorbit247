@@ -794,7 +794,7 @@ function Dashboard() {
                 <div className="panel-heading"><div><h2>Staff accounts</h2><p className="muted">Disable access immediately when a person leaves or changes responsibilities.</p></div></div>
                 <div className={teamUsers.length ? "question-list" : "empty-state"}>
                   {teamUsers.length ? teamUsers.map((user) => <div className="question-row" key={user.id}>
-                    <div><strong>{user.display_name} · {user.job_title}</strong><small>{user.email} · {user.department || "General"} · Reports to {user.manager_name || "Owner"} · {user.is_active ? "Active" : "Disabled"} · Last login: {user.last_login_at ? new Date(user.last_login_at).toLocaleString() : "Never"}</small></div>
+                    <div><strong>{user.display_name} · {user.job_title}</strong><small>{user.email} · {user.department || "General"} · Reports to {user.manager_name || "Not assigned"} · {user.is_active ? "Active" : "Disabled"} · Last login: {user.last_login_at ? new Date(user.last_login_at).toLocaleString() : "Never"}</small></div>
                     <div className="review-actions">
                       <select aria-label={"Access role for " + user.email} value={user.roles?.[0] || "read_only"} onChange={(e) => changeStaffRole(user,e.target.value)}>{accessRoles.map((r)=><option key={r.code} value={r.code}>{r.name}</option>)}</select>
                       <button className="text-button" onClick={() => resetStaffPassword(user)}>Reset password</button>
