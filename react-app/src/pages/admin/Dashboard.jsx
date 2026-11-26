@@ -217,12 +217,13 @@ function Dashboard() {
       }
       await api.completeUpload({ key, uploadId, parts });
       let resultMessage = "Uploaded to R2: " + key;
-      const publicUrl = API_BASE.replace(/\\/api$/, "") + "/api/content/" + key.split("/").map(encodeURIComponent).join("/") + "?verify=" + Date.now();
+      const workerOrigin = API_BASE.endsWith("/api") ? API_BASE.slice(0, -4) : API_BASE;
+      const publicUrl = workerOrigin + "/api/content/" + key.split("/").map(encodeURIComponent).join("/") + "?verify=" + Date.now();
       try {
         const check = await fetch(publicUrl, { method: "HEAD", cache: "no-store" });
         if (!check.ok) {
           resultMessage += " — upload finished, but the public read check returned " + check.status + ".";
-        } else if (/\\.json$/i.test(key) && uploadFile.size <= 10 * 1024 * 1024) {
+        } else if (key.toLowerCase().endsWith(".json") && uploadFile.size <= 10 * 1024 * 1024) {
           const response = await fetch(publicUrl, { cache: "no-store" });
           const data = await response.json().catch(() => null);
           resultMessage = Array.isArray(data?.questions)
