@@ -59,6 +59,9 @@ function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
   const [uploadResult, setUploadResult] = useState("");
+  const [uploadHistory, setUploadHistory] = useState([]);
+  const [questionHistory, setQuestionHistory] = useState([]);
+  const [historyError, setHistoryError] = useState("");
   const toastTimer = useRef();
 
   useEffect(() => {
@@ -79,6 +82,22 @@ function Dashboard() {
       clearTimeout(toastTimer.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!session || view !== "storage") return;
+    let active = true;
+    Promise.all([api.getUploadHistory(30), api.getQuestionHistory(30)])
+      .then(([uploads, changes]) => {
+        if (!active) return;
+        setUploadHistory(uploads.uploads || []);
+        setQuestionHistory(changes.changes || []);
+        setHistoryError("");
+      })
+      .catch((error) => {
+        if (active) setHistoryError(error.message || "Could not load audit history.");
+      });
+    return () => { active = false; };
+  }, [session, view, uploadResult]);
 
   const ready = drafts.filter((item) => validateQuestion(item).length === 0);
   const filtered = drafts.filter(
@@ -203,6 +222,7 @@ function Dashboard() {
         key,
         size: uploadFile.size,
         contentType: uploadFile.type || "application/octet-stream",
+        fileName: uploadFile.name,
       });
       uploadId = started.uploadId;
       const chunkSize = 8 * 1024 * 1024;
@@ -675,6 +695,35 @@ function Dashboard() {
                 <button className="primary" type="button" onClick={uploadToR2} disabled={uploading || !uploadFile}>
                   {uploading ? "Uploading…" : "Upload to R2"}
                 </button>
+              </article>
+              <article className="panel">
+                <div className="panel-heading"><div><h2>R2 upload history</h2><p className="muted">Who uploaded each object, when, and how the question count changed.</p></div></div>
+                {historyError && <p role="status" className="muted">{historyError}</p>}
+                <div className={uploadHistory.length ? "question-list" : "empty-state"}>
+                  {uploadHistory.length ? uploadHistory.map((item) => (
+                    <div className="question-row" key={item.upload_id}>
+                      <div>
+                        <strong>{item.original_file_name}</strong>
+                        <small>{item.object_key} · {item.status} · {item.question_count ?? "—"} questions</small>
+                        <small>Uploaded by {item.uploaded_by} · {item.completed_at ? new Date(item.completed_at).toLocaleString() : new Date(item.started_at).toLocaleString()}</small>
+                      </div>
+                      <small>+{item.added_count} · ~{item.updated_count} · −{item.removed_count}</small>
+                    </div>
+                  )) : "No R2 uploads recorded yet."}
+                </div>
+              </article>
+              <article className="panel">
+                <div className="panel-heading"><div><h2>Question change history</h2><p className="muted">Added, updated and removed question IDs from bank uploads.</p></div></div>
+                <div className={questionHistory.length ? "question-list" : "empty-state"}>
+                  {questionHistory.length ? questionHistory.map((item) => (
+                    <div className="question-row" key={item.id}>
+                      <div>
+                        <strong>{item.question_id} · {item.action}</strong>
+                        <small>{item.object_key} · {item.changed_by} · {new Date(item.changed_at).toLocaleString()}</small>
+                      </div>
+                    </div>
+                  )) : "No question changes recorded yet."}
+                </div>
               </article>
               <div className="notice-card">
                 <b>Question editor status</b>
