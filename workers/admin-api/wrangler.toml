@@ -1,4 +1,4 @@
-name = "studyorbit247-admin-api"
+name = "studyorbit247-api"
 main = "src/index.js"
 compatibility_date = "2026-11-24"
 
@@ -12,5 +12,9 @@ migrations_dir = "migrations"
 binding = "CONTENT_BUCKET"
 bucket_name = "studyorbit247"
 
-# Add a same-domain route after connecting your domain to Cloudflare:
+[vars]
+ADMIN_ORIGIN = "https://studyorbit247.web.app"
+PUBLIC_ORIGIN = "https://studyorbit247.web.app"
+
+# Add a same-domain route only if the site domain is later moved to Cloudflare:
 # routes = [{ pattern = "YOUR_DOMAIN/api/*", zone_name = "YOUR_DOMAIN" }]
