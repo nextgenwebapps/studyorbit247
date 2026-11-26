@@ -70,6 +70,8 @@ CREATE TABLE IF NOT EXISTS admin_users (
   email TEXT NOT NULL UNIQUE COLLATE NOCASE,
   display_name TEXT NOT NULL,
   job_title_code TEXT NOT NULL REFERENCES admin_job_titles(code),
+  department TEXT NOT NULL DEFAULT 'General',
+  reports_to TEXT REFERENCES admin_users(id),
   password_salt TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),
