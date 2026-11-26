@@ -4,7 +4,7 @@ import { Question } from "./Question.jsx";
 import { emptyAnswer, hasAnswer, displayAnswer, scoreQuestion } from "./answers.js";
 import questionBank from "./questions.json";
 
-const { questions, durationSeconds: duration } = questionBank;
+const CONTENT_API = (window.STUDYORBIT_CONTENT_API || "https://studyorbit247-api.studyorbit247.workers.dev/api/content").replace(/\/$/, "");
 const instructions =
   "Use the question palette to move between questions. Save & next records your answer. Use Mark for review to revisit a question. Multi-select questions may have more than one correct option. Submit to view your result and answer review.";
 
@@ -51,6 +51,8 @@ function saveLearningActivity(entry) {
   }
 }
 function MockTest() {
+  const [bank, setBank] = useState(questionBank);
+  const { questions, durationSeconds: duration } = bank;
   const [screen, setScreen] = useState("intro");
   const [answers, setAnswers] = useState({});
   const [reviewed, setReviewed] = useState([]);
@@ -63,6 +65,25 @@ function MockTest() {
   const deadline = useRef(0);
   const finished = useRef(false);
   const palette = useRef(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${CONTENT_API}/question-bank/gk/latest.json`, {
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("R2 question bank is not available yet.");
+        return response.json();
+      })
+      .then((nextBank) => {
+        if (Array.isArray(nextBank?.questions) && nextBank.questions.length > 0) setBank(nextBank);
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") console.info("Using the bundled question bank until R2 content is available.");
+      });
+    return () => controller.abort();
+  }, []);
 
   const question = questions[current];
   const answer = answers[question.id] ?? emptyAnswer(question);
@@ -199,21 +220,21 @@ function MockTest() {
                 <div className="setup-icon">✦</div>
                 <div>
                   <b>General Knowledge</b>
-                  <small>Demo mock test · 12 questions</small>
+                  <small>Practice test · {questions.length} questions</small>
                 </div>
                 <span className="gold-tag">DEMO</span>
               </div>
               <div className="setup-stats">
                 <div>
-                  <b>20 min</b>
+                  <b>{Math.floor(duration / 60)} min</b>
                   <small>Duration</small>
                 </div>
                 <div>
-                  <b>12</b>
+                  <b>{questions.length}</b>
                   <small>Questions</small>
                 </div>
                 <div>
-                  <b>12 marks</b>
+                  <b>{bank.totalMarks ?? questions.length} marks</b>
                   <small>Total marks</small>
                 </div>
               </div>
@@ -424,7 +445,7 @@ function MockTest() {
                 >
                   <div>
                     <strong id="scoreValue">{result.correct}</strong>
-                    <small> / 12</small>
+                    <small> / {result.total}</small>
                     <span>YOUR SCORE</span>
                   </div>
                 </div>
