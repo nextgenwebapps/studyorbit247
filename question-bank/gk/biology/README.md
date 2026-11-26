@@ -41,7 +41,7 @@ BIO-CELL-MEMBRANE-M-000001
 - `CHAPTER`: stable code for a chapter from the PDF.
 - `TOPIC`: stable code for a topic under that chapter.
 - `LEVEL`: `E` easy, `M` medium, or `H` hard.
-- `SERIAL`: reserved number from `000001` to `999999` for that topic and level.
+- `SERIAL`: reserved number from `000001` to `999999` for that topic. The sequence does not reset when the level changes.
 - `recordId`: a separate permanent UUID used for internal tracking. Keep it unchanged when correcting the readable ID, chapter, or topic.
 
 The example is illustrative; it is not a claim that “Cell Membrane” appears in the supplied PDF. Codes will be created from the PDF’s actual contents page and topic headings.
