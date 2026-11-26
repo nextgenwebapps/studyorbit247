@@ -16,6 +16,40 @@ const classifications = {
   gk12: ["Data Interpretation", "Tables", "Reading Values", "Easy"],
 };
 
+function classifyBankQuestion(question, index) {
+  const legacy = classifications[question.id];
+  if (legacy) return legacy;
+
+  const match = String(question.id ?? "").match(/(\\d+)$/);
+  const number = Number(match?.[1] ?? index + 1);
+  if (number <= 20) return ["Indian Polity", "Indian Polity", "Constitution and Governance", "Easy"];
+  if (number <= 40) return ["History", "Indian History", "History and Culture", "Easy"];
+  if (number <= 60) return ["Geography", "Indian Geography", "Physical and Indian Geography", "Easy"];
+  if (number <= 80) return ["General Science", "General Science", "Science and Technology", "Easy"];
+  if (number <= 90) return ["Indian Economy", "Indian Economy", "Economy", "Easy"];
+  return ["GK / GS", "General Knowledge", "Current Affairs and General Knowledge", "Easy"];
+}
+
+function mapBankQuestion(question, index) {
+  const [subject, chapter, topic, level] = classifyBankQuestion(question, index);
+  const isDataInterpretation = subject === "Data Interpretation";
+  const isEconomy = subject === "Indian Economy";
+  return {
+    ...question,
+    id: String(question.id ?? `gk-${index + 1}`),
+    prompt: question.prompt ?? question.question ?? question.text ?? "",
+    options: question.options ?? question.choices ?? [],
+    correct: question.correct ?? question.answer,
+    subjects: isDataInterpretation ? ["Quantitative Aptitude", subject] : [gk, subject],
+    exams: isDataInterpretation || isEconomy
+      ? ["SSC Exams", "Banking Exams", "RRB Exams"]
+      : ["SSC Exams", "RRB Exams", "UPSC", "State PCS"],
+    chapter: question.chapter ?? chapter,
+    topic: question.topic ?? topic,
+    level: question.level ?? level,
+  };
+}
+
 const samples = [
   {
     id: "practice-reasoning-1",
@@ -71,29 +105,16 @@ const samples = [
   },
 ];
 
-export const questions = [
-  ...questionBank.questions
-    .filter(({ id }) => classifications[id])
-    .map((question) => {
-      const [subject, chapter, topic, level] = classifications[question.id];
-      const isDataInterpretation = subject === "Data Interpretation";
-      return {
-        ...question,
-        subjects: isDataInterpretation ? ["Quantitative Aptitude", subject] : [gk, subject],
-        exams: isDataInterpretation || subject === "Indian Economy"
-          ? ["SSC Exams", "Banking Exams", "RRB Exams"]
-          : ["SSC Exams", "RRB Exams", "UPSC", "State PCS"],
-        chapter,
-        topic,
-        level,
-      };
-    }),
-  ...samples,
-];
+export function mapQuestionBank(bank) {
+  const bankQuestions = Array.isArray(bank?.questions) ? bank.questions : [];
+  return [...bankQuestions.map(mapBankQuestion), ...samples];
+}
 
-export function findQuestions(filters) {
+export const questions = mapQuestionBank(questionBank);
+
+export function findQuestions(filters, sourceQuestions = questions) {
   const { subject, exam, chapter, topic, level } = filters;
-  return questions.filter((question) =>
+  return sourceQuestions.filter((question) =>
     (!subject || question.subjects.includes(subject)) &&
     (!exam || question.exams.includes(exam)) &&
     (!chapter || question.chapter === chapter) &&
