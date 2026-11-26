@@ -106,7 +106,7 @@ async function route(request,env){
  }
  if(path==="/api/admin/login"&&request.method==="POST"){
   const body=await readBody(request),email=String(body?.email||"").trim().toLowerCase(),password=String(body?.password||"");
-  if(!body||!env.SESSION_SECRET)return json({error:"Admin authentication is not configured."},503);
+  if(!body||email.length>254||password.length>256||!env.SESSION_SECRET)return json({error:"Admin authentication is not configured."},503);
   let valid=false,canonicalEmail=email;
   if(isOwner(email,env))valid=Boolean(env.ADMIN_PASSWORD&&same(password,env.ADMIN_PASSWORD)),canonicalEmail=env.ADMIN_EMAIL;
   else {
