@@ -75,12 +75,12 @@ async function route(request,env){
  const session=await getSession(request,env);if(!session)return json({error:"Authentication required."},401);
  if(path.startsWith("/api/admin/uploads/")){
   if(!env.CONTENT_BUCKET)return json({error:"R2 content storage is not configured."},503);
-  if(path==="/api/admin/uploads/start"&&request.method==="POST"){
-   if(path==="/api/admin/uploads/history"&&request.method==="GET"){
+  if(path==="/api/admin/uploads/history"&&request.method==="GET"){
     const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit")||20)));
     const {results=[]}=await env.DB.prepare("SELECT upload_id,object_key,original_file_name,content_type,expected_size,actual_size,uploaded_by,status,question_count,added_count,updated_count,removed_count,schema_version,bank_version,sha256,r2_etag,started_at,completed_at FROM content_uploads ORDER BY started_at DESC LIMIT ?").bind(limit).all();
     return json({uploads:results});
-   }
+  }
+  if(path==="/api/admin/uploads/start"&&request.method==="POST"){
    const body=await readBody(request);const {key,size,contentType,fileName}=body||{};
    if(!safeUploadKey(key))return json({error:"Use a file path under question-bank/ or media/."},400);
    if(!Number.isSafeInteger(size)||size<1||size>MAX_UPLOAD_BYTES)return json({error:"File size must be between 1 byte and 500 MiB."},400);
@@ -108,7 +108,6 @@ async function route(request,env){
    const object=await upload.complete(clean);
    const completedAt=new Date().toISOString();
    const currentObject=await env.CONTENT_BUCKET.get(key);
-   const isQuestionJson=key.startsWith("question-bank/")&&key.toLowerCase().endsWith(".json");
    const currentSnapshot=currentObject?await readSmallObject(currentObject,isQuestionJson):{data:null,sha256:null};
    const currentData=currentSnapshot.data;
    const currentMap=questionMap(currentData);
