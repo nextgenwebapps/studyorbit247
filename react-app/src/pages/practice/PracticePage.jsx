@@ -11,7 +11,7 @@ import "./practice.css";
 
 const subjectOptions = subjects.map(([, title]) => title);
 const examOptions = exams.map(([, , title]) => title);
-const CONTENT_API = "https://studyorbit247-api.studyorbit247.workers.dev/api/content/question-bank/gk/latest.json";
+const CONTENT_API = "https://studyorbit247-api.studyorbit247.workers.dev/api/content/question-bank/studyorbit-gk-100-questions.json";
 
 function Filter({ label, name, options, value, onChange, disabled = false, all = label === "Level" ? "Any level" : "All " + label.toLowerCase() + "s" }) {
   return (
