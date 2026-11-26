@@ -13,6 +13,7 @@ const titles = {
   review: "Review & publish",
   storage: "R2 storage",
   taxonomy: "Taxonomy & IDs",
+  team: "Team & access",
 };
 
 function readDrafts() {
@@ -41,6 +42,11 @@ function QuestionRow({ question, children, review = false, detail }) {
 
 function Dashboard() {
   const [session, setSession] = useState(null);
+  const [teamUsers, setTeamUsers] = useState([]);
+  const [jobTitles, setJobTitles] = useState([]);
+  const [accessRoles, setAccessRoles] = useState([]);
+  const [teamMessage, setTeamMessage] = useState("");
+  const [teamForm, setTeamForm] = useState({ displayName: "", email: "", jobTitleCode: "ASSOCIATE", roleCode: "read_only", password: "" });
   const [drafts, setDrafts] = useState(readDrafts);
   const [published, setPublished] = useState([]);
   const [view, setView] = useState("overview");
@@ -105,6 +111,61 @@ function Dashboard() {
       });
     return () => { active = false; };
   }, [session, view, uploadResult]);
+
+
+  useEffect(() => {
+    if (!session || view !== "team") return;
+    let active = true;
+    Promise.all([api.getTeamOptions(), api.getTeamUsers()])
+      .then(([options, data]) => {
+        if (!active) return;
+        setJobTitles(options.titles || []);
+        setAccessRoles(options.roles || []);
+        setTeamUsers(data.users || []);
+        setTeamMessage("");
+      })
+      .catch((error) => { if (active) setTeamMessage(error.message || "Could not load team accounts."); });
+    return () => { active = false; };
+  }, [session, view]);
+
+  async function createStaff(event) {
+    event.preventDefault();
+    setTeamMessage("");
+    try {
+      await api.createTeamUser(teamForm);
+      const data = await api.getTeamUsers();
+      setTeamUsers(data.users || []);
+      setTeamForm((current) => ({ ...current, displayName: "", email: "", password: "" }));
+      setTeamMessage("Staff account created. Share the initial password securely with that person.");
+    } catch (error) { setTeamMessage(error.message || "Could not create staff account."); }
+  }
+
+  async function changeStaffRole(user, roleCode) {
+    try {
+      await api.updateTeamUser(user.id, { action: "role", roleCode });
+      setTeamUsers((users) => users.map((item) => item.id === user.id ? { ...item, roles: [roleCode] } : item));
+      setTeamMessage("Access role updated for " + user.email + ".");
+    } catch (error) { setTeamMessage(error.message || "Could not change access role."); }
+  }
+
+  async function toggleStaff(user) {
+    try {
+      const active = !user.is_active;
+      await api.updateTeamUser(user.id, { action: "active", active });
+      setTeamUsers((users) => users.map((item) => item.id === user.id ? { ...item, is_active: active ? 1 : 0 } : item));
+      setTeamMessage(user.email + (active ? " account enabled." : " account disabled."));
+    } catch (error) { setTeamMessage(error.message || "Could not update staff account."); }
+  }
+
+  async function resetStaffPassword(user) {
+    const password = window.prompt("Enter a new temporary password (at least 12 characters). Share it securely with " + user.email + ".");
+    if (!password) return;
+    if (password.length < 12) return setTeamMessage("Password must be at least 12 characters.");
+    try {
+      await api.updateTeamUser(user.id, { action: "password", password });
+      setTeamMessage("Password reset. Share the new password securely with " + user.email + ".");
+    } catch (error) { setTeamMessage(error.message || "Could not reset password."); }
+  }
 
   useEffect(() => {
     if (!session || view !== "taxonomy") return;
@@ -362,12 +423,18 @@ function Dashboard() {
             >
               ⇧ <span>R2 storage</span>
             </button>
+            {session?.permissions?.includes("*") && <button
+              className={view === "team" ? "nav-link active" : "nav-link"}
+              onClick={() => navigate("team")}
+            >
+              ♙ <span>Team & access</span>
+            </button>}
           </nav>
           <div className="sidebar-bottom">
             <div className="admin-user">
               <div className="avatar">A</div>
               <div>
-                <b>Administrator</b>
+                <b>{session.displayName || (session.isOwner ? "Owner / Super Admin" : "Staff member")}</b>
                 <small id="admin-email-label">{session.email} · Secure</small>
               </div>
             </div>
@@ -702,6 +769,43 @@ function Dashboard() {
               </div>
             </section>
 
+
+            <section className={view === "team" ? "view active" : "view"} id="view-team">
+              <div className="page-heading">
+                <div><div className="eyebrow">PEOPLE & PERMISSIONS</div><h1>Team & access</h1>
+                  <p className="muted">Job titles describe responsibility. Access roles decide what each person can do in StudyOrbit admin.</p></div>
+              </div>
+              <div className="notice-card"><b>Owner / Super Admin</b><p>Your existing Cloudflare ADMIN_EMAIL account stays the owner and keeps full control. Staff accounts use separate passwords and receive only the selected access role.</p></div>
+              <article className="panel">
+                <div className="panel-heading"><div><h2>Add a staff account</h2><p className="muted">Initial password must be at least 12 characters. It is stored as a salted hash.</p></div></div>
+                <form className="field-grid" onSubmit={createStaff}>
+                  <label className="field">Full name<input required minLength={2} maxLength={100} value={teamForm.displayName} onChange={(e) => setTeamForm({...teamForm, displayName:e.target.value})} /></label>
+                  <label className="field">Work email<input required type="email" value={teamForm.email} onChange={(e) => setTeamForm({...teamForm, email:e.target.value})} /></label>
+                  <label className="field">Job title<select value={teamForm.jobTitleCode} onChange={(e) => setTeamForm({...teamForm, jobTitleCode:e.target.value})}>{jobTitles.map((t)=><option key={t.code} value={t.code}>{t.title} · {t.category}</option>)}</select></label>
+                  <label className="field">Access role<select value={teamForm.roleCode} onChange={(e) => setTeamForm({...teamForm, roleCode:e.target.value})}>{accessRoles.map((r)=><option key={r.code} value={r.code}>{r.name} — {r.description}</option>)}</select></label>
+                  <label className="field">Initial password<input required type="password" minLength={12} autoComplete="new-password" value={teamForm.password} onChange={(e) => setTeamForm({...teamForm, password:e.target.value})} /></label>
+                  <button className="primary" type="submit">Create staff account</button>
+                </form>
+                {teamMessage && <p role="status">{teamMessage}</p>}
+              </article>
+              <article className="panel">
+                <div className="panel-heading"><div><h2>Staff accounts</h2><p className="muted">Disable access immediately when a person leaves or changes responsibilities.</p></div></div>
+                <div className={teamUsers.length ? "question-list" : "empty-state"}>
+                  {teamUsers.length ? teamUsers.map((user) => <div className="question-row" key={user.id}>
+                    <div><strong>{user.display_name} · {user.job_title}</strong><small>{user.email} · {user.is_active ? "Active" : "Disabled"} · Last login: {user.last_login_at ? new Date(user.last_login_at).toLocaleString() : "Never"}</small></div>
+                    <div className="review-actions">
+                      <select aria-label={"Access role for " + user.email} value={user.roles?.[0] || "read_only"} onChange={(e) => changeStaffRole(user,e.target.value)}>{accessRoles.map((r)=><option key={r.code} value={r.code}>{r.name}</option>)}</select>
+                      <button className="text-button" onClick={() => resetStaffPassword(user)}>Reset password</button>
+                      <button className="text-button" onClick={() => toggleStaff(user)}>{user.is_active ? "Disable" : "Enable"}</button>
+                    </div>
+                  </div>) : "No staff accounts yet. Add your first team member above."}
+                </div>
+              </article>
+              <article className="panel">
+                <div className="panel-heading"><div><h2>Access roles</h2><p className="muted">Start with a narrow role; promote access only when the work requires it.</p></div></div>
+                <div className="question-list">{accessRoles.map((role)=><div className="question-row" key={role.code}><div><strong>{role.name}</strong><small>{role.description}</small></div></div>)}</div>
+              </article>
+            </section>
             <section className={view === "taxonomy" ? "view active" : "view"} id="view-taxonomy">
               <div className="page-heading">
                 <div>
