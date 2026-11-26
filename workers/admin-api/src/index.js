@@ -22,10 +22,12 @@ async function readSmallObject(object,parseJson=false){
 }
 function questionMap(data){
  if(!Array.isArray(data?.questions))return null;
- const map=new Map();
+ const map=new Map(),codes=new Set();
  for(const item of data.questions){
-  if(!item||typeof item.id!=="string"||!item.id.trim()||map.has(item.id))return null;
-  map.set(item.id,item);
+  if(!item||typeof item.id!=="string"||!item.id.trim()||codes.has(item.id))return null;
+  const stableId=typeof item.recordId==="string"&&item.recordId.trim()?item.recordId:item.id;
+  if(map.has(stableId))return null;
+  map.set(stableId,item);codes.add(item.id);
  }
  return map;
 }
@@ -53,17 +55,17 @@ function validateQuestionBank(data){
 function changesBetween(before,after){
  const changes=[];
  if(after)for(const [id,item] of after){
-  if(!before||!before.has(id))changes.push({id,action:"created",before:null,after:item});
-  else if(JSON.stringify(before.get(id))!==JSON.stringify(item))changes.push({id,action:"updated",before:before.get(id),after:item});
+  if(!before||!before.has(id))changes.push({id,questionCode:item.id,action:"created",before:null,after:item});
+  else if(JSON.stringify(before.get(id))!==JSON.stringify(item))changes.push({id,questionCode:item.id,action:"updated",before:before.get(id),after:item});
  }
- if(before)for(const [id,item] of before)if(!after||!after.has(id))changes.push({id,action:"removed",before:item,after:null});
+ if(before)for(const [id,item] of before)if(!after||!after.has(id))changes.push({id,questionCode:item.id,action:"removed",before:item,after:null});
  return changes;
 }
 async function recordQuestionChanges(env,changes,key,uploadId,actor,changedAt){
  for(let offset=0;offset<changes.length;offset+=100){
   const batch=changes.slice(offset,offset+100).map(item=>env.DB.prepare(
-   "INSERT INTO question_change_log (id,question_id,action,object_key,upload_id,changed_by,changed_at,before_json,after_json) VALUES (?,?,?,?,?,?,?,?,?)"
-  ).bind(crypto.randomUUID(),item.id,item.action,key,uploadId,actor,changedAt,item.before?JSON.stringify(item.before):null,item.after?JSON.stringify(item.after):null));
+   "INSERT INTO question_change_log (id,question_id,question_code,action,object_key,upload_id,changed_by,changed_at,before_json,after_json) VALUES (?,?,?,?,?,?,?,?,?,?)"
+  ).bind(crypto.randomUUID(),item.id,item.questionCode,item.action,key,uploadId,actor,changedAt,item.before?JSON.stringify(item.before):null,item.after?JSON.stringify(item.after):null));
   if(batch.length)await env.DB.batch(batch);
  }
 }
@@ -205,8 +207,8 @@ async function route(request,env){
   const questionId=url.searchParams.get("questionId");
   const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit")||20)));
   const query=questionId
-   ?env.DB.prepare("SELECT id,question_id,action,object_key,upload_id,changed_by,changed_at,before_json,after_json FROM question_change_log WHERE question_id=? ORDER BY changed_at DESC LIMIT ?").bind(questionId,limit)
-   :env.DB.prepare("SELECT id,question_id,action,object_key,upload_id,changed_by,changed_at,before_json,after_json FROM question_change_log ORDER BY changed_at DESC LIMIT ?").bind(limit);
+   ?env.DB.prepare("SELECT id,question_id,question_code,action,object_key,upload_id,changed_by,changed_at,before_json,after_json FROM question_change_log WHERE question_id=? ORDER BY changed_at DESC LIMIT ?").bind(questionId,limit)
+   :env.DB.prepare("SELECT id,question_id,question_code,action,object_key,upload_id,changed_by,changed_at,before_json,after_json FROM question_change_log ORDER BY changed_at DESC LIMIT ?").bind(limit);
   const {results=[]}=await query.all();
   return json({changes:results});
  }
