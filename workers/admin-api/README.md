@@ -5,11 +5,11 @@ This service is the security boundary for the static GitHub Pages admin interfac
 ## D1 database and migrations
 
     cd workers/admin-api
-    npx wrangler d1 create studyorbit247-admin
+    npx wrangler d1 create studyorbit247
 
 If the database already exists, do not create another one. Set its returned database ID in `wrangler.toml`, then apply the migrations:
 
-    npx wrangler d1 migrations apply studyorbit247-admin --remote
+    npx wrangler d1 migrations apply studyorbit247 --remote
 
 ## Create and connect the R2 bucket
 
@@ -28,15 +28,12 @@ The deployed API will serve these at `/api/content/question-bank/gk/latest.zip` 
 
 ## Configure secrets
 
-Run each command and enter the value when Wrangler prompts. Use the administrator email supplied by the site owner for ADMIN_EMAIL; enter the chosen initial password for ADMIN_PASSWORD. Generate a long random session secret (for example, openssl rand -base64 32) for SESSION_SECRET.
+The site origins are set in `wrangler.toml`. Set the three authentication secrets before using the admin login routes. Use the administrator email for `ADMIN_EMAIL`, choose an initial `ADMIN_PASSWORD`, and generate a long random `SESSION_SECRET` (for example, `openssl rand -base64 32`).
 
     npx wrangler secret put ADMIN_EMAIL
     npx wrangler secret put ADMIN_PASSWORD
     npx wrangler secret put SESSION_SECRET
-    npx wrangler secret put ADMIN_ORIGIN
-    npx wrangler secret put PUBLIC_ORIGIN
-
-For `ADMIN_ORIGIN`, enter the exact origin serving the admin page. Set `PUBLIC_ORIGIN` to the exact student site origin, such as `https://studyorbit247.web.app` (origin only; no path). For best cookie reliability, serve the Worker on the same custom domain under `/api/*` and configure the route in wrangler.toml. Cross-site cookie restrictions can affect a Worker on a separate workers.dev host.
+The configured origins are exact and contain no path: `https://studyorbit247.web.app` for both the student site and admin page.
 
 ## Deploy
 
