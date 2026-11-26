@@ -22,6 +22,10 @@ function read(key, fallback) {
 function write(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 
 export const api = {
+  async getTeamOptions() { return request("/admin/team/options"); },
+  async getTeamUsers() { return request("/admin/team/users"); },
+  async createTeamUser(user) { return request("/admin/team/users", { method: "POST", body: JSON.stringify(user) }); },
+  async updateTeamUser(id, update) { return request("/admin/team/users/" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify(update) }); },
   async login(email, password) {
     return request("/admin/login", { method: "POST", body: JSON.stringify({ email, password }) });
   },
