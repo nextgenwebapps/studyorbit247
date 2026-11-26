@@ -35,6 +35,15 @@ The site origins are set in `wrangler.toml`. Set the three authentication secret
     npx wrangler secret put SESSION_SECRET
 The configured origins are exact and contain no path: `https://studyorbit247.web.app` for both the student site and admin page.
 
+## Apply the audit and taxonomy migration
+
+After pulling the repository, apply pending migrations before deploying the Worker:
+
+    npx wrangler d1 migrations apply studyorbit247 --remote
+    npx wrangler deploy
+
+Migration 0003 adds R2 upload history, per-question change snapshots, controlled subject/chapter/topic codes, and per-topic ID counters. The admin R2 upload screen records actor email, file name, object key, timestamps, size, question count, content hash, validation findings, and added/updated/removed IDs. Only uploads made through the authenticated admin screen are recorded; direct dashboard or CLI uploads bypass this audit trail.
+
 ## Deploy
 
     npx wrangler deploy
@@ -46,6 +55,10 @@ If using a separate Worker URL, set window.STUDYORBIT_ADMIN_API before the modul
 - POST /api/admin/login — validates secrets and issues an HttpOnly, Secure session cookie.
 - GET /api/admin/me — checks the signed session.
 - POST /api/admin/logout — clears the session cookie.\n- POST /api/admin/uploads/start, PUT /api/admin/uploads/:id/parts/:number, POST /api/admin/uploads/complete — authenticated multipart uploads into the R2 bucket.\n- POST /api/admin/uploads/abort — cancels an incomplete multipart upload.
+- GET /api/admin/uploads/history — lists recent R2 upload records.
+- GET /api/admin/questions/history — lists question changes; accepts an optional questionId query.
+- GET|POST /api/admin/taxonomy — lists or creates controlled subject, chapter, and topic codes.
+- POST /api/admin/questions/next-id — atomically reserves the next composite question code for a registered topic.
 - GET|POST /api/admin/questions/drafts — read/save question drafts in D1.
 - POST /api/admin/questions/publish — marks selected drafts published in D1.
 - GET|HEAD /api/content/question-bank/* — serves question-bank files from R2.
