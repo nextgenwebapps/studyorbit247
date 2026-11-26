@@ -842,7 +842,7 @@ function Dashboard() {
                   {questionHistory.length ? questionHistory.map((item) => (
                     <div className="question-row" key={item.id}>
                       <div>
-                        <strong>{item.question_id} · {item.action}</strong>
+                        <strong>{item.question_code || item.question_id} · {item.action}</strong>
                         <small>{item.object_key} · {item.changed_by} · {new Date(item.changed_at).toLocaleString()}</small>
                         <details><summary>View change</summary>
                           <small>Previous: {item.before_json || "—"}<br />New: {item.after_json || "—"}</small>
